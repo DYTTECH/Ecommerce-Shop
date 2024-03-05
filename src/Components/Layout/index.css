@@ -1,0 +1,27 @@
+/* navbar menu and profile dropdown */
+.css-1sucic7 .css-pwxzbm,
+.css-1j3mvvl .css-pwxzbm{
+    top:95px !important;
+}
+/* navbar categories menu */
+.catgoryMenu .css-pwxzbm ,
+#more-menu .css-pwxzbm ,
+#subcategories-menu .css-pwxzbm {
+    top:133px !important;
+    height: 20rem;
+}
+
+/* footer write email textfaild */
+.css-1x5jdmq{
+    padding:10.5px 14px !important;
+    background-color: #fff !important;
+}
+/* footer lang menu */
+.footerlangMenu .css-pwxzbm{
+    top:unset !important;
+    left: unset !important;
+}
+/* footer customer services */
+.css-1q6ff5o .MuiPaper-root{
+    top: 364px !important;
+}

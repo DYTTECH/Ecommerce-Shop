@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;1000&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Cairo'!important; /* Use sans-serif as a fallback */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body::-webkit-scrollbar {
+  width: 0.5em;
+}
+
+body::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  outline: 1px solid slategrey;
+  border-radius: 12px;
+}
+
+@font-face {
+  font-family: 'Cairo';
+  src: local('Cairo'), url('./assets/fonts/Cairo-Black.ttf') format('truetype');
+  font-weight: 900;
+}
+
+/* Repeat the @font-face rules for other font weights */
+
+/* Example for Cairo-Bold.ttf */
+@font-face {
+  font-family: 'Cairo';
+  src: local('Cairo'), url('./assets/fonts/Cairo-Bold.ttf') format('truetype');
+  font-weight: 700;
+}
+@font-face {
+  font-family: 'Cairo';
+  src: local('Cairo'), url('./assets/fonts/Cairo-ExtraBold.ttf') format('truetype');
+  font-weight: 600;
+}
+@font-face {
+  font-family: 'Cairo';
+  src: local('Cairo'), url('./assets/fonts/Cairo-ExtraLight.ttf') format('truetype');
+  font-weight: 300;
+}
+@font-face {
+  font-family: 'Cairo';
+  src: local('Cairo'), url('./assets/fonts/Cairo-Medium.ttf') format('truetype');
+  font-weight: 500;
+}
+@font-face {
+  font-family: 'Cairo';
+  src: local('Cairo'), url('./assets/fonts/Cairo-Regular.ttf') format('truetype');
+  font-weight: 400;
+}
+@font-face {
+  font-family: 'Cairo';
+  src: local('Cairo'), url('./assets/fonts/Cairo-SemiBold.ttf') format('truetype');
+  font-weight: 800;
+}
+
