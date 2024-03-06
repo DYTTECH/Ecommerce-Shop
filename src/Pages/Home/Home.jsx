@@ -96,14 +96,13 @@ const Home = () => {
           homecomponents.length ?
           homecomponents?.map((component) =>
             component?.content_type_name === "specialcategory" ? (
-              <Box>
-                <MainTitle sx={{paddingX:4, pb:4}}>{component?.title}</MainTitle>
+              
               <RecommendedForYou
                 key={component?.sort_number}
-                title={component?.name}
+                title={component?.title}
                 sort_id={component?.query_id}
               />
-              </Box>
+            
             ) : component?.content_type_name === "category" ? (
               <SubCategories
               key={component?.sort_number}
@@ -111,13 +110,13 @@ const Home = () => {
                 frame={component?.frame}
               />
             ) : component?.content_type_name === "shopbrand" ? (
-              <Box>
-                <MainTitle sx={{paddingX:4, pb:4}}>{component?.title}</MainTitle>
+             
                 <Brands 
               key={component?.sort_number}
               items={component?.items}
+              title={component?.title}
               />
-              </Box>
+              
             ) : (
               component?.content_type_name === "banner" && 
               <Banners 

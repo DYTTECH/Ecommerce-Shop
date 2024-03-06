@@ -117,7 +117,7 @@ console.log(items);
             <img
               src={banner?.image}
               alt={banner?.name}
-              style={{ width: "100%", height: 350 }}
+              style={{ width: "100%", height: 330 }}
             />
           </Card>
         ))

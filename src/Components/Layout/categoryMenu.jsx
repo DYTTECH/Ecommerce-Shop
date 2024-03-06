@@ -2,21 +2,23 @@ import { useEffect, useState } from "react";
 import BASEURL from "../../Data/API";
 import { useDispatch, useSelector } from "react-redux";
 import useRequest from "../../Hooks/useRequest";
-import { Box, Menu, MenuItem } from "@mui/material";
+import { Box, CircularProgress, Menu, MenuItem, Stack } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@emotion/react";
 import { ButtonStyle } from "../../Style/StyledComponents/Buttons";
 import { BoxMenuSkew } from "../../Style/StyledComponents/Box";
 import CategoryMenuSkeleton from "../Skeleton/CategoryMenuSkeleton";
+import { GrayText } from "../../Style/StyledComponents/Typography";
+import { useNavigate } from "react-router-dom";
 
 const CategoriesMenu = () => {
+  const navigate=useNavigate()
   const storedLanguage = localStorage.getItem("language");
   const dispatch = useDispatch();
   // const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));  
   const shopInfo=useSelector((state)=>state.shopInfo.value.shop)
-  // const categories = useSelector((state) => state.categories.value);
+   const categories = useSelector((state) => state.categories.value);
 
-  const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [categoryID, setCategoryID] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
@@ -25,7 +27,7 @@ const CategoriesMenu = () => {
   const open = Boolean(anchorEl);
   const moreOpen = Boolean(moreAnchorEl); // Boolean for the "More" menu
   const theme = useTheme();
-  const [loading, setLoading] = useState(true);
+  
 
   const handleClick = (event, categoryId) => {
     setAnchorEl(event.currentTarget);
@@ -44,49 +46,48 @@ const CategoriesMenu = () => {
     setMoreAnchorEl(event.currentTarget);
   };
 
-  const [categoryRequest, categoryResponse] = useRequest({
+  const [GetCategoryRequest, GetCategoryResponse] = useRequest({
     path: `${BASEURL}shop/${shopInfo?.id}/categories/?level=${"0"}`,
     method: "get",
   });
 
-  const [subCategoryRequest, subCategoryResponse] = useRequest({
+  const [GetSubCategoryRequest, GetSubCategoryResponse] = useRequest({
     path: `${BASEURL}shop/${shopInfo?.id}/categories/?level=${"1"}`,
     method: "get",
   });
 
 
   const GetCategories = (sizeParams = 200) => {
-    categoryRequest({
+    GetCategoryRequest({
       params: {
         size:sizeParams,
       }, 
       onSuccess: (res) => {
-        // dispatch({ type: "categories/set", payload: res.data});
-        setLoading(false); 
-        setCategories(res.data.results);
+         dispatch({ type: "categories/set", payload: res?.data});
+        
       },
       onError: (err) => {
         dispatch({ payload: err.message });
-        setLoading(false); 
+       
       }
     });
   };
 
   const GetSubCategories = (sizeParams = 200) => {
-    subCategoryRequest({
+    GetSubCategoryRequest({
       params: {
         size:sizeParams,
       }, 
       onSuccess: (res) => {
         const filteredSubCategories = res.data.results.filter(subCategory =>
-          subCategory.parent_id === categoryID
+          subCategory?.parent_id === categoryID
         );
         setSubCategories(filteredSubCategories);
-        setLoading(false);
+        
       },
       onError: (err) => {
         dispatch({ payload: err.message });
-        setLoading(false); 
+        
       },
     });
   };
@@ -100,16 +101,14 @@ const CategoriesMenu = () => {
     },5000)
   }, [shopInfo?.id]);
   useEffect(() => {
-    setTimeout(()=>{
+   
       if(shopInfo?.id){
         GetSubCategories();
     }
-    },5000)
+   
   }, [shopInfo?.id,categoryID]);
 
-  if (loading) {
-    return <CategoryMenuSkeleton />;
-  }
+ 
 
   return (
     <>
@@ -124,10 +123,12 @@ const CategoriesMenu = () => {
           mt: { lg: 4, md: 1, sm: 2, xs: 3 },
           background: theme.palette.primary.dark,
           width: '100%',
-          zIndex:'1'
+          zIndex:'1',
+          gap:2
         }}
       >
-        {categories?.slice(0, 4).map((category, index) => (
+        {GetCategoryResponse.isPending?<CategoryMenuSkeleton/>:
+        categories?.results?.slice(0, 4).map((category, index) => (
           <ButtonStyle
             key={index}
             id="demo-positioned-button"
@@ -140,7 +141,7 @@ const CategoriesMenu = () => {
             {category.name}
           </ButtonStyle>
         ))}
-        {categories?.length > 4 && (
+        {categories?.results?.length > 4 && (
           <Box sx={{ position: 'relative', mr: 2 }}>
           <BoxMenuSkew sx={{bgcolor: theme.palette.primary.main}}></BoxMenuSkew>
           <ButtonStyle
@@ -153,7 +154,7 @@ const CategoriesMenu = () => {
         )}
         <Box sx={{ position: 'relative', mr: 3 }}>
           <BoxMenuSkew sx={{bgcolor: theme.palette.primary.red}}></BoxMenuSkew>
-          <ButtonStyle sx={{fontFamily:"Cairo"}} >
+          <ButtonStyle sx={{fontFamily:"Cairo"}} onClick={()=>navigate(`/t2/${shopInfo?.sub_domain}/discounts`)} >
             {t("Sales")}
           </ButtonStyle>
         </Box>
@@ -172,7 +173,7 @@ const CategoriesMenu = () => {
             horizontal: "left",
           }}
         >
-          {categories?.slice(4).map((category, index) => (
+          {categories?.results?.slice(4).map((category, index) => (
             <MenuItem key={index} onClick={handleMoreClose} sx={{fontFamily:"Cairo"}}>
               {category.name}
             </MenuItem>
@@ -195,11 +196,17 @@ const CategoriesMenu = () => {
             horizontal: "left",
           }}
         >
-          {subCategories?.map((subcategory, index) => (
+          {
+          GetSubCategoryResponse.isPending?
+          <Stack   alignItems="center" justifyContent={'center'} sx={{height:"220px",width:200}}>
+          <CircularProgress   size={36}  /> </Stack> : subCategories.length>0?
+          subCategories?.map((subcategory, index) => (
             <MenuItem key={index} onClick={handleClose} sx={{fontFamily:"Cairo"}}>
               {subcategory.name}
             </MenuItem>
-          ))}
+          )):<Stack justifyContent={'center'} alignItems={'center'} sx={{height:"220px",width:200}}>
+          <GrayText>No subcategories</GrayText>
+          </Stack>}
         </Menu>
       </Box>
     </>

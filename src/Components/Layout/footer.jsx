@@ -314,7 +314,7 @@ const Footer = () => {
                   <FooterGrayIcon>
                     <EmailIcon />
                   </FooterGrayIcon>{" "}
-                  {shopInfo.email}
+                  {shopInfo?.email}
                 </FooterMenuText>
               </MenuItem>
               <MenuItem onClick={handleClose} disableRipple>

@@ -15,7 +15,8 @@ import {
   useScrollTrigger,
   useTheme,
 } from "@mui/material";
-
+import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
+import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import SearchIcon from "@mui/icons-material/Search";
 import { styled, alpha } from "@mui/material/styles";
 import Badge from "@mui/material/Badge";
@@ -291,8 +292,11 @@ useEffect(() => {
                   aria-label="show 17 new notifications"
                 >
                   <Badge badgeContent={17} color="error">
-                    <NotificationsIcon />
+                    <NotificationsNoneOutlinedIcon />
                   </Badge>
+                </GrayIcon>
+                <GrayIcon>
+                  <FavoriteBorderOutlinedIcon/>
                 </GrayIcon>
                 <PopupState variant="popper" popupId="demo-popup-popper" >
                   {(popupState) => (

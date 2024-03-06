@@ -3,7 +3,7 @@ import React from 'react'
 
 const BannerSkeleton = () => {
   return (
-    <Box><Skeleton variant="rectangular" width={"100%"} height={220} /></Box>
+    <Box><Skeleton variant="rectangular" width={"100%"} height={330} /></Box>
   )
 }
 

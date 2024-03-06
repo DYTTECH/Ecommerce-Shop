@@ -41,7 +41,7 @@ export const MainMenuLang = ({ open, onClose, anchorElLang }) => {
       }}
       open={open}
       onClose={onClose}
-      sx={{ ".MuiMenuItem-root": { cursor: "pointer"} }} // Use correct class name
+      sx={{ ".MuiMenuItem-root": { cursor: "pointer",height:"40px",width:"130px"} }} // Use correct class name
       
     >
       <MenuItem

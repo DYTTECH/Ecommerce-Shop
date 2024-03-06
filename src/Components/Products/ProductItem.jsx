@@ -29,7 +29,7 @@ export const ProductItem = ({
 
   return (
     <Box className="product" onClick={()=>navigate(`/t2/${shopInfo?.sub_domain}/products/${name}`)}>
-      <Card sx={{ width: '345px', height:'320px',display:'flex', flexDirection: 'column',
+      <Card sx={{ width: "100%", height:'320px',display:'flex', flexDirection: 'column',
     justifyContent: 'space-between'}}>
         <CardActionArea>
         {main_image ? (
@@ -48,13 +48,25 @@ export const ProductItem = ({
           />
           )}
           <CardContent sx={{}}>
-            <ItemsTitle sx={{textAlign:'right'}}>
+            <ItemsTitle sx={{textAlign:'right',
+           maxHeight: '3em', // Set the maximum height (3em for three lines)
+           overflow: 'hidden',
+           display: '-webkit-box',
+           WebkitBoxOrient: 'vertical',
+           WebkitLineClamp: 3, // Limit th
+          }}>
               {name.slice(0, 50)}
             </ItemsTitle>
             <Typography
               variant="body2"
               color="text.secondary"
-              sx={{fontFamily: "Cairo", textAlign:'right'}}
+              sx={{fontFamily: "Cairo", textAlign:'right',
+              maxHeight: '3em', // Set the maximum height (3em for three lines)
+              overflow: 'hidden',
+              display: '-webkit-box',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: 3, // Limit th
+            }}
               dangerouslySetInnerHTML={{ __html: description.slice(0, 50) }}
             />
           </CardContent>

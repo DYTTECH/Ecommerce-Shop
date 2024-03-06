@@ -13,6 +13,7 @@ import BestSellerSlice from "./Pages/BestSellerSlice";
 import BrandsSlice from "./Pages/BrandSlice"
 import BannersSlice from "./Pages/BannerSlice"
 import subCategoriesSlice from "./Pages/SubCategorieSlice"
+import DiscountsSlice from "./Pages/DiscountsSlice";
 
 
 export const store = configureStore({
@@ -30,7 +31,8 @@ export const store = configureStore({
       bestseller:BestSellerSlice,
       BannersSlice: BannersSlice,
       BrandsSlice:BrandsSlice,
-      subCategories: subCategoriesSlice
+      subCategories: subCategoriesSlice,
+      discounts:DiscountsSlice
     },
     middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

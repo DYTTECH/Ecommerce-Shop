@@ -1,8 +1,13 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import ResponsiveLayout from '../../Components/Layout/Layout'
 import PageMeta from '../../Components/Layout/MetaPage'
+import { Grid } from '@mui/material'
 
 export const Products = () => {
+
+  useEffect(() => {
+    
+  }, [])
   return (
     <ResponsiveLayout>
         <PageMeta
@@ -12,7 +17,12 @@ export const Products = () => {
         type="website"
         image="URL_to_your_image"
       />
-        Products
+        <Grid container spacing={2}>
+          <Grid md={3}></Grid>
+          <Grid md={9}>
+            {/* Your products will be displayed here. You can */}
+          </Grid>
+        </Grid>
         </ResponsiveLayout>
   )
 }

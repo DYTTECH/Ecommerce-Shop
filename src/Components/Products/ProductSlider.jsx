@@ -1,13 +1,12 @@
 import { Box, Grid, Stack } from "@mui/material";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-
-import ProductSkeleton from "../Skeleton/ProductSkeleton";
 import useRequest from "../../Hooks/useRequest";
 import { PRODUCTS } from "../../Data/API";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ProductItem } from "./ProductItem";
+import { MainTitle } from "../../Style/StyledComponents/Typography";
 const ProductSlider = ({ title ,keyId}) => {
   const shopInfo =  JSON.parse(localStorage.getItem("shopInfo"))
   const bestseller=useSelector((state)=>state.bestseller.value)
@@ -64,23 +63,26 @@ const ProductSlider = ({ title ,keyId}) => {
       breakpoint: { max: 3000, min: 1024 },
       items: 4,
       slidesToSlide: 1,
-      autoPlay: false,
+      autoPlay: true,
     },
     tablet: {
       breakpoint: { max: 1024, min: 464 },
       items: 3,
       slidesToSlide: 1,
+      autoPlay: true,
     },
     mobile: {
       breakpoint: { max: 464, min: 0 },
       items: 2,
       slidesToSlide: 1,
+      autoPlay: true,
     },
   };
   
   return (
     <Stack
     gap={1}
+    co
     className={lang === 'en' ? 'productStack' : ''}
     sx={{
       ".react-multi-carousel-list": {
@@ -91,11 +93,12 @@ const ProductSlider = ({ title ,keyId}) => {
       ".react-multi-carousel-item": {
         // padding: "0",
         // margin: "15px",
-        width: { md: "100% !important", xs: 'fit-content !important' },
+        width: { md: "23.7vw !important", xs: '47vw !important' },
         padding: "10px",
       },
     }}
   >
+     <MainTitle sx={{paddingX:4}}>{title}</MainTitle>
   {keyId===1?(
      bestseller?.results?.length?
     <Carousel
@@ -106,7 +109,9 @@ const ProductSlider = ({ title ,keyId}) => {
       removeArrowOnDeviceType={["tablet", "mobile", "desktop"]}
       direction={lang === 'en' ? 'rtl' : 'ltr'}
     >
+      
       {bestseller.results.slice(0, 4).map((product, index) => (
+        
         <ProductItem {...product} key={index} />
       ))}
     </Carousel>
