@@ -59,7 +59,7 @@ const SubCategories = ({ category_level, props}) => {
         flexGrow: 1,
         transition: "0.8s all",
         paddingInline: "2%",
-        paddingBottom: trigger ? "5%" : "8%",
+        paddingBottom: trigger ? "5%" : "0%",
 
         paddingTop: trigger ? "1%" : "0",
       }}

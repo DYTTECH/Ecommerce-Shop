@@ -64,7 +64,7 @@ const Home = () => {
 
     window.scroll(0, 0);
   }, []);
-  console.log(homecomponents);
+
   useEffect(() => {
     setTimeout(()=>{
       if(shopInfo?.id){
@@ -135,7 +135,7 @@ const Home = () => {
           </Box>
           )
         )}
-        <Footer />
+       
       </ResponsiveLayout>
     </Box>
   );
