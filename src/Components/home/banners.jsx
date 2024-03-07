@@ -42,7 +42,7 @@ console.log(items);
       sx={{
         flexGrow: 1,
         transition: "0.8s all",
-        paddingBottom: trigger ? "5%" : "8%",
+        paddingBottom: trigger ? "5%" : "0%",
         paddingTop: trigger ? "1%" : "0",
         marginTop:{lg:'69px', md:'0', sm:'0',xs:'0'}
       }}

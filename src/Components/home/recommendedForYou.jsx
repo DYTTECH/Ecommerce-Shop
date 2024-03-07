@@ -27,9 +27,10 @@ const RecommendedForYou = ({ sort_id, title }) => {
             transition: "0.8s all",
             paddingLeft: "2%",
             paddingRight: "2%",
-            paddingBottom: trigger ? "5%" : "8%",
+            paddingBottom: trigger ? "5%" : "0%",
             paddingTop: trigger ? "1%" : "2%",
           }}
+
         >
           <ProductSlider title={title} keyId={sort_id} />
         </Box>

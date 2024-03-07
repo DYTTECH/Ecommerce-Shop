@@ -43,6 +43,7 @@ import '../../App.css'
 import { useSelector } from "react-redux";
 import { GrayIcon } from "../../Style/StyledComponents/IconButton";
 import { BoxStyle } from "../../Style/StyledComponents/Box";
+import Footer from "./footer";
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
@@ -389,7 +390,7 @@ useEffect(() => {
         component="main"
         sx={{
           flexGrow: 1,
-          pt: { lg: 0, md: 4, sm: 4, xs: '38px' },
+          py: { lg: 0, md: 4, sm: 4, xs: '38px' },
           direction: i18n.language == "ar" ? "rtl" : "ltr",
           // height:'auto'
           width: "100%",
@@ -397,6 +398,7 @@ useEffect(() => {
       >
         <Toolbar />
         {props.children}
+        <Footer />
       </Box>
     </Box>
   );

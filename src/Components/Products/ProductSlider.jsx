@@ -7,6 +7,8 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ProductItem } from "./ProductItem";
 import { MainTitle } from "../../Style/StyledComponents/Typography";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 const ProductSlider = ({ title ,keyId}) => {
   const shopInfo =  JSON.parse(localStorage.getItem("shopInfo"))
   const bestseller=useSelector((state)=>state.bestseller.value)
@@ -15,6 +17,8 @@ const ProductSlider = ({ title ,keyId}) => {
   const mostviewed=useSelector((state)=>state.mostviewed.value)
   const mostrated=useSelector((state)=>state.mostrated.value)
   const dispatch=useDispatch();
+  const navigate =useNavigate()
+  const {t}=useTranslation()
   const lang = localStorage.getItem("language");
 
     // Get shop info request
@@ -23,6 +27,7 @@ const ProductSlider = ({ title ,keyId}) => {
     path: PRODUCTS+shopInfo.id+`/products/?query_id=${keyId}`,
   });
   const GetProductSort=(shop)=>{
+
     RequestGetProductSort({
       onSuccess: (res) => {
         switch (keyId) {
@@ -98,7 +103,12 @@ const ProductSlider = ({ title ,keyId}) => {
       },
     }}
   >
-     <MainTitle sx={{paddingX:4}}>{title}</MainTitle>
+    <Stack flexDirection={'row'} justifyContent={'space-between'}>
+     <MainTitle sx={{paddingX:4,cursor:'pointer'}}>{title}</MainTitle>
+     <MainTitle sx={{paddingX:4,cursor:'pointer'}} onClick={() => navigate(`/t2/${shopInfo.sub_domain}/products`,{state:{keys:{
+      sort_id:keyId
+     }}})}>{t('More')}</MainTitle>
+     </Stack>
   {keyId===1?(
      bestseller?.results?.length?
     <Carousel
