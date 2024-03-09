@@ -5,14 +5,15 @@ import { Card } from "../../Style/StyledComponents/Cards";
 import BASEURL from "../../Data/API";
 import { useDispatch, useSelector } from "react-redux";
 import useRequest from "../../Hooks/useRequest";
-import { useEffect, useState } from "react";
-import ImageIcon from "@mui/icons-material/Image";
+import { useEffect } from "react";
 import { Tooltip } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import { GrayText } from "../../Style/StyledComponents/Typography";
 import { useScrollTrigger } from '@mui/material';
+import { useNavigate } from "react-router-dom";
 
 const SubCategories = ({ category_level, props}) => {
+  const navigate=useNavigate()
   const { window } = props || {}; // Destructure 'window' with a default value of an empty object
   const trigger = useScrollTrigger({
     target: window ? window() : undefined,
@@ -80,6 +81,9 @@ const SubCategories = ({ category_level, props}) => {
                 height: "5.5rem",
                 paddingX: 4,
               }}
+              onClick={() => navigate(`/t2/${shopInfo.sub_domain}/products`,{state:{keys:{
+                category_id:category?.id
+              }}})}
             >
               <GrayText>{category?.name}</GrayText>
               <Tooltip title={category?.name} arrow>
