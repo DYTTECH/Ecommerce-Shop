@@ -34,7 +34,8 @@ const CategoriesMenu = () => {
     setCategoryID(categoryId);
   };
 
-  const handleClose = () => {
+  const handleClose = (categoryId) => {
+    navigate(`/t2/${shopInfo.sub_domain}/products`, { state: { keys: { category_id: categoryId } } });
     setAnchorEl(null);
   };
 
@@ -201,7 +202,7 @@ const CategoriesMenu = () => {
           <Stack   alignItems="center" justifyContent={'center'} sx={{height:"220px",width:200}}>
           <CircularProgress   size={36}  /> </Stack> : subCategories.length>0?
           subCategories?.map((subcategory, index) => (
-            <MenuItem key={index} onClick={handleClose} sx={{fontFamily:"Cairo"}}>
+            <MenuItem key={index} onClick={()=>handleClose(subcategory.id)} sx={{fontFamily:"Cairo"}}>
               {subcategory.name}
             </MenuItem>
           )):<Stack justifyContent={'center'} alignItems={'center'} sx={{height:"220px",width:200}}>

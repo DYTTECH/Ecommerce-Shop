@@ -5,9 +5,12 @@ import { Stack, Tooltip, useScrollTrigger } from "@mui/material";
 import { Card } from "../../Style/StyledComponents/Cards";
 import { ItemsTitle, MainTitle, ProductTitle } from "../../Style/StyledComponents/Typography";
 import Carousel from "react-multi-carousel";
+import { useNavigate } from "react-router-dom";
 
 const Brands = ({ props, items ,title}) => {
   const lang = localStorage.getItem("language");
+  const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
+  const navigate=useNavigate()
   const { window } = props || {};
   const trigger = useScrollTrigger({
     target: window ? window() : undefined,
@@ -44,6 +47,7 @@ const Brands = ({ props, items ,title}) => {
   
           paddingTop: trigger ? "1%" : "0",
         }}
+        
       >
          <Stack
     gap={1}
@@ -77,6 +81,9 @@ const Brands = ({ props, items ,title}) => {
               <Tooltip title={brand?.name} arrow>
                 <Grid xs={2} key={index}>
                   <Card
+                  onClick={() => navigate(`/t2/${shopInfo.sub_domain}/products`,{state:{keys:{
+                   brand_id:brand?.id
+                   }}})}
                     sx={{
                       display: "flex",
                       alignItems: "center",
