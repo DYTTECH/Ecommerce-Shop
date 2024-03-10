@@ -207,14 +207,17 @@ const ProductDetails = () => {
               <Grid container spacing={2}>
                 <Grid
                   item
+                  lg={1} 
                   xs={2}
                   sx={{
                     display: {
-                      lg: "block",
+                      lg: "flex",
                       md: "none",
                       sm: "none",
                       xs: "none",
                     },
+                    alignItems:'center',
+                    flexDirection:'column'
                   }}
                 >
                   {product?.images.map((image, index) => (
@@ -222,12 +225,12 @@ const ProductDetails = () => {
                       item
                       xs={2}
                       key={index}
-                      sx={{ maxWidth: "100% !important" }}
+                      sx={{maxWidth:'50% !important',objectFit:'cover'}}
                     >
                       <img
                         src={image.image}
                         alt={`Image ${index}`}
-                        style={{ width: "50%" }}
+                        style={{width:'100%' }}
                       />
                     </Grid>
                   ))}
@@ -258,7 +261,8 @@ const ProductDetails = () => {
                         {product?.images.map((image, index) => (
                           <Box
                             key={index}
-                            sx={{ maxWidth: "25% !important", display: "flex" }}
+                            
+                            sx={{ maxWidth: "80px!important", display: "flex" }}
                           >
                             <img
                               src={image.image}
@@ -271,7 +275,7 @@ const ProductDetails = () => {
                     </Dialog>
                   </Box>
                 </Grid>
-                <Grid item lg={5} md={6} xs={12}>
+                <Grid item lg={6} md={6} xs={12}>
                   <Box
                     sx={{ display: "flex", justifyContent: "flex-end", pt: 2 }}
                   >
