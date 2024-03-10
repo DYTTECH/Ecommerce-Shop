@@ -51,7 +51,6 @@ const ProductSlider = ({ title ,keyId}) => {
             // Default case if keyId doesn't match any of the specified cases
             break;
         }
-       
 			},
       onError: (err) => {
         dispatch({type: "newarrive/reset", payload:err.message});

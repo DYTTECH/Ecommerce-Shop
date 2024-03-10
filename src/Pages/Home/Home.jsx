@@ -57,6 +57,8 @@ const Home = () => {
     });
   };
   useEffect(() => {
+
+    window.scrollTo(10, 0);
     const currentShopInfo = window.location.pathname.split("/t2/")[1];
     if (currentShopInfo) {
       GetShopInfo(currentShopInfo);
