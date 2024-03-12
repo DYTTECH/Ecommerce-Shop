@@ -390,7 +390,7 @@ useEffect(() => {
         component="main"
         sx={{
           flexGrow: 1,
-          py: { lg: 0, md: 4, sm: 4, xs: '38px' },
+          pt: { lg: 0, md: 4, sm: 4, xs: '38px' },
           direction: i18n.language == "ar" ? "rtl" : "ltr",
           // height:'auto'
           width: "100%",
