@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import ResponsiveLayout from '../../Components/Layout/Layout'
 import PageMeta from '../../Components/Layout/MetaPage'
-import { Grid, Pagination, PaginationItem, Stack } from '@mui/material'
+import { Accordion, AccordionDetails, AccordionSummary, Box, Checkbox, FormControlLabel, Grid, Pagination, PaginationItem, Rating, Stack, Typography } from '@mui/material'
 import { useLocation } from 'react-router-dom'
 import useRequest from '../../Hooks/useRequest'
 import { PRODUCTS } from '../../Data/API'
@@ -10,18 +10,19 @@ import { ProductItem } from '../../Components/Products/ProductItem'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ViewProductsSkeleton from '../../Components/Skeleton/ViewProductsSkeleton'
-
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import FilterSkeleton from '../../Components/Skeleton/FilterSkeleton'
 export const Products = () => {
   const Products=useSelector((state)=>state.products.value)
-  const [page,setPage]=useState(1)
+  const filter=useSelector((state)=>state.filter.value)
   const shopInfo =  JSON.parse(localStorage.getItem("shopInfo"))
+  const [page,setPage]=useState(1)
+  const [expanded, setExpanded] =useState(false);
   const location=useLocation()
   const dispatch=useDispatch()
-
-
-
-
-
+  const handleChangeExpanded = (panel) => (event, isExpanded) => {
+    setExpanded(isExpanded ? panel : false);
+  };
 let params = {};
       
 if (location?.state?.keys?.brand_id) {
@@ -57,6 +58,12 @@ const [RequestGetProductFilterd, ResponseGetProductFilterd] = useRequest({
   method: "Get",
   path: PRODUCTS+shopInfo.id+`/products/?${queryString}`,
 });
+
+const [RequestGetFilter, ResponseGetFilter] = useRequest({
+  method: "Get",
+  path: PRODUCTS+shopInfo.id+`/filter-attributes/`,
+});
+
 const handleChange = (event, value) => {
   setPage(value);
 };
@@ -69,33 +76,15 @@ const handleChange = (event, value) => {
       },
       onSuccess: (res) => {
         dispatch({type: "products/set", payload:res?.data});
-      // switch (location?.state?.keys?.sort_id) {
-      //     case 1:
-      //       dispatch({ type: "bestseller/set", payload: res.data });
-      //       break;
-      //     case 2:
-      //       dispatch({ type: "recommendation/set", payload: res.data });
-      //       break;
-      //       case 3:
-      //       dispatch({ type: "newarrive/set", payload: res.data });
-      //       break;
-      //       case 4:
-      //       dispatch({ type: "mostviewed/set", payload: res.data });
-      //       break;
-      //       case 5:
-      //       dispatch({ type: "mostrated/set", payload: res.data });
-      //       break;
-      //     default:
-      //       dispatch({ type: "products/set", payload: res.data });
-      //       // Default case if keyId doesn't match any of the specified cases
-      //       break;
-      //   }
-      //   if(location?.state?.keys?.brand_id){
-      //   dispatch({type: "products/set", payload:res?.data});
-      //   }
+      
       },
     })  
-  
+    RequestGetFilter({
+      onSuccess: (res) => {
+        dispatch({type: "filter/set", payload:res?.data});
+      
+      },
+    })  
   }, [location?.state?.keys,page])
 
   
@@ -128,7 +117,7 @@ const handleChange = (event, value) => {
   // }
 }, [location?.state?.keys?.sort_id, page]);
 
- 
+ console.log(filter);
   return (
     <ResponsiveLayout>
         <PageMeta
@@ -139,10 +128,75 @@ const handleChange = (event, value) => {
         image="URL_to_your_image"
       />
 
-        <Grid container spacing={2}>
-          <Grid md={3} xs={0}></Grid>
-          <Grid md={9} xs={12} >
-            <Grid container spacing={3}>
+        <Grid container spacing={2} >
+          <Grid item md={3} xs={0}  position={"sticky"} >
+          {ResponseGetFilter.isPending?
+            <FilterSkeleton/>
+          :Object.keys(filter).map((key)=>(
+             <Accordion
+             elevation={0}
+             expanded={expanded === filter[key]} onChange={handleChangeExpanded(filter[key])}>
+             <AccordionSummary
+               expandIcon={<ExpandMoreIcon />}
+               aria-controls="panel1bh-content"
+               id="panel1bh-header"
+             >
+               <Typography sx={{ flexShrink: 0 }}>
+                 {key}
+               </Typography>
+             </AccordionSummary>
+             <AccordionDetails>
+              {
+                Array.isArray(filter[key])?
+                key==='Price'?
+                filter[key].map((item,index)=>(
+                
+                  <FormControlLabel
+                  key={index}
+                    control={
+                      <Checkbox
+                        // checked={ItemChecked(item)}
+                        // onChange={()=>HandleCheckBox(item)}
+                        //  name={index}
+
+                      />
+                    }
+                    label={item}
+                  />
+                  ))
+                :key==='Rate'?
+                filter[key].map((item,index)=>(
+                <Rating
+                key={index}
+                name="simple-controlled"
+                value={item}
+                
+              />))
+                :
+                filter[key].map((item,index)=>(
+                
+                  <FormControlLabel
+                  key={index}
+                    control={
+                      <Checkbox
+                        // checked={ItemChecked(item)}
+                        // onChange={()=>HandleCheckBox(item)}
+                        // name={item}
+                      />
+                    }
+                    label={item.name}
+                    sx={{textTransform:"capitalize",fontWeight:"600",fontSize:"14px",width:"40%"}}
+                  />
+                  )):null
+              }
+              
+             </AccordionDetails>
+           </Accordion>
+          ))}
+          
+          </Grid>
+          <Grid item md={9} xs={12} >
+            <Grid container spacing={3} px={2}>
             {ResponseGetProductFilterd.isPending?(
              <ViewProductsSkeleton/>
             ):(
@@ -155,17 +209,20 @@ const handleChange = (event, value) => {
             </Grid>
             {/* Your products will be displayed here. You can */}
             <Stack spacing={2} mt={2} mb={2} justifyContent="center" alignItems="center">
-      <Pagination
-        count={Math.ceil(Products.count/8)}
-        page={page}
-        onChange={handleChange}
-        renderItem={(item) => (
-          <PaginationItem
-            slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
-            {...item}
-          />
-        )}
-      />
+              {Products?.count > 0 && Products?.count > 8 && (
+                <Pagination
+                  count={Math.ceil(Products.count/8)}
+                  page={page}
+                  onChange={handleChange}
+                  renderItem={(item) => (
+                    <PaginationItem
+                      slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
+                      {...item}
+                    />
+                  )}
+                />
+              )}
+      
     </Stack>
           </Grid>
         </Grid>
