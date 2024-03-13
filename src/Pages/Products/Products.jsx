@@ -11,6 +11,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ViewProductsSkeleton from '../../Components/Skeleton/ViewProductsSkeleton'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import FilterSkeleton from '../../Components/Skeleton/FilterSkeleton'
 export const Products = () => {
   const Products=useSelector((state)=>state.products.value)
   const filter=useSelector((state)=>state.filter.value)
@@ -127,9 +128,11 @@ const handleChange = (event, value) => {
         image="URL_to_your_image"
       />
 
-        <Grid container spacing={2}>
-          <Grid item md={3} xs={0} mt={6} position={"sticky"} top={0}>
-          {!ResponseGetFilter.isPending&&Object.keys(filter).map((key)=>(
+        <Grid container spacing={2} >
+          <Grid item md={3} xs={0}  position={"sticky"} >
+          {ResponseGetFilter.isPending?
+            <FilterSkeleton/>
+          :Object.keys(filter).map((key)=>(
              <Accordion
              elevation={0}
              expanded={expanded === filter[key]} onChange={handleChangeExpanded(filter[key])}>
@@ -193,7 +196,7 @@ const handleChange = (event, value) => {
           
           </Grid>
           <Grid item md={9} xs={12} >
-            <Grid container spacing={3}>
+            <Grid container spacing={3} px={2}>
             {ResponseGetProductFilterd.isPending?(
              <ViewProductsSkeleton/>
             ):(
@@ -206,17 +209,20 @@ const handleChange = (event, value) => {
             </Grid>
             {/* Your products will be displayed here. You can */}
             <Stack spacing={2} mt={2} mb={2} justifyContent="center" alignItems="center">
-      <Pagination
-        count={Math.ceil(Products.count/8)}
-        page={page}
-        onChange={handleChange}
-        renderItem={(item) => (
-          <PaginationItem
-            slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
-            {...item}
-          />
-        )}
-      />
+              {Products?.count > 0 && Products?.count > 8 && (
+                <Pagination
+                  count={Math.ceil(Products.count/8)}
+                  page={page}
+                  onChange={handleChange}
+                  renderItem={(item) => (
+                    <PaginationItem
+                      slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
+                      {...item}
+                    />
+                  )}
+                />
+              )}
+      
     </Stack>
           </Grid>
         </Grid>
