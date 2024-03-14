@@ -48,6 +48,7 @@ export const Products = () => {
   //   params['filters'] = [...data.filters];
   // }
 
+
   // if (data.min_price) {
   //   params['min_price'] = data.min_price;
   // }
@@ -55,6 +56,7 @@ export const Products = () => {
   // if (data.max_price) {
   //   params['max_price'] = data.max_price;
   // }
+
 
   // if (data.rate) {
   //   params['rate'] = [...data.rate];
@@ -128,6 +130,7 @@ export const Products = () => {
   }, [location?.state?.keys?.sort_id, page]);
 
   console.log(filter);
+
   return (
     <ResponsiveLayout>
       <PageMeta
@@ -137,6 +140,7 @@ export const Products = () => {
         type="website"
         image="URL_to_your_image"
       />
+
       <CategoryMenu />
       <Grid
         container
@@ -220,6 +224,7 @@ export const Products = () => {
                 </Grid>
               ))
             )}
+
           </Grid>
           {/* Your products will be displayed here. You can */}
           <Stack
