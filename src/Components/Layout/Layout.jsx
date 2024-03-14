@@ -225,6 +225,7 @@ useEffect(() => {
           paddingInline: "2%",
           paddingBlock: trigger ? "0.4%" : "0.4%",
           background: theme.palette.primary.light,
+          
         }}
       >
         <Toolbar
