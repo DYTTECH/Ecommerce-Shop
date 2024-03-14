@@ -18,11 +18,73 @@ export const Products = () => {
   const shopInfo =  JSON.parse(localStorage.getItem("shopInfo"))
   const [page,setPage]=useState(1)
   const [expanded, setExpanded] =useState(false);
+   const [filterdata, setFilterData] = useState({});
+   const [startPrice, setStartPrice] = useState(0);
+  const [endPrice, setEndPrice] = useState(0);
+   const [value, setValue] = useState(0);
   const location=useLocation()
   const dispatch=useDispatch()
   const handleChangeExpanded = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
+
+  const handleFilterByPrice = (e, index) => {
+    setFilterData((old) => ({
+      ...old,
+      min_price: startPrice,
+      max_price: endPrice,
+    }));
+  };
+   const handleRateChange = (value) => {
+    setValue(value);
+    setFilterData((old) => ({ ...old, rate: value }));
+    //  handleFilter({ rate: value });
+  };
+
+  const handleBrandChange = (e, index, brand_id) => {
+    console.log(e.target.checked);
+
+    let data = filterdata?.brands ? [...filterdata.brands] : [];
+    const in_brand = Boolean(
+      filterdata?.brands?.find((brand) => brand === brand_id)
+    );
+
+    if (e.target.checked) {
+      // Add the brand_id to the array if checked and not already present
+      if (!in_brand) {
+        data = [...data, brand_id];
+      }
+    } else {
+      // Remove the brand_id from the array if unchecked and present
+      if (in_brand) {
+        data = data.filter((brand) => brand !== brand_id);
+      }
+    }
+
+    setFilterData((old) => ({ ...old, brands: data }));
+  };
+
+  const handleAttributesChange = (e, index, attribute) => {
+    let data = filterdata?.filters ? [...filterdata.filters] : [];
+    const in_filter = Boolean(
+      filterdata?.filters?.find((attr) => attr === attribute)
+    );
+
+    if (e.target.checked) {
+      // Add the brand_id to the array if checked and not already present
+      if (!in_filter) {
+        data = [...data, attribute];
+      }
+    } else {
+      // Remove the brand_id from the array if unchecked and present
+      if (in_filter) {
+        data = data.filter((brand) => brand !== attribute);
+      }
+    }
+
+    setFilterData((old) => ({ ...old, filters: data }));
+  };
+
 let params = {};
       
 if (location?.state?.keys?.brand_id) {
@@ -116,7 +178,12 @@ const handleChange = (event, value) => {
   //   setProducts(Prorductsbrand)
   // }
 }, [location?.state?.keys?.sort_id, page]);
-
+useEffect(() => {
+    if (!Object?.keys(filterdata)?.length) {
+      return ;
+    }
+    // handleFilter(filterdata);
+  }, [filterdata]);
  console.log(filter);
   return (
     <ResponsiveLayout>
@@ -166,12 +233,20 @@ const handleChange = (event, value) => {
                   ))
                 :key==='Rate'?
                 filter[key].map((item,index)=>(
+                  <Stack gap={1} key={index} direction="row">
+                     <Checkbox
+                         checked={item}
+                        onChange={()=>handleRateChange(item)}
+                          name={index}
+
+                      />
                 <Rating
-                key={index}
+               
                 name="simple-controlled"
                 value={item}
                 
-              />))
+              />
+              </Stack>))
                 :
                 filter[key].map((item,index)=>(
                 
