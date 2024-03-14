@@ -19,6 +19,7 @@ export const ProductItem = ({
   description,
   price,
   final_price,
+  id
 }) => {
   const shopInfo =  JSON.parse(localStorage.getItem("shopInfo"))
   const navigate=useNavigate()
@@ -28,7 +29,10 @@ export const ProductItem = ({
   }, [i18n.language]);
 
   return (
-    <Box className="product" onClick={()=>navigate(`/t2/${shopInfo?.sub_domain}/products/${name}`)}>
+    <Box className="product" onClick={() => {
+      localStorage.setItem("productId", id);
+      navigate(`/t2/${shopInfo?.sub_domain}/products/${name}`);
+    }}>
       <Card sx={{ width: "100%", height:'320px',display:'flex', flexDirection: 'column',
     justifyContent: 'space-between'}}>
         <CardActionArea>
@@ -48,12 +52,13 @@ export const ProductItem = ({
           />
           )}
           <CardContent sx={{}}>
-            <ItemsTitle sx={{textAlign:'right',
-           maxHeight: '3em', // Set the maximum height (3em for three lines)
-           overflow: 'hidden',
-           display: '-webkit-box',
-           WebkitBoxOrient: 'vertical',
-           WebkitLineClamp: 3, // Limit th
+            <ItemsTitle sx={{
+              textAlign:'right',
+            maxHeight: '3em', // Set the maximum height (3em for three lines)
+            overflow: 'hidden',
+            display: '-webkit-box',
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: 3, // Limit th
           }}>
               {name.slice(0, 50)}
             </ItemsTitle>
