@@ -27,7 +27,7 @@ const createRoutes = () => {
       // errorElement: <ErrorPage />,
     },
     {
-      path: "/t2/:name/products/:name",
+      path: "/t2/:name/products/:name/:id",
       element: <ProductDetails />,
       // errorElement: <ErrorPage />,
     },

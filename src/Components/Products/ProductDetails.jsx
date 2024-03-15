@@ -5,12 +5,15 @@ import {
   Avatar,
   Box,
   Button,
+  CircularProgress,
   Container,
   Grid,
   IconButton,
   List,
   ListItem,
   ListItemText,
+  Skeleton,
+  Stack,
   Typography,
 } from "@mui/material";
 import { forwardRef, useEffect, useState } from "react";
@@ -41,17 +44,14 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
-import SubCategorySkeleton from "../Skeleton/SubCategorySkeleton";
 import RecommendedForYou from "../home/recommendedForYou";
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
 import { TransitionProps } from "@mui/material/transitions";
+import { useParams } from "react-router-dom";
+import ProductSkeleton from "../Skeleton/ProductSkeleton";
 
-const StyledMenu = styled((props: MenuProps) => (
+const StyledMenu = styled((props) => (
   <Menu
     elevation={0}
     anchorOrigin={{
@@ -93,26 +93,22 @@ const StyledMenu = styled((props: MenuProps) => (
     },
   },
 }));
-const Transition = forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement<any, any>,
-  },
-  ref: React.Ref<unknown>
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
+const Transition = forwardRef(function Transition(props, ref) {
+  const { children, ...other } = props;
+  return <Slide direction="up" ref={ref} {...other}>{children}</Slide>;
 });
 
+
 const ProductDetails = () => {
-  // const product = useSelector((state) => state.products.value);
+  const params = useParams();
+  const ProductDetails = useSelector((state) => state.productdetails.value);
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
-  const productId = localStorage.getItem("productId");
   const dispatch = useDispatch();
-  const [product, setProduct] = useState();
   const { t } = useTranslation();
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
   const openDropDown = Boolean(anchorEl);
-  const homecomponents = useSelector((state) => state.homecomponents.value);
+  const mostviewed = useSelector((state) => state.mostviewed.value);
   const [open, setOpen] = React.useState(false);
   const handleOpenDialog = () => {
     setOpen(true);
@@ -129,59 +125,39 @@ const ProductDetails = () => {
     setAnchorEl(null);
   };
   // Get shop home component
-  const [RequestGetHomeComponent, ResponseGetHomeComponent] = useRequest({
+  const [RequestGetProductSort, ResponseGetProductSort] = useRequest({
     method: "Get",
-    path: HOMECOMPONENTS + shopInfo?.id + "/home-components/",
+    path: HOMECOMPONENTS + shopInfo?.id + "/products/?query_id=4",
   });
-  const GetHomeComponent = () => {
-    RequestGetHomeComponent({
+  const GetProductSort = () => {
+    RequestGetProductSort({
       onSuccess: (res) => {
-        dispatch({ type: "homecomponents/set", payload: res.data });
-      },
-      onError: (err) => {
-        dispatch({ type: "shopInfo/clearShop", payload: err.message });
+        dispatch({ type: "mostviewed/set", payload: res.data });
       },
     });
   };
-  const [RequestGetProduct, ResponseGetProduct] = useRequest({
+  const [RequestGetProductDetails, ResponseGetProductDetails] = useRequest({
     method: "Get",
-    path: `${PRODUCTS}/${shopInfo?.id}/products/${productId}/`,
+    path: `${PRODUCTS}/${shopInfo?.id}/products/${params?.id}/`,
   });
 
-  const GetProduct = () => {
-    RequestGetProduct({
-      params: { id: productId },
+  const GetProductDetails = () => {
+    RequestGetProductDetails({
       onSuccess: (res) => {
-        dispatch({ type: "products/set", payload: res.data });
-        setProduct(res.data);
+        dispatch({ type: "productdetails/set", payload: res.data });
       },
     });
   };
 
   useEffect(() => {
-    GetProduct();
-    setTimeout(() => {
-      if (shopInfo?.id) {
-        GetHomeComponent();
-      }
-    }, 5000);
+    GetProductDetails();
+    GetProductSort();
   }, [shopInfo?.id]);
-
-  console.log(productId);
-  console.log(product);
-  console.log(homecomponents);
-
-  const parseHTMLToText = (html) => {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, "text/html");
-    return doc.body.textContent || "";
-  };
-
   return (
     <Box>
       <ResponsiveLayout>
         <PageMeta
-          title={product?.name}
+          title={ProductDetails?.name}
           desc="Description of my page for SEO"
           name={shopInfo?.full_name}
           type={shopInfo?.shop_type_name}
@@ -197,8 +173,8 @@ const ProductDetails = () => {
             }}
           >
             <GrayText>
-              {shopInfo?.shop_name}&nbsp;/&nbsp;{product?.categories[0].name}
-              &nbsp;/&nbsp;{product?.name}
+              {/* {shopInfo?.shop_name}&nbsp;/&nbsp;{ProductDetails?.categories[0]?.name}
+              &nbsp;/&nbsp;{ProductDetails?.name} */}
             </GrayText>
           </Box>
           <Divider />
@@ -207,7 +183,7 @@ const ProductDetails = () => {
               <Grid container spacing={2}>
                 <Grid
                   item
-                  lg={1} 
+                  lg={1}
                   xs={2}
                   sx={{
                     display: {
@@ -216,64 +192,80 @@ const ProductDetails = () => {
                       sm: "none",
                       xs: "none",
                     },
-                    alignItems:'center',
-                    flexDirection:'column'
+                    alignItems: "center",
+                    flexDirection: "column",
                   }}
                 >
-                  {product?.images.map((image, index) => (
+                  {ProductDetails?.images?.map((image, index) => (
                     <Grid
                       item
                       xs={2}
                       key={index}
-                      sx={{maxWidth:'50% !important',objectFit:'cover'}}
+                      sx={{ maxWidth: "50% !important", objectFit: "cover" }}
                     >
                       <img
                         src={image.image}
-                        alt={`Image ${index}`}
-                        style={{width:'100%' }}
+                        alt={`Img ${index}`}
+                        style={{ width: "100%" }}
                       />
                     </Grid>
                   ))}
                 </Grid>
                 <Grid item lg={5} md={6} xs={12}>
-                  <Box>
-                    <img
-                      src={product?.main_image}
-                      alt={product?.name}
-                      style={{ width: "100%" }}
-                      onClick={handleOpenDialog}
-                    />
-                    <Dialog
-                      open={open}
-                      TransitionComponent={Transition}
-                      keepMounted
-                      onClose={handleCloseDialog}
-                      aria-describedby="alert-dialog-slide-description"
+                  {ResponseGetProductDetails.isPending ? (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: "100%",
+                        height: "70vh",
+                      }}
                     >
-                      <Box sx={{ maxWidth: "100% !important" }}>
-                        <img
-                          src={product?.main_image}
-                          alt={product?.name}
-                          style={{ width: "100%" }}
-                        />
-                      </Box>
-                      <Box>
-                        {product?.images.map((image, index) => (
-                          <Box
-                            key={index}
-                            
-                            sx={{ maxWidth: "80px!important", display: "flex" }}
-                          >
-                            <img
-                              src={image.image}
-                              alt={`Image ${index}`}
-                              style={{ width: "100%" }}
-                            />
-                          </Box>
-                        ))}
-                      </Box>
-                    </Dialog>
-                  </Box>
+                      <CircularProgress size="3rem" color="primary" />
+                    </Box>
+                  ) : (
+                    <Box>
+                      <img
+                        src={ProductDetails?.main_image}
+                        alt={ProductDetails?.name}
+                        style={{ width: "100%" }}
+                        onClick={handleOpenDialog}
+                      />
+                      <Dialog
+                        open={open}
+                        TransitionComponent={Transition}
+                        keepMounted
+                        onClose={handleCloseDialog}
+                        aria-describedby="alert-dialog-slide-description"
+                      >
+                        <Box sx={{ maxWidth: "100% !important" }}>
+                          <img
+                            src={ProductDetails?.main_image}
+                            alt={ProductDetails?.name}
+                            style={{ width: "100%" }}
+                          />
+                        </Box>
+                        <Box>
+                          {ProductDetails?.images?.map((image, index) => (
+                            <Box
+                              key={index}
+                              sx={{
+                                maxWidth: "80px!important",
+                                display: "flex",
+                              }}
+                            >
+                              <img
+                                src={image.image}
+                                alt={`Image ${index}`}
+                                style={{ width: "100%" }}
+                              />
+                            </Box>
+                          ))}
+                        </Box>
+                      </Dialog>
+                    </Box>
+                  )}
                 </Grid>
                 <Grid item lg={6} md={6} xs={12}>
                   <Box
@@ -286,10 +278,32 @@ const ProductDetails = () => {
                       <ShareIcon />
                     </Avatar>
                   </Box>
-                  <MainTitle sx={{ pt: 2 }}>{product?.name}</MainTitle>
-                  <ItemsDes sx={{ pt: 3 }}>
-                    {parseHTMLToText(product?.description)}
-                  </ItemsDes>
+                  {ResponseGetProductDetails.isPending ? (
+                    <Stack gap={2} direction="column">
+                      <Skeleton variant="text" width="100%" height={50} />
+                      {Array.from({ length: 5 }, (_, index) => (
+                        <Skeleton
+                          variant="text"
+                          width="100%"
+                          height={50}
+                          key={index}
+                        />
+                      ))}
+                    </Stack>
+                  ) : (
+                    <>
+                      <MainTitle sx={{ pt: 2 }}>
+                        {ProductDetails?.name}
+                      </MainTitle>
+                      <ItemsDes
+                        sx={{ pt: 3 }}
+                        dangerouslySetInnerHTML={{
+                          __html: ProductDetails?.description || "",
+                        }}
+                      />
+                    </>
+                  )}
+
                   <Box
                     sx={{
                       display: "flex",
@@ -306,13 +320,13 @@ const ProductDetails = () => {
                         fontFamily: "Cairo",
                       }}
                     >
-                      {product?.price} {t("SAR")}
+                      {ProductDetails?.price} {t("SAR")}
                     </Typography>
                     <Typography variant="body1" sx={{ fontFamily: "Cairo" }}>
-                      {product?.final_price} {t("SAR")}
+                      {ProductDetails?.final_price} {t("SAR")}
                     </Typography>
                     <Typography variant="body1" sx={{ paddingRight: 2 }}>
-                      {product?.discount} %
+                      {ProductDetails?.discount} %
                     </Typography>
                   </Box>
                   <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -456,10 +470,7 @@ const ProductDetails = () => {
                             >
                               <ThumbUpAltIcon />
                             </Avatar>
-                            <BlackText
-                              variant="body1"
-                              sx={{ pr: 3 }}
-                            >
+                            <BlackText variant="body1" sx={{ pr: 3 }}>
                               {t("100% Genuine")}
                             </BlackText>
                           </Box>
@@ -470,32 +481,26 @@ const ProductDetails = () => {
                             >
                               <AutorenewIcon />
                             </Avatar>
-                            <BlackText
-                              variant="body1"
-                              sx={{ pr: 3 }}
-                            >
+                            <BlackText variant="body1" sx={{ pr: 3 }}>
                               {t("Free Returns")}
                             </BlackText>
                           </Box>
                         </Box>
                         <Box>
-                          <BlackText
-                            variant="body1"
-                            sx={{ pr: 3 }}
-                          >
+                          <BlackText variant="body1" sx={{ pr: 3 }}>
                             {t("Product Details")}:
                           </BlackText>
-                          <ItemsDes sx={{ pt: 3 }}>
-                            {parseHTMLToText(product?.description)}
-                          </ItemsDes>
+                          <ItemsDes
+                            sx={{ pt: 3 }}
+                            dangerouslySetInnerHTML={{
+                              __html: ProductDetails?.description,
+                            }}
+                          />
                         </Box>
                       </Box>
                     </Grid>
                     <Grid item lg={6} md={6} xs={12} sx={{ pr: 4 }}>
-                      <BlackText
-                        variant="body1"
-                        sx={{ pr: 3 }}
-                      >
+                      <BlackText variant="body1" sx={{ pr: 3 }}>
                         {t("Product Attributes")}
                       </BlackText>
                       <List
@@ -520,7 +525,7 @@ const ProductDetails = () => {
                           >
                             <ListItemText
                               primary={t("Attribute ") + `${value}`}
-                              sx={{ textAlign: "right", fontFamily:'Cairo' }}
+                              sx={{ textAlign: "right", fontFamily: "Cairo" }}
                             />
                           </ListItem>
                         ))}
@@ -539,7 +544,9 @@ const ProductDetails = () => {
                 </AccordionSummary>
                 <AccordionDetails>
                   <Typography>
-                    {t("Return any unsatisfactory items within 14 days from receiving your order.")}
+                    {t(
+                      "Return any unsatisfactory items within 14 days from receiving your order."
+                    )}
                   </Typography>
                   <BlackText>
                     {t("* Free delivery for orders above RS 200")}
@@ -553,29 +560,16 @@ const ProductDetails = () => {
                 </AccordionDetails>
               </Accordion>
             </Box>
-            
           </Container>
-          <Box sx={{pt:4}}>
-              {ResponseGetHomeComponent?.isPending ? (
-                <Box sx={{ marginTop: 5 }}>
-                  <SubCategorySkeleton />
-                </Box>
-              ) : homecomponents.length ? (
-                homecomponents?.map((component) =>
-                  component?.name == "New Arrived" ? (
-                    <RecommendedForYou
-                      key={component?.sort_number}
-                      title={component?.title == "most view"}
-                      sort_id={component?.query_id}
-                    />
-                  ) : null
-                )
-              ) : (
-                <Box sx={{ marginTop: 5 }}>
-                  <SubCategorySkeleton />
-                </Box>
-              )}
-            </Box>
+          <Box sx={{ pt: 4 }}>
+            {ResponseGetProductSort?.isPending ? (
+              <Box sx={{ marginTop: 5 }}>
+                <ProductSkeleton />
+              </Box>
+            ) : mostviewed?.results?.length ? (
+              <RecommendedForYou title={"Most View"} sort_id={4} />
+            ) : null}
+          </Box>
         </Box>
       </ResponsiveLayout>
     </Box>

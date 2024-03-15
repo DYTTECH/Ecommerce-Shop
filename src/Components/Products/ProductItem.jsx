@@ -22,6 +22,7 @@ export const ProductItem = ({
   id
 }) => {
   const shopInfo =  JSON.parse(localStorage.getItem("shopInfo"))
+  const product_route=`${name.replace(' ','_')}/${id}`
   const navigate=useNavigate()
   const { i18n, t } = useTranslation();
   useEffect(() => {
@@ -31,7 +32,7 @@ export const ProductItem = ({
   return (
     <Box className="product" onClick={() => {
       localStorage.setItem("productId", id);
-      navigate(`/t2/${shopInfo?.sub_domain}/products/${name}`);
+      navigate(`/t2/${shopInfo?.sub_domain}/products/${product_route}`);
     }}>
       <Card sx={{ width: "100%", height:'320px',display:'flex', flexDirection: 'column',
     justifyContent: 'space-between'}}>
