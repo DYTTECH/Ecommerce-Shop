@@ -33,5 +33,15 @@
     "Customer Services":"خدمات العملاء",
     "Log Out":"تسجيل الخروج",
     "My account":"حسابي",
-    "Profile":"الملف الشخصي"
+    "Profile":"الملف الشخصي",
+    "You already have account?":"هل لديك حساب بالفعل؟",
+    "Email address":"البريد الإلكتروني",
+    "this field is required.":"هذا الحقل مطلوب.",
+    "Remember me":"تذكرني",
+    "Password":"كلمة المرور",
+    "Forget Password":"نسيت كلمة المرور",
+    "Female":"أنثى",
+    "Other":"اخرى",
+    "Male":"ذكر",
+    "Sign up":"تسجيل"
 }

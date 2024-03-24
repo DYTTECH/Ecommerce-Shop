@@ -15,8 +15,8 @@ import {
   useScrollTrigger,
   useTheme,
 } from "@mui/material";
-import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
-import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
+import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
+import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import { styled, alpha } from "@mui/material/styles";
 import Badge from "@mui/material/Badge";
@@ -33,17 +33,23 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { MainMenuLang, MenuLanguage } from "./MenuLanguage";
 import "./index.css";
-import { BlackText, GrayText, MainText } from "../../Style/StyledComponents/Typography";
+import {
+  BlackText,
+  GrayText,
+  MainText,
+} from "../../Style/StyledComponents/Typography";
 import Popper from "@mui/material/Popper";
 import PopupState, { bindToggle, bindPopper } from "material-ui-popup-state";
 import Fade from "@mui/material/Fade";
 import Paper from "@mui/material/Paper";
 import { useState } from "react";
-import '../../App.css'
+import "../../App.css";
 import { useSelector } from "react-redux";
 import { GrayIcon } from "../../Style/StyledComponents/IconButton";
 import { BoxStyle } from "../../Style/StyledComponents/Box";
 import Footer from "./footer";
+import AuthLogin from "../authentication/LogInAuth";
+import AuthRegister from "../authentication/RegisterAuth";
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
@@ -105,6 +111,23 @@ function ResponsiveLayout(props) {
     disableHysteresis: true,
     threshold: 100,
   });
+
+  const [openLogin, setOpenLogin] = useState(false);
+  const [openRegister, setOpenRegister] = useState(false);
+
+
+  const handleCloseLogin = () => {
+    setOpenLogin(false);
+  };
+  const handleClickOpenLogin = () => {
+    setOpenLogin(true);
+  };
+  const handleCloseRegister = () => {
+    setOpenRegister(false);
+  };
+  const handleClickOpenRegister = () => {
+    setOpenRegister(true);
+  };
 
   const handleLanguageMenuOpen = (event) => {
     setAnchorElLang(event.currentTarget);
@@ -180,6 +203,8 @@ function ResponsiveLayout(props) {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
+      <MenuItem onClick={handleClickOpenRegister}>{t("Register")}</MenuItem>
+      <MenuItem onClick={handleClickOpenLogin}>{t("Sign In")}</MenuItem>
       <MenuItem onClick={handleMenuClose}>{t("Profile")}</MenuItem>
       <MenuItem onClick={handleMenuClose}>{t("My account")}</MenuItem>
       <MenuItem onClick={handleLogOut}>{t("Log Out")}</MenuItem>
@@ -194,23 +219,27 @@ function ResponsiveLayout(props) {
   );
   const [popperOpen, setPopperOpen] = useState(true);
 
-useEffect(() => {
-  // Close the Popper after 10 seconds
-  const timer = setTimeout(() => {
-    setPopperOpen(false);
-  }, 10000);
+  useEffect(() => {
+    // Close the Popper after 10 seconds
+    const timer = setTimeout(() => {
+      setPopperOpen(false);
+    }, 10000);
 
-  return () => clearTimeout(timer); // Clear the timer on component unmount
-}, []);
-useEffect(() => {
-  i18n.changeLanguage("ar");
-}, []);
+    return () => clearTimeout(timer); // Clear the timer on component unmount
+  }, []);
+  useEffect(() => {
+    i18n.changeLanguage("ar");
+  }, []);
 
   return (
     <Box
       className="layout"
-      sx={{display: "flex",
-      alignItems: "center",justifyContent: { sm: "center" }, overflow:'hidden' }}
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: { sm: "center" },
+        overflow: "hidden",
+      }}
       onScroll={handleDrawerTransitionEnd}
     >
       <CssBaseline />
@@ -225,7 +254,6 @@ useEffect(() => {
           paddingInline: "2%",
           paddingBlock: trigger ? "0.4%" : "0.4%",
           background: theme.palette.primary.light,
-          
         }}
       >
         <Toolbar
@@ -267,8 +295,9 @@ useEffect(() => {
           >
             <Typography variant="h6" noWrap component="div">
               <Box
-                sx={{display: "flex",
-                alignItems: "center",
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
                   flexGrow: 1,
                   gap: "0.6rem",
                   paddingY: 3,
@@ -283,24 +312,25 @@ useEffect(() => {
                   </SearchIconWrapper>
                   <StyledInputBase
                     placeholder={t("Search…")}
-                    
                     // inputProps={{ "Cairo": "search" }}
-                    sx={{ border: "1px solid  #e7eaf3", borderRadius: "8px", fontFamily:'Cairo', fontSize:'14px' }}
+                    sx={{
+                      border: "1px solid  #e7eaf3",
+                      borderRadius: "8px",
+                      fontFamily: "Cairo",
+                      fontSize: "14px",
+                    }}
                   />
                 </Search>
                 <div>|</div>
-                <GrayIcon
-                  size="large"
-                  aria-label="show 17 new notifications"
-                >
+                <GrayIcon size="large" aria-label="show 17 new notifications">
                   <Badge badgeContent={17} color="error">
                     <NotificationsNoneOutlinedIcon />
                   </Badge>
                 </GrayIcon>
                 <GrayIcon>
-                  <FavoriteBorderOutlinedIcon/>
+                  <FavoriteBorderOutlinedIcon />
                 </GrayIcon>
-                <PopupState variant="popper" popupId="demo-popup-popper" >
+                <PopupState variant="popper" popupId="demo-popup-popper">
                   {(popupState) => (
                     <div>
                       <GrayIcon
@@ -315,16 +345,41 @@ useEffect(() => {
                       >
                         <AccountCircle />
                       </GrayIcon>
-                      <Popper open={popperOpen}
-  transition
-  className={lang === 'en' ? 'popper-en' : ''}
-  sx={{ top: '96px !important', left: lang === 'en' ? 'unset !important' : '0', right: lang === 'en' ? '0' : 'unset', zIndex:'1000'}}>
+                      <Popper
+                        open={popperOpen}
+                        transition
+                        className={lang === "en" ? "popper-en" : ""}
+                        sx={{
+                          top: "96px !important",
+                          left: lang === "en" ? "unset !important" : "0",
+                          right: lang === "en" ? "0" : "unset",
+                          zIndex: "1000",
+                        }}
+                      >
                         {({ TransitionProps }) => (
                           <Fade {...TransitionProps} timeout={350}>
-                            <Paper sx={{p:3, textAlign:'center'}}>
-                              <Button sx={{bgcolor:theme.palette.primary.main, color:theme.palette.primary.light, width:'100%', fontFamily:"Cairo"}}>{t("Sign In")}</Button>
-                              <GrayText sx={{ pt: 2, pX:2 }}>
-                                {t("New Customer?")} <MainText sx={{ cursor:'pointer', display:'inline'}}>{t("Register")}</MainText>
+                            <Paper sx={{ p: 3, textAlign: "center" }}>
+                            
+                              <Button
+                                sx={{
+                                  bgcolor: theme.palette.primary.dark,
+                                  color: theme.palette.primary.light,
+                                  width: "100%",
+                                  fontFamily: "Cairo",
+                                }}
+                                onClick={handleClickOpenLogin}
+                              >
+                                
+                                {t("Sign In")}
+                              </Button>
+                              <GrayText sx={{ pt: 2, pX: 2 }}>
+                                {t("New Customer?")}{" "}
+                                <MainText
+                                  sx={{ cursor: "pointer", display: "inline" }}
+                                  onClick={handleClickOpenRegister}
+                                >
+                                  {t("Register")}
+                                </MainText>
                               </GrayText>
                             </Paper>
                           </Fade>
@@ -358,7 +413,9 @@ useEffect(() => {
         </Toolbar>
       </AppBar>
       {renderLanguage}
-        {renderMenu}
+      {renderMenu}
+      <AuthLogin openLogin={openLogin} handleCloseLogin={handleCloseLogin} />
+      <AuthRegister openRegister={openRegister} handleCloseRegister={handleCloseRegister} />
       <Box
         component="nav"
         // sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
@@ -386,12 +443,11 @@ useEffect(() => {
           {drawer}
         </Drawer>
       </Box>
-
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          py: { lg: 0, md: 4, sm: 4, xs: '38px' },
+          py: { lg: 0, md: 4, sm: 4, xs: "38px" },
           direction: i18n.language == "ar" ? "rtl" : "ltr",
           // height:'auto'
           width: "100%",

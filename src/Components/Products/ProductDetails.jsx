@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   BlackText,
   GrayText,
-  ItemsDes,
+  ItemsTitle,
   MainTitle,
 } from "../../Style/StyledComponents/Typography";
 import { HOMECOMPONENTS, PRODUCTS } from "../../Data/API";
@@ -287,9 +287,9 @@ const ProductDetails = () => {
                     </Avatar>
                   </Box>
                   <MainTitle sx={{ pt: 2 }}>{product?.name}</MainTitle>
-                  <ItemsDes sx={{ pt: 3 }}>
+                  <ItemsTitle sx={{ pt: 3 }}>
                     {parseHTMLToText(product?.description)}
-                  </ItemsDes>
+                  </ItemsTitle>
                   <Box
                     sx={{
                       display: "flex",
@@ -485,9 +485,9 @@ const ProductDetails = () => {
                           >
                             {t("Product Details")}:
                           </BlackText>
-                          <ItemsDes sx={{ pt: 3 }}>
+                          <ItemsTitle sx={{ pt: 3 }}>
                             {parseHTMLToText(product?.description)}
-                          </ItemsDes>
+                          </ItemsTitle>
                         </Box>
                       </Box>
                     </Grid>

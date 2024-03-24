@@ -6,5 +6,15 @@
     "Search…":"Search…",
     "Sign In":"Sign In",
     "New Customer?":"New Customer?",
-    "Enter your E-mail":"Enter your E-mail"
+    "Enter your E-mail":"Enter your E-mail",
+    "You already have account?":"You already have account?",
+    "Email address":"Email address",
+    "this field is required.":"this field is required.",
+    "Remember me":"Remember me",
+    "Password":"Password",
+    "Forget Password":"Forget Password",
+    "Female":"Female",
+    "Male":"Male",
+    "Other":"Other",
+    "Sign up":"Sign up"
 }
