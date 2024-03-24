@@ -8,12 +8,13 @@ import { Grid } from "@mui/material";
 import { ProductItem } from "../../Components/Products/ProductItem";
 import ProductSkeleton from "../../Components/Skeleton/ProductSkeleton";
 import { GrayText } from "../../Style/StyledComponents/Typography";
+import ViewProductsSkeleton from "../../Components/Skeleton/ViewProductsSkeleton";
 
 const Discount = () => {
   const discounts = useSelector((state) => state.discounts.value);
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
   const dispatch = useDispatch();
-  // Get shop info request
+  // Get discount request
   const [RequestGetDiscounts, ResponseGetDiscounts] = useRequest({
     method: "Get",
     path: PRODUCTS + shopInfo?.id + "/products/?discount=True",
@@ -35,15 +36,15 @@ const Discount = () => {
   return (
     <ResponsiveLayout>
       <PageMeta
-        title="Discounts"
+        title={`${shopInfo?.sub_domain}-Discounts`}
         desc="Description of my page for SEO"
         name="Your Name"
         type="website"
         image="URL_to_your_image"
       />
-      <Grid container>
+      <Grid container  spacing={3}>
         {ResponseGetDiscounts.isPending ? (
-          <ProductSkeleton />
+          <ViewProductsSkeleton />
         ) : (discounts?.results?.length?
           discounts?.results?.map((product) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={product?.id}>

@@ -44,6 +44,7 @@ import { useSelector } from "react-redux";
 import { GrayIcon } from "../../Style/StyledComponents/IconButton";
 import { BoxStyle } from "../../Style/StyledComponents/Box";
 import Footer from "./footer";
+import CategoriesMenu from "./categoryMenu";
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
@@ -94,7 +95,7 @@ function ResponsiveLayout(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   // menu lang state
   const [anchorElLang, setAnchorElLang] = React.useState(null);
-  // const lang = useSelector((state) => state.language.lang);
+
   const { t, i18n } = useTranslation(); // Retrieve translation functions
   const openLangMenu = Boolean(anchorElLang);
   // const dispatch = useDispatch();
@@ -112,7 +113,10 @@ function ResponsiveLayout(props) {
   const handleCloseLang = () => {
     setAnchorElLang(null);
   };
-
+const handleViewWishList=()=>{
+  
+  navigate(`/t2/${shopInfo.sub_domain}/wishlist`);
+}
   // dark mode and light mode
 
   const isMenuOpen = Boolean(anchorEl);
@@ -194,6 +198,8 @@ function ResponsiveLayout(props) {
   );
   const [popperOpen, setPopperOpen] = useState(true);
 
+  const ViewMainCategories=(<CategoriesMenu/>)
+
 useEffect(() => {
   // Close the Popper after 10 seconds
   const timer = setTimeout(() => {
@@ -204,7 +210,8 @@ useEffect(() => {
 }, []);
 useEffect(() => {
   i18n.changeLanguage("ar");
-}, []);
+  
+}, [i18n]);
 
   return (
     <Box
@@ -297,7 +304,7 @@ useEffect(() => {
                     <NotificationsNoneOutlinedIcon />
                   </Badge>
                 </GrayIcon>
-                <GrayIcon>
+                <GrayIcon onClick={handleViewWishList}>
                   <FavoriteBorderOutlinedIcon/>
                 </GrayIcon>
                 <PopupState variant="popper" popupId="demo-popup-popper" >
@@ -398,6 +405,7 @@ useEffect(() => {
         }}
       >
         <Toolbar />
+        {ViewMainCategories}
         {props.children}
         <Footer />
       </Box>
