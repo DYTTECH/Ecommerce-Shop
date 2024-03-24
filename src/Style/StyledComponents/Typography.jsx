@@ -75,3 +75,10 @@ export const ItemsTitle = styled(Typography)(({ theme }) => ({
   fontWeight: theme.font.fontWeight.semibold,
   fontFamily: "Cairo",
 }));
+ 
+export const ItemsDes = styled(Typography)(({ theme }) => ({
+  color: theme.palette.primary.forth,
+  fontSize: theme.font.fontSize.extraSmall,
+  fontWeight: theme.font.fontWeight.medium,
+  fontFamily: "Cairo",
+}));
