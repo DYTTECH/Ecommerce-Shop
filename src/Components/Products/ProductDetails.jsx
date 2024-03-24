@@ -7,6 +7,8 @@ import {
   Button,
   CircularProgress,
   Container,
+  DialogContent,
+  DialogTitle,
   Grid,
   IconButton,
   List,
@@ -27,6 +29,7 @@ import {
   GrayText,
   ItemsDes,
   MainTitle,
+  TextDiscount,
 } from "../../Style/StyledComponents/Typography";
 import { HOMECOMPONENTS, PRODUCTS } from "../../Data/API";
 import useRequest from "../../Hooks/useRequest";
@@ -43,14 +46,27 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
-import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import RecommendedForYou from "../home/recommendedForYou";
 import Dialog from "@mui/material/Dialog";
 import Slide from "@mui/material/Slide";
-import { TransitionProps } from "@mui/material/transitions";
 import { useParams } from "react-router-dom";
 import ProductSkeleton from "../Skeleton/ProductSkeleton";
-
+import HeroTitle from "../Layout/HeroTitle";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import "../../App.css";
+import {
+  FacebookIcon,
+  FacebookShareButton, 
+  TelegramIcon, 
+  TelegramShareButton,
+  TwitterIcon,
+  TwitterShareButton,
+  WhatsappIcon,
+  WhatsappShareButton,
+ 
+} from "react-share";
+import { RWebShare } from "react-web-share";
+import Specification from "./ProductSpecification";
 const StyledMenu = styled((props) => (
   <Menu
     elevation={0}
@@ -95,9 +111,12 @@ const StyledMenu = styled((props) => (
 }));
 const Transition = forwardRef(function Transition(props, ref) {
   const { children, ...other } = props;
-  return <Slide direction="up" ref={ref} {...other}>{children}</Slide>;
+  return (
+    <Slide direction="up" ref={ref} {...other}>
+      {children}
+    </Slide>
+  );
 });
-
 
 const ProductDetails = () => {
   const params = useParams();
@@ -110,6 +129,15 @@ const ProductDetails = () => {
   const openDropDown = Boolean(anchorEl);
   const mostviewed = useSelector((state) => state.mostviewed.value);
   const [open, setOpen] = React.useState(false);
+  const [openShare, setOpenShare] = React.useState(false);
+
+  const handleOpenShareDialog = () => {
+    setOpenShare(true);
+  };
+
+  const handleCloseShareDialog = () => {
+    setOpenShare(false);
+  };
   const handleOpenDialog = () => {
     setOpen(true);
   };
@@ -148,11 +176,58 @@ const ProductDetails = () => {
       },
     });
   };
+  
+
+  // add to favorite
+  const [RequestAddProductToFavorite, ResponseAddProductToFavorite] =
+    useRequest({
+      method: "POST",
+      path: `${PRODUCTS}/${shopInfo?.id}/favorites/`,
+    });
+
+  const AddProductToFavorite = () => {
+    RequestAddProductToFavorite({
+      body: {
+        product: params?.id,
+      },
+      onSuccess: (res) => {
+        dispatch({ type: "wishlist/addItem", payload: res.data });
+      },
+    });
+  };
+  // delete from favorite
+  const [RequestDeleteProductFromFavorite, ResponseDeleteProductFromFavorite] =
+    useRequest({
+      method: "Delete",
+      path: `${PRODUCTS}/${shopInfo?.id}/favorites/`,
+    });
+
+  const DeleteProductFromFavorite = () => {
+    RequestDeleteProductFromFavorite({
+      body: {
+        product: params?.id,
+      },
+      onSuccess: (res) => {
+        dispatch({ type: "wishlist/deleteItem", payload: res.data });
+      },
+    });
+  };
 
   useEffect(() => {
     GetProductDetails();
     GetProductSort();
   }, [shopInfo?.id]);
+
+  const shareData = {
+    text: ProductDetails.name,
+    url: window.location.href.replace(" ","%20"),
+    title: ProductDetails.name
+  };
+  const crumbs = [
+    { label: `${t('Home')}`, link: `/t2/${shopInfo?.sub_domain}`, active: false },
+    { label: `${t('Products')}`, link: `/t2/${shopInfo?.sub_domain}/products/`, active: false },
+    { label: `${ProductDetails?.name}`, link: `/t2/${shopInfo?.sub_domain}/products/${ProductDetails?.name}`, active: false },
+  ];    
   return (
     <Box>
       <ResponsiveLayout>
@@ -163,7 +238,58 @@ const ProductDetails = () => {
           type={shopInfo?.shop_type_name}
           image={shopInfo?.logo}
         />
-        <CategoryMenu />
+        {/* <Dialog
+        maxWidth='sm'
+        fullWidth
+        open={openShare}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleCloseShareDialog}
+        aria-describedby="alert-dialog-slide-description"
+        sx={{
+          "& .MuiDialog-container": {
+            alignItems: "center",
+            justifyContent: "center",
+            display:"flex",
+            flexDirection: 'column',
+            p:3,
+          },
+        }}
+      >
+         <DialogTitle sx={{display:'flex',justifyContent:'center',alignItems:'center'}}>Optional sizes</DialogTitle>
+         
+         <DialogContent  dividers sx={{display:'flex',justifyContent:'center',alignItems:'center',gap:3}}>
+          <FacebookShareButton 
+         quote={ProductDetails?.name}
+         url={ProduductRoutes}
+         >
+        <FacebookIcon logoFillColor="white" size={"40"} round={true}/>
+    </FacebookShareButton>
+
+        <TwitterShareButton url={ProduductRoutes}>
+          <TwitterIcon  logoFillColor="white" size={"40"} round={true} />
+        </TwitterShareButton>
+        <WhatsappShareButton 
+        image={`${ProductDetails?.main_image}`}
+        title={ProductDetails?.name}
+        url={window.location.href}
+       
+        >
+          <WhatsappIcon logoFillColor="white" size={"40"} round={true} />
+        </WhatsappShareButton>
+        
+         <TelegramShareButton 
+        image={`${ProductDetails?.main_image}`}
+        title={ProductDetails?.name}
+        url={window.location.href}
+       
+        >
+          <TelegramIcon logoFillColor="white" size={"40"} round={true} />
+        </TelegramShareButton> 
+        
+         </DialogContent>
+
+      </Dialog> */}
         <Box sx={{ marginY: { lg: "90px", md: 2, sm: 2, xs: 2 } }}>
           <Box
             sx={{
@@ -173,8 +299,7 @@ const ProductDetails = () => {
             }}
           >
             <GrayText>
-              {/* {shopInfo?.shop_name}&nbsp;/&nbsp;{ProductDetails?.categories[0]?.name}
-              &nbsp;/&nbsp;{ProductDetails?.name} */}
+              <HeroTitle  crumbs={crumbs}/>
             </GrayText>
           </Box>
           <Divider />
@@ -226,12 +351,14 @@ const ProductDetails = () => {
                     </Box>
                   ) : (
                     <Box>
-                      <img
+                       
+                       <img
                         src={ProductDetails?.main_image}
                         alt={ProductDetails?.name}
                         style={{ width: "100%" }}
                         onClick={handleOpenDialog}
                       />
+                      
                       <Dialog
                         open={open}
                         TransitionComponent={Transition}
@@ -257,14 +384,14 @@ const ProductDetails = () => {
                             >
                               <img
                                 src={image.image}
-                                alt={`Image ${index}`}
+                                alt={`Img ${index}`}
                                 style={{ width: "100%" }}
                               />
                             </Box>
                           ))}
                         </Box>
-                      </Dialog>
-                    </Box>
+                      </Dialog> 
+                    </Box> 
                   )}
                 </Grid>
                 <Grid item lg={6} md={6} xs={12}>
@@ -272,20 +399,36 @@ const ProductDetails = () => {
                     sx={{ display: "flex", justifyContent: "flex-end", pt: 2 }}
                   >
                     <Avatar>
-                      <FavoriteBorderIcon />
+                    {ProductDetails?.is_favorite ? (
+          <FavoriteIcon
+            sx={{ color: "red" }}
+            onClick={DeleteProductFromFavorite}
+          />
+        ) : (
+          <FavoriteBorderIcon onClick={AddProductToFavorite} />
+        )}
                     </Avatar>
-                    <Avatar sx={{ mr: 3 }}>
-                      <ShareIcon />
+                    <Avatar sx={{ mr: 3 }} onClick={handleOpenShareDialog}>
+                    <RWebShare
+            data={shareData}
+            sites={["whatsapp", "facebook", "telegram","twitter","copy"]}
+            onClick={() => console.log("shared successfully!")}
+          >
+             <ShareIcon />
+          </RWebShare>
+                     
                     </Avatar>
                   </Box>
                   {ResponseGetProductDetails.isPending ? (
                     <Stack gap={2} direction="column">
-                      <Skeleton variant="text" width="100%" height={50} />
-                      {Array.from({ length: 5 }, (_, index) => (
+                      <Skeleton
+                        variant="text"
+                        sx={{ fontSize: "1rem", width: "70%" }}
+                      />
+                      {Array.from({ length: 8 }, (_, index) => (
                         <Skeleton
                           variant="text"
-                          width="100%"
-                          height={50}
+                          sx={{ fontSize: "1rem", width: "100%" }}
                           key={index}
                         />
                       ))}
@@ -304,31 +447,42 @@ const ProductDetails = () => {
                     </>
                   )}
 
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      padding: 2,
-                    }}
-                  >
-                    <Typography
-                      variant="body1"
+                  {ResponseGetProductDetails.isPending ? (
+                    <Stack
+                      gap={4}
+                      direction="row"
+                      justifyContent={"space-between"}
+                    >
+                      {Array.from({ length: 3 }, (_, index) => (
+                        <Skeleton
+                          variant="text"
+                          sx={{ fontSize: "1rem", width: "100%" }}
+                          key={index}
+                        />
+                      ))}
+                    </Stack>
+                  ) : (
+                    <Box
                       sx={{
-                        color: "red",
-                        textDecorationLine: "line-through",
-                        fontFamily: "Cairo",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        padding: 2,
                       }}
                     >
-                      {ProductDetails?.price} {t("SAR")}
-                    </Typography>
-                    <Typography variant="body1" sx={{ fontFamily: "Cairo" }}>
-                      {ProductDetails?.final_price} {t("SAR")}
-                    </Typography>
-                    <Typography variant="body1" sx={{ paddingRight: 2 }}>
-                      {ProductDetails?.discount} %
-                    </Typography>
-                  </Box>
+                      <TextDiscount
+                        variant="body1"
+                      >
+                        {ProductDetails?.price} {t("SAR")}
+                      </TextDiscount>
+                      <Typography variant="body1" sx={{ fontFamily: "Cairo" }}>
+                        {ProductDetails?.final_price} {t("SAR")}
+                      </Typography>
+                      <Typography variant="body1" sx={{ paddingRight: 2 }}>
+                        {ProductDetails?.discount} %
+                      </Typography>
+                    </Box>
+                  )}
                   <Box sx={{ display: "flex", alignItems: "center" }}>
                     <Typography variant="body1" sx={{ fontFamily: "Cairo" }}>
                       {t("deliver by")}&nbsp;
@@ -503,33 +657,7 @@ const ProductDetails = () => {
                       <BlackText variant="body1" sx={{ pr: 3 }}>
                         {t("Product Attributes")}
                       </BlackText>
-                      <List
-                        sx={{
-                          width: "100%",
-                          maxWidth: 360,
-                          bgcolor: "background.paper",
-                        }}
-                      >
-                        {[
-                          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-                        ].map((value) => (
-                          <ListItem
-                            key={value}
-                            disableGutters
-                            sx={{ paddingTop: "0", paddingBottom: "0" }}
-                            secondaryAction={
-                              <IconButton aria-label="comment">
-                                <FiberManualRecordIcon sx={{ p: 1 }} />
-                              </IconButton>
-                            }
-                          >
-                            <ListItemText
-                              primary={t("Attribute ") + `${value}`}
-                              sx={{ textAlign: "right", fontFamily: "Cairo" }}
-                            />
-                          </ListItem>
-                        ))}
-                      </List>
+                     <Specification/>
                     </Grid>
                   </Grid>
                 </AccordionDetails>
