@@ -71,7 +71,7 @@ const SubCategories = ({ category_level, props}) => {
         columns={{ xs: 4, sm: 8, md: 12 }}
       >
         {subCategories?.results?.map((category, index) => (
-          <Grid item xs={2} sm={4} md={4} key={index}>
+          <Grid item xs={2} sm={4} md={3} key={index}>
             <Card
               sx={{
                 display: "flex",

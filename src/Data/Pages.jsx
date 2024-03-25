@@ -5,6 +5,8 @@ import { Products } from "../Pages/Products/Products";
 import ErrorPage from "./ErrorPage";
 import ProductDetails from "../Components/Products/ProductDetails";
 import Discount from "../Pages/Discount/Discount";
+import Wishlist from "../Pages/WishList/Wishlist";
+import Cart from "../Pages/Cart/Cart";
 
 const createRoutes = () => {
   
@@ -27,13 +29,23 @@ const createRoutes = () => {
       // errorElement: <ErrorPage />,
     },
     {
-      path: "/t2/:name/products/:name",
+      path: "/t2/:name/products/:name/:id",
       element: <ProductDetails />,
       // errorElement: <ErrorPage />,
     },
     {
       path: "/t2/:name/discounts",
       element: <Discount />,
+      // errorElement: <ErrorPage />,
+    },
+    {
+      path: "/t2/:name/wishlist",
+      element: <Wishlist />,
+      // errorElement: <ErrorPage />,
+    },
+    {
+      path: "/t2/:name/cart",
+      element: <Cart />,
       // errorElement: <ErrorPage />,
     },
     // Add more routes if needed
