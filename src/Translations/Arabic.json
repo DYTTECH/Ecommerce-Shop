@@ -52,5 +52,17 @@
     "More Info":"معلومات أكثر",
     "Apply":"تطبيق",
     "Home":"الرئيسية",
-    "Products":"المنتجات"
+    "Products":"المنتجات",
+    "You already have account?":"هل لديك حساب بالفعل؟",
+    "Full Name":"الإسم بالكامل",
+    "Email address":"البريد الإلكتروني",
+    "Password":"كلمة المرور",
+    "Phone Number":"رقم الهاتف",
+    "Male":"ذكر",
+    "Female":"أنثى",
+    "Sign up":"إنشاء حساب",
+    "Register for a unique shopping experience":"سجل للحصول على تجربة تسوق فريدة",
+    "Forget Password":"نسيت كلمة المرور؟",
+    "Remember me":"تذكرني",
+    "Sign in":"تسجيل دخول"
 }
