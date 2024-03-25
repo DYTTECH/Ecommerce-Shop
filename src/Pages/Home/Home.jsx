@@ -13,10 +13,6 @@ import ProductSkeleton from "../../Components/Skeleton/ProductSkeleton";
 import BrandSkeleton from "../../Components/Skeleton/BrandSkeleton";
 import BannerSkeleton from "../../Components/Skeleton/BannerSkeleton";
 import SubCategorySkeleton from "../../Components/Skeleton/SubCategorySkeleton";
-import Footer from '../../Components/Layout/footer';
-import CategoryMenu from "../../Components/Layout/categoryMenu";
-import { MainTitle } from "../../Style/StyledComponents/Typography";
-
 
 const Home = () => {
   const homecomponents = useSelector((state) => state.homecomponents.value);
@@ -72,7 +68,7 @@ const Home = () => {
       if(shopInfo?.id){
       GetHomeComponent();
     }
-    },5000)
+    },50000)
   }, [shopInfo?.id]);
 
   return (
@@ -85,7 +81,7 @@ const Home = () => {
           type={shopInfo?.shop_type_name}
           image={shopInfo?.logo}
         />
-        <CategoryMenu />
+        {/* <CategoryMenu /> */}
 
         {ResponseGetHomeComponent?.isPending ? (
           <Box sx={{marginTop:5}}>

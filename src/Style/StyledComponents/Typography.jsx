@@ -82,3 +82,9 @@ export const ItemsDes = styled(Typography)(({ theme }) => ({
   fontWeight: theme.font.fontWeight.medium,
   fontFamily: "Cairo",
 }));
+
+export const TextDiscount = styled(Typography)(({ theme }) => ({
+  color: "red",
+  textDecorationLine: "line-through",
+  fontFamily: "Cairo",
+}));

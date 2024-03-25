@@ -5,12 +5,17 @@ import {
   Avatar,
   Box,
   Button,
+  CircularProgress,
   Container,
+  DialogContent,
+  DialogTitle,
   Grid,
   IconButton,
   List,
   ListItem,
   ListItemText,
+  Skeleton,
+  Stack,
   Typography,
 } from "@mui/material";
 import { forwardRef, useEffect, useState } from "react";
@@ -24,6 +29,7 @@ import {
   GrayText,
   ItemsTitle,
   MainTitle,
+  TextDiscount,
 } from "../../Style/StyledComponents/Typography";
 import { HOMECOMPONENTS, PRODUCTS } from "../../Data/API";
 import useRequest from "../../Hooks/useRequest";
@@ -40,18 +46,28 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
-import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
-import SubCategorySkeleton from "../Skeleton/SubCategorySkeleton";
 import RecommendedForYou from "../home/recommendedForYou";
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
-import { TransitionProps } from "@mui/material/transitions";
-
-const StyledMenu = styled((props: MenuProps) => (
+import { useParams } from "react-router-dom";
+import ProductSkeleton from "../Skeleton/ProductSkeleton";
+import HeroTitle from "../Layout/HeroTitle";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import "../../App.css";
+import {
+  FacebookIcon,
+  FacebookShareButton, 
+  TelegramIcon, 
+  TelegramShareButton,
+  TwitterIcon,
+  TwitterShareButton,
+  WhatsappIcon,
+  WhatsappShareButton,
+ 
+} from "react-share";
+import { RWebShare } from "react-web-share";
+import Specification from "./ProductSpecification";
+const StyledMenu = styled((props) => (
   <Menu
     elevation={0}
     anchorOrigin={{
@@ -93,27 +109,35 @@ const StyledMenu = styled((props: MenuProps) => (
     },
   },
 }));
-const Transition = forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement<any, any>,
-  },
-  ref: React.Ref<unknown>
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
+const Transition = forwardRef(function Transition(props, ref) {
+  const { children, ...other } = props;
+  return (
+    <Slide direction="up" ref={ref} {...other}>
+      {children}
+    </Slide>
+  );
 });
 
 const ProductDetails = () => {
-  // const product = useSelector((state) => state.products.value);
+  const params = useParams();
+  const ProductDetails = useSelector((state) => state.productdetails.value);
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
-  const productId = localStorage.getItem("productId");
   const dispatch = useDispatch();
-  const [product, setProduct] = useState();
   const { t } = useTranslation();
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
   const openDropDown = Boolean(anchorEl);
-  const homecomponents = useSelector((state) => state.homecomponents.value);
+  const mostviewed = useSelector((state) => state.mostviewed.value);
   const [open, setOpen] = React.useState(false);
+  const [openShare, setOpenShare] = React.useState(false);
+
+  const handleOpenShareDialog = () => {
+    setOpenShare(true);
+  };
+
+  const handleCloseShareDialog = () => {
+    setOpenShare(false);
+  };
   const handleOpenDialog = () => {
     setOpen(true);
   };
@@ -129,65 +153,143 @@ const ProductDetails = () => {
     setAnchorEl(null);
   };
   // Get shop home component
-  const [RequestGetHomeComponent, ResponseGetHomeComponent] = useRequest({
+  const [RequestGetProductSort, ResponseGetProductSort] = useRequest({
     method: "Get",
-    path: HOMECOMPONENTS + shopInfo?.id + "/home-components/",
+    path: HOMECOMPONENTS + shopInfo?.id + "/products/?query_id=4",
   });
-  const GetHomeComponent = () => {
-    RequestGetHomeComponent({
+  const GetProductSort = () => {
+    RequestGetProductSort({
       onSuccess: (res) => {
-        dispatch({ type: "homecomponents/set", payload: res.data });
-      },
-      onError: (err) => {
-        dispatch({ type: "shopInfo/clearShop", payload: err.message });
+        dispatch({ type: "mostviewed/set", payload: res.data });
       },
     });
   };
-  const [RequestGetProduct, ResponseGetProduct] = useRequest({
+  const [RequestGetProductDetails, ResponseGetProductDetails] = useRequest({
     method: "Get",
-    path: `${PRODUCTS}/${shopInfo?.id}/products/${productId}/`,
+    path: `${PRODUCTS}/${shopInfo?.id}/products/${params?.id}/`,
   });
 
-  const GetProduct = () => {
-    RequestGetProduct({
-      params: { id: productId },
+  const GetProductDetails = () => {
+    RequestGetProductDetails({
       onSuccess: (res) => {
-        dispatch({ type: "products/set", payload: res.data });
-        setProduct(res.data);
+        dispatch({ type: "productdetails/set", payload: res.data });
+      },
+    });
+  };
+  
+
+  // add to favorite
+  const [RequestAddProductToFavorite, ResponseAddProductToFavorite] =
+    useRequest({
+      method: "POST",
+      path: `${PRODUCTS}/${shopInfo?.id}/favorites/`,
+    });
+
+  const AddProductToFavorite = () => {
+    RequestAddProductToFavorite({
+      body: {
+        product: params?.id,
+      },
+      onSuccess: (res) => {
+        dispatch({ type: "wishlist/addItem", payload: res.data });
+      },
+    });
+  };
+  // delete from favorite
+  const [RequestDeleteProductFromFavorite, ResponseDeleteProductFromFavorite] =
+    useRequest({
+      method: "Delete",
+      path: `${PRODUCTS}/${shopInfo?.id}/favorites/`,
+    });
+
+  const DeleteProductFromFavorite = () => {
+    RequestDeleteProductFromFavorite({
+      body: {
+        product: params?.id,
+      },
+      onSuccess: (res) => {
+        dispatch({ type: "wishlist/deleteItem", payload: res.data });
       },
     });
   };
 
   useEffect(() => {
-    GetProduct();
-    setTimeout(() => {
-      if (shopInfo?.id) {
-        GetHomeComponent();
-      }
-    }, 5000);
+    GetProductDetails();
+    GetProductSort();
   }, [shopInfo?.id]);
 
-  console.log(productId);
-  console.log(product);
-  console.log(homecomponents);
-
-  const parseHTMLToText = (html) => {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, "text/html");
-    return doc.body.textContent || "";
+  const shareData = {
+    text: ProductDetails.name,
+    url: window.location.href.replace(" ","%20"),
+    title: ProductDetails.name
   };
-
+  const crumbs = [
+    { label: `${t('Home')}`, link: `/t2/${shopInfo?.sub_domain}`, active: false },
+    { label: `${t('Products')}`, link: `/t2/${shopInfo?.sub_domain}/products/`, active: false },
+    { label: `${ProductDetails?.name}`, link: `/t2/${shopInfo?.sub_domain}/products/${ProductDetails?.name}`, active: false },
+  ];    
   return (
     <Box>
       <ResponsiveLayout>
         <PageMeta
-          title={product?.name}
+          title={ProductDetails?.name}
           desc="Description of my page for SEO"
           name={shopInfo?.full_name}
           type={shopInfo?.shop_type_name}
           image={shopInfo?.logo}
         />
-        <CategoryMenu />
+        {/* <Dialog
+        maxWidth='sm'
+        fullWidth
+        open={openShare}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleCloseShareDialog}
+        aria-describedby="alert-dialog-slide-description"
+        sx={{
+          "& .MuiDialog-container": {
+            alignItems: "center",
+            justifyContent: "center",
+            display:"flex",
+            flexDirection: 'column',
+            p:3,
+          },
+        }}
+      >
+         <DialogTitle sx={{display:'flex',justifyContent:'center',alignItems:'center'}}>Optional sizes</DialogTitle>
+         
+         <DialogContent  dividers sx={{display:'flex',justifyContent:'center',alignItems:'center',gap:3}}>
+          <FacebookShareButton 
+         quote={ProductDetails?.name}
+         url={ProduductRoutes}
+         >
+        <FacebookIcon logoFillColor="white" size={"40"} round={true}/>
+    </FacebookShareButton>
+
+        <TwitterShareButton url={ProduductRoutes}>
+          <TwitterIcon  logoFillColor="white" size={"40"} round={true} />
+        </TwitterShareButton>
+        <WhatsappShareButton 
+        image={`${ProductDetails?.main_image}`}
+        title={ProductDetails?.name}
+        url={window.location.href}
+       
+        >
+          <WhatsappIcon logoFillColor="white" size={"40"} round={true} />
+        </WhatsappShareButton>
+        
+         <TelegramShareButton 
+        image={`${ProductDetails?.main_image}`}
+        title={ProductDetails?.name}
+        url={window.location.href}
+       
+        >
+          <TelegramIcon logoFillColor="white" size={"40"} round={true} />
+        </TelegramShareButton> 
+        
+         </DialogContent>
+
+      </Dialog> */}
         <Box sx={{ marginY: { lg: "90px", md: 2, sm: 2, xs: 2 } }}>
           <Box
             sx={{
@@ -197,8 +299,7 @@ const ProductDetails = () => {
             }}
           >
             <GrayText>
-              {shopInfo?.shop_name}&nbsp;/&nbsp;{product?.categories[0].name}
-              &nbsp;/&nbsp;{product?.name}
+              <HeroTitle  crumbs={crumbs}/>
             </GrayText>
           </Box>
           <Divider />
@@ -207,7 +308,7 @@ const ProductDetails = () => {
               <Grid container spacing={2}>
                 <Grid
                   item
-                  lg={1} 
+                  lg={1}
                   xs={2}
                   sx={{
                     display: {
@@ -216,105 +317,172 @@ const ProductDetails = () => {
                       sm: "none",
                       xs: "none",
                     },
-                    alignItems:'center',
-                    flexDirection:'column'
+                    alignItems: "center",
+                    flexDirection: "column",
                   }}
                 >
-                  {product?.images.map((image, index) => (
+                  {ProductDetails?.images?.map((image, index) => (
                     <Grid
                       item
                       xs={2}
                       key={index}
-                      sx={{maxWidth:'50% !important',objectFit:'cover'}}
+                      sx={{ maxWidth: "50% !important", objectFit: "cover" }}
                     >
                       <img
                         src={image.image}
-                        alt={`Image ${index}`}
-                        style={{width:'100%' }}
+                        alt={`Img ${index}`}
+                        style={{ width: "100%" }}
                       />
                     </Grid>
                   ))}
                 </Grid>
                 <Grid item lg={5} md={6} xs={12}>
-                  <Box>
-                    <img
-                      src={product?.main_image}
-                      alt={product?.name}
-                      style={{ width: "100%" }}
-                      onClick={handleOpenDialog}
-                    />
-                    <Dialog
-                      open={open}
-                      TransitionComponent={Transition}
-                      keepMounted
-                      onClose={handleCloseDialog}
-                      aria-describedby="alert-dialog-slide-description"
+                  {ResponseGetProductDetails.isPending ? (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: "100%",
+                        height: "70vh",
+                      }}
                     >
-                      <Box sx={{ maxWidth: "100% !important" }}>
-                        <img
-                          src={product?.main_image}
-                          alt={product?.name}
-                          style={{ width: "100%" }}
-                        />
-                      </Box>
-                      <Box>
-                        {product?.images.map((image, index) => (
-                          <Box
-                            key={index}
-                            
-                            sx={{ maxWidth: "80px!important", display: "flex" }}
-                          >
-                            <img
-                              src={image.image}
-                              alt={`Image ${index}`}
-                              style={{ width: "100%" }}
-                            />
-                          </Box>
-                        ))}
-                      </Box>
-                    </Dialog>
-                  </Box>
+                      <CircularProgress size="3rem" color="primary" />
+                    </Box>
+                  ) : (
+                    <Box>
+                       
+                       <img
+                        src={ProductDetails?.main_image}
+                        alt={ProductDetails?.name}
+                        style={{ width: "100%" }}
+                        onClick={handleOpenDialog}
+                      />
+                      
+                      <Dialog
+                        open={open}
+                        TransitionComponent={Transition}
+                        keepMounted
+                        onClose={handleCloseDialog}
+                        aria-describedby="alert-dialog-slide-description"
+                      >
+                        <Box sx={{ maxWidth: "100% !important" }}>
+                          <img
+                            src={ProductDetails?.main_image}
+                            alt={ProductDetails?.name}
+                            style={{ width: "100%" }}
+                          />
+                        </Box>
+                        <Box>
+                          {ProductDetails?.images?.map((image, index) => (
+                            <Box
+                              key={index}
+                              sx={{
+                                maxWidth: "80px!important",
+                                display: "flex",
+                              }}
+                            >
+                              <img
+                                src={image.image}
+                                alt={`Img ${index}`}
+                                style={{ width: "100%" }}
+                              />
+                            </Box>
+                          ))}
+                        </Box>
+                      </Dialog> 
+                    </Box> 
+                  )}
                 </Grid>
                 <Grid item lg={6} md={6} xs={12}>
                   <Box
                     sx={{ display: "flex", justifyContent: "flex-end", pt: 2 }}
                   >
                     <Avatar>
-                      <FavoriteBorderIcon />
+                    {ProductDetails?.is_favorite ? (
+          <FavoriteIcon
+            sx={{ color: "red" }}
+            onClick={DeleteProductFromFavorite}
+          />
+        ) : (
+          <FavoriteBorderIcon onClick={AddProductToFavorite} />
+        )}
                     </Avatar>
-                    <Avatar sx={{ mr: 3 }}>
-                      <ShareIcon />
+                    <Avatar sx={{ mr: 3 }} onClick={handleOpenShareDialog}>
+                    <RWebShare
+            data={shareData}
+            sites={["whatsapp", "facebook", "telegram","twitter","copy"]}
+            onClick={() => console.log("shared successfully!")}
+          >
+             <ShareIcon />
+          </RWebShare>
+                     
                     </Avatar>
                   </Box>
-                  <MainTitle sx={{ pt: 2 }}>{product?.name}</MainTitle>
-                  <ItemsTitle sx={{ pt: 3 }}>
-                    {parseHTMLToText(product?.description)}
-                  </ItemsTitle>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      padding: 2,
-                    }}
-                  >
-                    <Typography
-                      variant="body1"
+                  {ResponseGetProductDetails.isPending ? (
+                    <Stack gap={2} direction="column">
+                      <Skeleton
+                        variant="text"
+                        sx={{ fontSize: "1rem", width: "70%" }}
+                      />
+                      {Array.from({ length: 8 }, (_, index) => (
+                        <Skeleton
+                          variant="text"
+                          sx={{ fontSize: "1rem", width: "100%" }}
+                          key={index}
+                        />
+                      ))}
+                    </Stack>
+                  ) : (
+                    <>
+                      <MainTitle sx={{ pt: 2 }}>
+                        {ProductDetails?.name}
+                      </MainTitle>
+                      <ItemsDes
+                        sx={{ pt: 3 }}
+                        dangerouslySetInnerHTML={{
+                          __html: ProductDetails?.description || "",
+                        }}
+                      />
+                    </>
+                  )}
+
+                  {ResponseGetProductDetails.isPending ? (
+                    <Stack
+                      gap={4}
+                      direction="row"
+                      justifyContent={"space-between"}
+                    >
+                      {Array.from({ length: 3 }, (_, index) => (
+                        <Skeleton
+                          variant="text"
+                          sx={{ fontSize: "1rem", width: "100%" }}
+                          key={index}
+                        />
+                      ))}
+                    </Stack>
+                  ) : (
+                    <Box
                       sx={{
-                        color: "red",
-                        textDecorationLine: "line-through",
-                        fontFamily: "Cairo",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        padding: 2,
                       }}
                     >
-                      {product?.price} {t("SAR")}
-                    </Typography>
-                    <Typography variant="body1" sx={{ fontFamily: "Cairo" }}>
-                      {product?.final_price} {t("SAR")}
-                    </Typography>
-                    <Typography variant="body1" sx={{ paddingRight: 2 }}>
-                      {product?.discount} %
-                    </Typography>
-                  </Box>
+                      <TextDiscount
+                        variant="body1"
+                      >
+                        {ProductDetails?.price} {t("SAR")}
+                      </TextDiscount>
+                      <Typography variant="body1" sx={{ fontFamily: "Cairo" }}>
+                        {ProductDetails?.final_price} {t("SAR")}
+                      </Typography>
+                      <Typography variant="body1" sx={{ paddingRight: 2 }}>
+                        {ProductDetails?.discount} %
+                      </Typography>
+                    </Box>
+                  )}
                   <Box sx={{ display: "flex", alignItems: "center" }}>
                     <Typography variant="body1" sx={{ fontFamily: "Cairo" }}>
                       {t("deliver by")}&nbsp;
@@ -456,10 +624,7 @@ const ProductDetails = () => {
                             >
                               <ThumbUpAltIcon />
                             </Avatar>
-                            <BlackText
-                              variant="body1"
-                              sx={{ pr: 3 }}
-                            >
+                            <BlackText variant="body1" sx={{ pr: 3 }}>
                               {t("100% Genuine")}
                             </BlackText>
                           </Box>
@@ -470,61 +635,29 @@ const ProductDetails = () => {
                             >
                               <AutorenewIcon />
                             </Avatar>
-                            <BlackText
-                              variant="body1"
-                              sx={{ pr: 3 }}
-                            >
+                            <BlackText variant="body1" sx={{ pr: 3 }}>
                               {t("Free Returns")}
                             </BlackText>
                           </Box>
                         </Box>
                         <Box>
-                          <BlackText
-                            variant="body1"
-                            sx={{ pr: 3 }}
-                          >
+                          <BlackText variant="body1" sx={{ pr: 3 }}>
                             {t("Product Details")}:
                           </BlackText>
-                          <ItemsTitle sx={{ pt: 3 }}>
-                            {parseHTMLToText(product?.description)}
-                          </ItemsTitle>
+                          <ItemsDes
+                            sx={{ pt: 3 }}
+                            dangerouslySetInnerHTML={{
+                              __html: ProductDetails?.description,
+                            }}
+                          />
                         </Box>
                       </Box>
                     </Grid>
                     <Grid item lg={6} md={6} xs={12} sx={{ pr: 4 }}>
-                      <BlackText
-                        variant="body1"
-                        sx={{ pr: 3 }}
-                      >
+                      <BlackText variant="body1" sx={{ pr: 3 }}>
                         {t("Product Attributes")}
                       </BlackText>
-                      <List
-                        sx={{
-                          width: "100%",
-                          maxWidth: 360,
-                          bgcolor: "background.paper",
-                        }}
-                      >
-                        {[
-                          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-                        ].map((value) => (
-                          <ListItem
-                            key={value}
-                            disableGutters
-                            sx={{ paddingTop: "0", paddingBottom: "0" }}
-                            secondaryAction={
-                              <IconButton aria-label="comment">
-                                <FiberManualRecordIcon sx={{ p: 1 }} />
-                              </IconButton>
-                            }
-                          >
-                            <ListItemText
-                              primary={t("Attribute ") + `${value}`}
-                              sx={{ textAlign: "right", fontFamily:'Cairo' }}
-                            />
-                          </ListItem>
-                        ))}
-                      </List>
+                     <Specification/>
                     </Grid>
                   </Grid>
                 </AccordionDetails>
@@ -539,7 +672,9 @@ const ProductDetails = () => {
                 </AccordionSummary>
                 <AccordionDetails>
                   <Typography>
-                    {t("Return any unsatisfactory items within 14 days from receiving your order.")}
+                    {t(
+                      "Return any unsatisfactory items within 14 days from receiving your order."
+                    )}
                   </Typography>
                   <BlackText>
                     {t("* Free delivery for orders above RS 200")}
@@ -553,29 +688,16 @@ const ProductDetails = () => {
                 </AccordionDetails>
               </Accordion>
             </Box>
-            
           </Container>
-          <Box sx={{pt:4}}>
-              {ResponseGetHomeComponent?.isPending ? (
-                <Box sx={{ marginTop: 5 }}>
-                  <SubCategorySkeleton />
-                </Box>
-              ) : homecomponents.length ? (
-                homecomponents?.map((component) =>
-                  component?.name == "New Arrived" ? (
-                    <RecommendedForYou
-                      key={component?.sort_number}
-                      title={component?.title == "most view"}
-                      sort_id={component?.query_id}
-                    />
-                  ) : null
-                )
-              ) : (
-                <Box sx={{ marginTop: 5 }}>
-                  <SubCategorySkeleton />
-                </Box>
-              )}
-            </Box>
+          <Box sx={{ pt: 4 }}>
+            {ResponseGetProductSort?.isPending ? (
+              <Box sx={{ marginTop: 5 }}>
+                <ProductSkeleton />
+              </Box>
+            ) : mostviewed?.results?.length ? (
+              <RecommendedForYou title={"Most View"} sort_id={4} />
+            ) : null}
+          </Box>
         </Box>
       </ResponsiveLayout>
     </Box>

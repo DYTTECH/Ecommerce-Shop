@@ -48,6 +48,8 @@ import { useSelector } from "react-redux";
 import { GrayIcon } from "../../Style/StyledComponents/IconButton";
 import { BoxStyle } from "../../Style/StyledComponents/Box";
 import Footer from "./footer";
+
+import CategoriesMenu from "./categoryMenu";
 import AuthLogin from "../authentication/LogInAuth";
 import AuthRegister from "../authentication/RegisterAuth";
 const Search = styled("div")(({ theme }) => ({
@@ -100,7 +102,7 @@ function ResponsiveLayout(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   // menu lang state
   const [anchorElLang, setAnchorElLang] = React.useState(null);
-  // const lang = useSelector((state) => state.language.lang);
+
   const { t, i18n } = useTranslation(); // Retrieve translation functions
   const openLangMenu = Boolean(anchorElLang);
   // const dispatch = useDispatch();
@@ -135,7 +137,10 @@ function ResponsiveLayout(props) {
   const handleCloseLang = () => {
     setAnchorElLang(null);
   };
-
+const handleViewWishList=()=>{
+  
+  navigate(`/t2/${shopInfo.sub_domain}/wishlist`);
+}
   // dark mode and light mode
 
   const isMenuOpen = Boolean(anchorEl);
@@ -219,17 +224,20 @@ function ResponsiveLayout(props) {
   );
   const [popperOpen, setPopperOpen] = useState(true);
 
-  useEffect(() => {
-    // Close the Popper after 10 seconds
-    const timer = setTimeout(() => {
-      setPopperOpen(false);
-    }, 10000);
+  const ViewMainCategories=(<CategoriesMenu/>)
 
-    return () => clearTimeout(timer); // Clear the timer on component unmount
-  }, []);
-  useEffect(() => {
-    i18n.changeLanguage("ar");
-  }, []);
+useEffect(() => {
+  // Close the Popper after 10 seconds
+  const timer = setTimeout(() => {
+    setPopperOpen(false);
+  }, 10000);
+
+  return () => clearTimeout(timer); // Clear the timer on component unmount
+}, []);
+useEffect(() => {
+  i18n.changeLanguage("ar");
+  
+}, [i18n]);
 
   return (
     <Box
@@ -327,8 +335,8 @@ function ResponsiveLayout(props) {
                     <NotificationsNoneOutlinedIcon />
                   </Badge>
                 </GrayIcon>
-                <GrayIcon>
-                  <FavoriteBorderOutlinedIcon />
+                <GrayIcon onClick={handleViewWishList}>
+                  <FavoriteBorderOutlinedIcon/>
                 </GrayIcon>
                 <PopupState variant="popper" popupId="demo-popup-popper">
                   {(popupState) => (
@@ -454,6 +462,7 @@ function ResponsiveLayout(props) {
         }}
       >
         <Toolbar />
+        {ViewMainCategories}
         {props.children}
         <Footer />
       </Box>
