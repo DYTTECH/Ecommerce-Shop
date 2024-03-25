@@ -332,6 +332,7 @@ export const Products = () => {
             mb={2}
             justifyContent="center"
             alignItems="center"
+            sx={{paddingY: 4}}
           >
             {Products?.count > 0 && Products?.count > 8 && (
               <Pagination

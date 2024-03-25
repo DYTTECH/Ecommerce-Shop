@@ -27,7 +27,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   BlackText,
   GrayText,
-  ItemsDes,
+  ItemsTitle,
   MainTitle,
   TextDiscount,
 } from "../../Style/StyledComponents/Typography";

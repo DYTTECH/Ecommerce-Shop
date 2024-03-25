@@ -55,6 +55,12 @@ export const MainText = styled(Typography)(({ theme }) => ({
   fontWeight: theme.font.fontWeight.medium,
   fontFamily: "Cairo",
 }));
+export const DarkText = styled(Typography)(({ theme }) => ({
+  color: theme.palette.primary.dark,
+  fontSize: theme.font.fontSize.small,
+  fontWeight: theme.font.fontWeight.medium,
+  fontFamily: "Cairo",
+}));
 
 export const MainTitle = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.dark,
