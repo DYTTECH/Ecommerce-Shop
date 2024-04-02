@@ -50,8 +50,10 @@ import { BoxStyle } from "../../Style/StyledComponents/Box";
 import Footer from "./footer";
 
 import CategoriesMenu from "./categoryMenu";
-import AuthLogin from "../authentication/LogInAuth";
-import AuthRegister from "../authentication/RegisterAuth";
+import AuthRegister from "../Authentication/RegisterAuth";
+import AuthLogin from "../Authentication/LogInAuth";
+import CartPopup from "../../Pages/Cart/CartPopup";
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
@@ -116,7 +118,16 @@ function ResponsiveLayout(props) {
 
   const [openLogin, setOpenLogin] = useState(false);
   const [openRegister, setOpenRegister] = useState(false);
+  const [openCartPopup, setOpenCartPopup] = useState(false);
 
+
+  const handleCloseCartPopup = () => {
+    setOpenCartPopup(false);
+  };
+  const handleClickOpenCartPopup = () => {
+    setOpenCartPopup(true);
+    console.log(openCartPopup);
+  };
 
   const handleCloseLogin = () => {
     setOpenLogin(false);
@@ -338,6 +349,9 @@ useEffect(() => {
                 <GrayIcon onClick={handleViewWishList}>
                   <FavoriteBorderOutlinedIcon/>
                 </GrayIcon>
+                <GrayIcon onClick={handleClickOpenCartPopup}>
+                  <ShoppingCartIcon/>
+                </GrayIcon>
                 <PopupState variant="popper" popupId="demo-popup-popper">
                   {(popupState) => (
                     <div>
@@ -424,6 +438,7 @@ useEffect(() => {
       {renderMenu}
       <AuthLogin openLogin={openLogin} handleCloseLogin={handleCloseLogin} />
       <AuthRegister openRegister={openRegister} handleCloseRegister={handleCloseRegister} />
+      <CartPopup openCartPopup={openCartPopup} handleCloseCartPopup={handleCloseCartPopup} />
       <Box
         component="nav"
         // sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
@@ -461,7 +476,7 @@ useEffect(() => {
           width: "100%",
         }}
       >
-        <Toolbar />
+        <Toolbar className="gehad" sx={{marginBottom:{lg:'35px', md:'0', sm:'0',xs:'0'}}} />
         {ViewMainCategories}
         {props.children}
         <Footer />

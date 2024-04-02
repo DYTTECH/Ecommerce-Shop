@@ -36,7 +36,7 @@ const Home = () => {
       },
     });
   };
-
+console.log(shopInfo);
   // Get shop home component
   const [RequestGetHomeComponent, ResponseGetHomeComponent] = useRequest({
     method: "Get",
