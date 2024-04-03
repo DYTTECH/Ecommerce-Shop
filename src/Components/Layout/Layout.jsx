@@ -50,12 +50,6 @@ import { BoxStyle } from "../../Style/StyledComponents/Box";
 import Footer from "./footer";
 
 import CategoriesMenu from "./categoryMenu";
-import AuthRegister from "../Authentication/RegisterAuth";
-import AuthLogin from "../Authentication/LogInAuth";
-import CartPopup from "../../Pages/Cart/CartPopup";
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import BASEURL from "../../Data/API";
-import useRequest from "../../Hooks/useRequest";
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
@@ -104,6 +98,13 @@ function ResponsiveLayout(props) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [openLogin, setOpenLogin] = React.useState(false);
+  const handleCloseLogin = () => {
+    setOpenLogin(false);
+  } 
+const handleOpenLogin = () => {
+  setOpenLogin(true);
+}
   // menu lang state
   const [anchorElLang, setAnchorElLang] = React.useState(null);
 
@@ -383,28 +384,10 @@ useEffect(() => {
                       >
                         {({ TransitionProps }) => (
                           <Fade {...TransitionProps} timeout={350}>
-                            <Paper sx={{ p: 3, textAlign: "center" }}>
-                            
-                              <Button
-                                sx={{
-                                  bgcolor: theme.palette.primary.dark,
-                                  color: theme.palette.primary.light,
-                                  width: "100%",
-                                  fontFamily: "Cairo",
-                                }}
-                                onClick={handleClickOpenLogin}
-                              >
-                                
-                                {t("Sign In")}
-                              </Button>
-                              <GrayText sx={{ pt: 2, pX: 2 }}>
-                                {t("New Customer?")}{" "}
-                                <MainText
-                                  sx={{ cursor: "pointer", display: "inline" }}
-                                  onClick={handleClickOpenRegister}
-                                >
-                                  {t("Register")}
-                                </MainText>
+                            <Paper sx={{p:3, textAlign:'center'}}>
+                              <Button sx={{bgcolor:theme.palette.primary.main, color:theme.palette.primary.light, width:'100%', fontFamily:"Cairo"}}>{t("Sign In")}</Button>
+                              <GrayText sx={{ pt: 2, pX:2 }}>
+                                {t("New Customer?")} <MainText sx={{ cursor:'pointer', display:'inline'}}>{t("Register")}</MainText>
                               </GrayText>
                             </Paper>
                           </Fade>
@@ -484,6 +467,7 @@ useEffect(() => {
         {props.children}
         <Footer />
       </Box>
+      <AuthLogin openLogin={openLogin} handleCloseLogin={handleCloseLogin}/>
     </Box>
   );
 }

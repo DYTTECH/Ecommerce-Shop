@@ -60,7 +60,7 @@ console.log(shopInfo);
       GetShopInfo(currentShopInfo);
     }
 
-    window.scroll(0, 0);
+    window.scrollTo(10, 0);
   }, []);
 
   useEffect(() => {
