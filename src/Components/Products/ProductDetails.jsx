@@ -27,7 +27,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   BlackText,
   GrayText,
-  ItemsTitle,
+  ItemsDes,
   MainTitle,
   TextDiscount,
 } from "../../Style/StyledComponents/Typography";
@@ -161,6 +161,7 @@ const ProductDetails = () => {
     RequestGetProductSort({
       onSuccess: (res) => {
         dispatch({ type: "mostviewed/set", payload: res.data });
+        console.log(res.data);
       },
     });
   };
@@ -228,6 +229,38 @@ const ProductDetails = () => {
     { label: `${t('Products')}`, link: `/t2/${shopInfo?.sub_domain}/products/`, active: false },
     { label: `${ProductDetails?.name}`, link: `/t2/${shopInfo?.sub_domain}/products/${ProductDetails?.name}`, active: false },
   ];    
+
+console.log(ProductDetails);
+
+// Define state to manage the local cart items
+const [cartItems, setCartItems] = useState(
+  JSON.parse(localStorage.getItem("cartItems")) || []
+);
+
+// Function to handle adding the product to the cart
+const handleAddToCart = () => {
+  // Check if the product is already in the cart
+  const existingItemIndex = cartItems.findIndex(
+    (item) => item.id === ProductDetails?.id
+  );
+
+  if (existingItemIndex !== -1) {
+    // If the product is already in the cart, update its quantity
+    const updatedCartItems = [...cartItems];
+    updatedCartItems[existingItemIndex].quantity += 1;
+    setCartItems(updatedCartItems);
+  } else {
+    // If the product is not in the cart, add it with quantity 1
+    const newItem = {
+      id: ProductDetails?.id,
+      quantity: 1,
+    };
+    setCartItems([...cartItems, newItem]);
+  }
+
+  // Store the updated cart items in localStorage
+  localStorage.setItem("cartItems", JSON.stringify(cartItems));
+};
   return (
     <Box>
       <ResponsiveLayout>
@@ -294,8 +327,7 @@ const ProductDetails = () => {
           <Box
             sx={{
               pr: 5,
-              mb: 2,
-              display: { lg: "block", md: "none", sm: "none", xs: "none" },
+              mb: 2
             }}
           >
             <GrayText>
@@ -590,6 +622,8 @@ const ProductDetails = () => {
                   <Button
                     variant="contained"
                     sx={{ mt: 4, width: "100%", fontFamily: "cairo" }}
+                    onClick={handleAddToCart}
+                    
                   >
                     {t("Add to Cart")}
                   </Button>

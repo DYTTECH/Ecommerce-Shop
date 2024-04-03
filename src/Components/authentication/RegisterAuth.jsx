@@ -176,7 +176,7 @@ const AuthRegister = ({ openRegister, handleCloseRegister }) => {
         }}
         id="alert-dialog-title"
       >
-        {t("You already have account?")}
+        {t("Register for a unique shopping experience")}
       </BlackText>
       <DialogContent sx={{display:'flex', width:'350px', justifyContent:'center'}}>
         <FormControl>
@@ -291,7 +291,7 @@ const AuthRegister = ({ openRegister, handleCloseRegister }) => {
           <Box>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
-              inputFormat="dd-MM-yyyy"
+              inputFormat={t("dd-MM-yyyy")}
               sx={{ maxHeight: "48px !important", width: "90%",margin: "10px 15px"}}
               name="birth_date"
               value={birthDate} // Step 4: Set value from birthDate state

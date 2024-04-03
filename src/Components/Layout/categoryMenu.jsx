@@ -111,7 +111,7 @@ const CategoriesMenu = () => {
           display: { lg: "flex", md: "none", sm: "none", xs: "none" },
           justifyContent: "center",
           textAlign: "center",
-          mt: { lg: 4, md: 1, sm: 2, xs: 3 },
+          // mt: { lg: 4, md: 1, sm: 2, xs: 3 },
           background: theme.palette.primary.dark,
           width: "100%",
           zIndex: "1",
