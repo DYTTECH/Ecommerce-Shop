@@ -54,6 +54,8 @@ import AuthRegister from "../Authentication/RegisterAuth";
 import AuthLogin from "../Authentication/LogInAuth";
 import CartPopup from "../../Pages/Cart/CartPopup";
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import BASEURL from "../../Data/API";
+import useRequest from "../../Hooks/useRequest";
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
@@ -196,6 +198,7 @@ const handleViewWishList=()=>{
   useEffect(() => {
     i18n.language == "ar" ? (document.dir = "rtl") : (document.dir = "ltr");
   }, [i18n.language]);
+
 
   // sidebar button links
   const drawer = <Container>hjh</Container>;
