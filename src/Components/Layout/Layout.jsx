@@ -48,8 +48,11 @@ import { useSelector } from "react-redux";
 import { GrayIcon } from "../../Style/StyledComponents/IconButton";
 import { BoxStyle } from "../../Style/StyledComponents/Box";
 import Footer from "./footer";
-
+import AuthLogin from "../Authentication/LogInAuth";
 import CategoriesMenu from "./categoryMenu";
+import AuthRegister from "../Authentication/RegisterAuth";
+import CartPopup from "../../Pages/Cart/CartPopup";
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
@@ -98,10 +101,7 @@ function ResponsiveLayout(props) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [openLogin, setOpenLogin] = React.useState(false);
-  const handleCloseLogin = () => {
-    setOpenLogin(false);
-  } 
+ 
 const handleOpenLogin = () => {
   setOpenLogin(true);
 }
@@ -467,7 +467,7 @@ useEffect(() => {
         {props.children}
         <Footer />
       </Box>
-      <AuthLogin openLogin={openLogin} handleCloseLogin={handleCloseLogin}/>
+     
     </Box>
   );
 }
