@@ -7,6 +7,7 @@ import {
   Alert,
   Box,
   Checkbox,
+  CircularProgress,
   FormControl,
   FormControlLabel,
   IconButton,
@@ -16,7 +17,10 @@ import {
   TextField,
 } from "@mui/material";
 import "./index.css";
-import { BlackText, DarkText, MainTitle } from "../../Style/StyledComponents/Typography";
+import {
+  BlackText,
+  DarkText,
+} from "../../Style/StyledComponents/Typography";
 import { useTheme } from "@emotion/react";
 import { useState } from "react";
 import Visibility from "@mui/icons-material/Visibility";
@@ -24,17 +28,14 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import useRequest from "../../Hooks/useRequest";
 import BASEURL from "../../Data/API";
 import useControls from "../../Hooks/useControls";
-import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
 const AuthLogin = ({ openLogin, handleCloseLogin }) => {
   const { t } = useTranslation();
   const theme = useTheme();
+  const dispatch=useDispatch()
   const [showPassword, setShowPassword] = useState(false);
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
-  const [formVisible, setFormVisible] = useState(true);
-  const [loginMessage, setLoginMessage] = useState("");
-  const dispatch = useDispatch();
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -46,6 +47,8 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
     path: `${BASEURL}shop/${shopInfo?.id}/customer/login/`,
     method: "post",
   });
+
+  
 
   const [
     { controls, invalid, required },
@@ -79,45 +82,41 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
   const handleClick = () => {
     setOpen(true);
   };
-  useEffect(() => {
-    let timer;
-    if (loginMessage) {
-      timer = setTimeout(() => {
-        setLoginMessage("");
-        handleCloseLogin();
-      }, 5000);
-    }
-    return () => clearTimeout(timer);
-  }, [loginMessage, handleCloseLogin]);
 
   const handleSubmit = () => {
     validate().then((output) => {
       if (!output.isOk) return;
-
+  
       LoginRequest({
         body: controls,
         onSuccess: (res) => {
-          console.log(res);
-          dispatch({ type: "userInfo/setToken", payload: res.data });        
-          setLoginMessage(res?.data?.message);
-          setFormVisible(false);
+         dispatch({ type: "userInfo/setToken", payload: res.data.token })
+          console.log(res.data);
+         resetControls()
         },
         // Handle other cases if needed
-      }).then((res) => {
-        let response = res?.response?.data;
-      });
+      
     });
+  });
   };
   return (
     <Dialog
+      maxWidth="xs"
+      fullWidth
       open={openLogin}
       onClose={handleCloseLogin}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
+      sx={{
+        "& .MuiPaper-root": {
+          borderRadius: "10px",
+          width: "100%",
+          height: "100%",
+          margin:"auto",
+        },
+      }}
     >
-      {formVisible && (
-        <>
-        <BlackText
+      <BlackText
         sx={{
           padding: "30px 30px 0 0",
         }}
@@ -126,25 +125,25 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
         {t("You already have account?")}
       </BlackText>
       <DialogContent>
-        <FormControl>
-          <TextField
+        <FormControl fullWidth sx={{justifyContent:"flex-end",display:"flex",gap:"10px",}}>
+        <TextField
             variant="outlined"
             sx={{
               padding: "10.5px 14px !important",
               width: "100%",
             }}
             type="text"
-            value={controls?.email}
-            onChange={(e) => {
-              setControl("email", e.target.value);
-              console.log(e.target.value); // Print the value in the console
-            }}
-            required={required.includes("email")}
-            error={Boolean(invalid?.email)}
-            helperText={invalid?.email}
+          value={controls?.email}
+          onChange={(e) => {
+            setControl('email', e.target.value);
+          }}
+          required={required.includes('email')}
+          error={Boolean(invalid?.email)}
+          helperText={invalid?.email}
             name="email"
             placeholder={t("Email address")}
-          ></TextField>
+
+          />
           <TextField
             variant="outlined"
             sx={{
@@ -152,17 +151,16 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
               width: "100%",
             }}
             name="password"
-            value={controls?.password}
-            onChange={(e) => {
-              setControl("password", e.target.value);
-              console.log(e.target.value); // Print the value in the console
-            }}
-            required={required.includes("password")}
-            error={Boolean(invalid?.password)}
-            helperText={invalid?.password}
+          value={controls?.password}
+          onChange={(e) => {
+            setControl('password', e.target.value);
+          }}
+          required={required.includes('password')}
+          error={Boolean(invalid?.password)}
+          helperText={invalid?.password}
             type={showPassword ? "text" : "password"}
             placeholder={t("Password")}
-          ></TextField>
+          />
           <InputAdornment
             sx={{
               position: "absolute",
@@ -195,7 +193,7 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
               label={t("Remember me")}
               sx={{ fontFamily: "Cairo !important" }}
             />
-            <DarkText
+            <BlackText
               variant="subtitle1"
               color="secondary"
               sx={{
@@ -205,35 +203,30 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
               // onClick={()=>navigate("/authentication/forget-password")}
             >
               {t("Forget Password")}
-            </DarkText>
+            </BlackText>
           </Box>
-          <Stack spacing={2} sx={{ width: "90%", margin: "30px 15px" }}>
-            <Button
-              onClick={() => {
-                handleSubmit();
-                handleClick();
-              }}
-              type="button"
-              variant="contained"
-              sx={{
-                bgcolor: theme.palette.primary.dark,
-                color: theme.palette.primary.light,
-                width: "100%",
-                fontFamily: "Cairo",
-              }}
-            >
-              {t("Sign in")}
-            </Button>
-          </Stack>
+          <Stack spacing={2} sx={{ width: '90%',margin: "30px 15px" }}>
+                        <Button
+                          onClick={() => {
+                            handleSubmit();
+                            handleClick();
+                          }}
+                          type="button"
+                          variant="contained"
+                          sx={{
+                            bgcolor: theme.palette.primary.dark,
+                            color: theme.palette.primary.light,
+                            width: "100%",
+                            fontFamily: "Cairo",
+                          }}
+                        >
+                          {Boolean(LoginResponse.isPending)? <CircularProgress/>:t("Sign in")}
+                        </Button>
+                      </Stack>
         </FormControl>
       </DialogContent>
-        </>
-      )}
-      {!formVisible && (
-        <DialogContent sx={{p:5}}>
-          <MainTitle>{loginMessage}</MainTitle>
-        </DialogContent>
-      )}
+      {LoginResponse.failAlert}
+      {LoginResponse.successAlert}
     </Dialog>
   );
 };
