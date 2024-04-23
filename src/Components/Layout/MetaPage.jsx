@@ -8,7 +8,7 @@ const PageMeta = ({ title, desc, name="DTYTECH", type="E-commerce", image }) => 
     <title>{title}</title>
     <meta name="description" content={desc} />
     <meta property="og:image" content={image} />
-    <link rel="icon" type="image/x-icon" href={shopInfo.logo} />
+    <link rel="icon" type="image/x-icon" href={shopInfo?.logo} />
     {/* Facebook tags */}
     <meta property="og:type" content={type} />
     <meta property="og:image:type" content="image/png" />
