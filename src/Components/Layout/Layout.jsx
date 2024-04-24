@@ -48,17 +48,11 @@ import { useSelector } from "react-redux";
 import { GrayIcon } from "../../Style/StyledComponents/IconButton";
 import { BoxStyle } from "../../Style/StyledComponents/Box";
 import Footer from "./footer";
-
+import AuthLogin from "../Authentication/LogInAuth";
 import CategoriesMenu from "./categoryMenu";
 import AuthRegister from "../Authentication/RegisterAuth";
-import AuthLogin from "../Authentication/LogInAuth";
 import CartPopup from "../../Pages/Cart/CartPopup";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import BASEURL from "../../Data/API";
-import useRequest from "../../Hooks/useRequest";
-import ProfileMenu from "./ProfileMenu";
-import { Unstable_Popup as BasePopup } from '@mui/base/Unstable_Popup';
-
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
@@ -140,6 +134,10 @@ function ResponsiveLayout(props) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
+ 
+const handleOpenLogin = () => {
+  setOpenLogin(true);
+}
   // menu lang state
   const [anchorElLang, setAnchorElLang] = React.useState(null);
   const [anchorElProfile, setAnchorElProfile] = React.useState(null);
@@ -379,39 +377,64 @@ function ResponsiveLayout(props) {
                 <GrayIcon onClick={handleClickOpenCartPopup}>
                   <ShoppingCartIcon />
                 </GrayIcon>
-                
-                <GrayIcon  aria-describedby={id} onClick={handleProfileMenuOpen}>
-                  <AccountCircle />
-                </GrayIcon>
-                <BasePopup id={id} open={open} anchor={anchor}>
-        <PopupBody>
-        <Box sx={{ p: 3, textAlign: "center" }}>
-                      <Button
-                        sx={{
-                          bgcolor: theme.palette.primary.dark,
-                          color: theme.palette.primary.light,
-                          width: "100%",
-                          fontFamily: "Cairo",
-                        }}
-                        onClick={handleClickOpenLogin}
+                <PopupState variant="popper" popupId="demo-popup-popper">
+                  {(popupState) => (
+                    <div>
+                      <GrayIcon
+                        variant="contained"
+                        {...bindToggle(popupState)}
+                        size="large"
+                        edge="end"
+                        aria-label="account of current user"
+                        aria-controls={menuId}
+                        aria-haspopup="true"
+                        onClick={handleProfileMenuOpen}
                       >
-                        {t("Sign In")}
-                      </Button>
-                      <GrayText sx={{ pt: 2, pX: 2 }}>
-                        {t("New Customer?")}{" "}
-                        <MainText
-                          sx={{
-                            cursor: "pointer",
-                            display: "inline",
-                          }}
-                          onClick={handleClickOpenRegister}
-                        >
-                          {t("Register")}
-                        </MainText>
-                      </GrayText>
-                    </Box>
-        </PopupBody>
-      </BasePopup>
+                        <AccountCircle />
+                      </GrayIcon>
+                      <Popper
+                        open={popperOpen}
+                        transition
+                        className={lang === "en" ? "popper-en" : ""}
+                        sx={{
+                          top: "96px !important",
+                          left: lang === "en" ? "unset !important" : "0",
+                          right: lang === "en" ? "0" : "unset",
+                          zIndex: "1000",
+                        }}
+                      >
+                        {({ TransitionProps }) => (
+                          <Fade {...TransitionProps} timeout={350}>
+                            <Paper sx={{ p: 3, textAlign: "center" }}>
+                            
+                              <Button
+                                sx={{
+                                  bgcolor: theme.palette.primary.dark,
+                                  color: theme.palette.primary.light,
+                                  width: "100%",
+                                  fontFamily: "Cairo",
+                                }}
+                                onClick={handleClickOpenLogin}
+                              >
+                                
+                                {t("Sign In")}
+                              </Button>
+                              <GrayText sx={{ pt: 2, pX: 2 }}>
+                                {t("New Customer?")}{" "}
+                                <MainText
+                                  sx={{ cursor: "pointer", display: "inline" }}
+                                  onClick={handleClickOpenRegister}
+                                >
+                                  {t("Register")}
+                                </MainText>
+                              </GrayText>
+                            </Paper>
+                          </Fade>
+                        )}
+                      </Popper>
+                    </div>
+                  )}
+                </PopupState>
 
                 <GrayIcon
                   size="large"
@@ -493,6 +516,7 @@ function ResponsiveLayout(props) {
         {props.children}
         <Footer />
       </Box>
+     
     </Box>
   );
 }

@@ -14,7 +14,7 @@ const useRequest = ({
   //----useSelectors----
   const states = useSelector((state) => state);
    const userInfo = useSelector((state) => state.userInfo.value);
-  console.log(userInfo);
+ 
   // ---hooks invokes----
   const dispatch = useDispatch();
 
@@ -90,8 +90,7 @@ const useRequest = ({
       ...(!noHeaders && {
         headers: {
           //prettier-ignore
-          //  "Authorization": Boolean(customAuthorization) ? `JWT ${customAuthorization}` : `JWT  ${Boolean(customToken) ? customToken :userInfo}`,
-          // "Authorization": `JWT f82b269882e4619bac8163ea8c9c98633b0ed112`,
+        //  "Authorization": Boolean(customAuthorization) ? `${customAuthorization}` : ` ${Boolean(customToken) ? customToken :Boolean(userInfo)?`Token ${userInfo}`:""}`,
           "Accept-Language": "en-US,en;"
         },
       }),

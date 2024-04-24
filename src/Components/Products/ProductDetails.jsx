@@ -10,10 +10,6 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
   Skeleton,
   Stack,
   Typography,
@@ -54,19 +50,9 @@ import ProductSkeleton from "../Skeleton/ProductSkeleton";
 import HeroTitle from "../Layout/HeroTitle";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import "../../App.css";
-import {
-  FacebookIcon,
-  FacebookShareButton, 
-  TelegramIcon, 
-  TelegramShareButton,
-  TwitterIcon,
-  TwitterShareButton,
-  WhatsappIcon,
-  WhatsappShareButton,
- 
-} from "react-share";
 import { RWebShare } from "react-web-share";
 import Specification from "./ProductSpecification";
+import CartPopup from "../../Pages/Cart/CartPopup";
 const StyledMenu = styled((props) => (
   <Menu
     elevation={0}
@@ -122,6 +108,8 @@ const ProductDetails = () => {
   const params = useParams();
   const ProductDetails = useSelector((state) => state.productdetails.value);
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
+  const [openCartPopup, setOpenCartPopup] = useState(false);
+  const [selectedimg, setSelectedimg] = useState("");
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const theme = useTheme();
@@ -152,11 +140,33 @@ const ProductDetails = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const handleCloseCartPopup = () => {
+    setOpenCartPopup(false);
+  }
   // Get shop home component
   const [RequestGetProductSort, ResponseGetProductSort] = useRequest({
     method: "Get",
     path: HOMECOMPONENTS + shopInfo?.id + "/products/?query_id=4",
   });
+
+  // add to cart 
+  const [RequestAddProductToCart, ResponseAddProductToCart] = useRequest({
+    method: "POST",
+    path: `${PRODUCTS}${shopInfo?.id}/cart/items/`,
+  })
+  const AddProductToCart = () => {
+    RequestAddProductToCart({
+      body: {
+        product: params?.id,
+        quantity: 1,
+      },
+      onSuccess: (res) => {
+        setOpenCartPopup(true)
+        dispatch({ type: "cart/addItem", payload: res.data });
+      },
+    });
+  }
   const GetProductSort = () => {
     RequestGetProductSort({
       onSuccess: (res) => {
@@ -219,6 +229,12 @@ const ProductDetails = () => {
     GetProductSort();
   }, [shopInfo?.id]);
 
+  useEffect(() => {
+    if (ProductDetails["images"]?.length) {
+      setSelectedimg(ProductDetails["images"][0]?.image);
+    }
+  }, [ProductDetails["images"]]);
+
   const shareData = {
     text: ProductDetails.name,
     url: window.location.href.replace(" ","%20"),
@@ -230,7 +246,7 @@ const ProductDetails = () => {
     { label: `${ProductDetails?.name}`, link: `/t2/${shopInfo?.sub_domain}/products/${ProductDetails?.name}`, active: false },
   ];    
 
-console.log(ProductDetails);
+
 
 // Define state to manage the local cart items
 const [cartItems, setCartItems] = useState(
@@ -261,6 +277,8 @@ const handleAddToCart = () => {
   // Store the updated cart items in localStorage
   localStorage.setItem("cartItems", JSON.stringify(cartItems));
 };
+
+
   return (
     <Box>
       <ResponsiveLayout>
@@ -271,58 +289,7 @@ const handleAddToCart = () => {
           type={shopInfo?.shop_type_name}
           image={shopInfo?.logo}
         />
-        {/* <Dialog
-        maxWidth='sm'
-        fullWidth
-        open={openShare}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleCloseShareDialog}
-        aria-describedby="alert-dialog-slide-description"
-        sx={{
-          "& .MuiDialog-container": {
-            alignItems: "center",
-            justifyContent: "center",
-            display:"flex",
-            flexDirection: 'column',
-            p:3,
-          },
-        }}
-      >
-         <DialogTitle sx={{display:'flex',justifyContent:'center',alignItems:'center'}}>Optional sizes</DialogTitle>
-         
-         <DialogContent  dividers sx={{display:'flex',justifyContent:'center',alignItems:'center',gap:3}}>
-          <FacebookShareButton 
-         quote={ProductDetails?.name}
-         url={ProduductRoutes}
-         >
-        <FacebookIcon logoFillColor="white" size={"40"} round={true}/>
-    </FacebookShareButton>
-
-        <TwitterShareButton url={ProduductRoutes}>
-          <TwitterIcon  logoFillColor="white" size={"40"} round={true} />
-        </TwitterShareButton>
-        <WhatsappShareButton 
-        image={`${ProductDetails?.main_image}`}
-        title={ProductDetails?.name}
-        url={window.location.href}
        
-        >
-          <WhatsappIcon logoFillColor="white" size={"40"} round={true} />
-        </WhatsappShareButton>
-        
-         <TelegramShareButton 
-        image={`${ProductDetails?.main_image}`}
-        title={ProductDetails?.name}
-        url={window.location.href}
-       
-        >
-          <TelegramIcon logoFillColor="white" size={"40"} round={true} />
-        </TelegramShareButton> 
-        
-         </DialogContent>
-
-      </Dialog> */}
         <Box sx={{ marginY: { lg: "90px", md: 2, sm: 2, xs: 2 } }}>
           <Box
             sx={{
@@ -358,12 +325,19 @@ const handleAddToCart = () => {
                       item
                       xs={2}
                       key={index}
-                      sx={{ maxWidth: "50% !important", objectFit: "cover" }}
+                      sx={{ maxWidth: "50% !important",
+                      borderRadius: "8px", objectFit: "cover", border:
+                      image?.image === selectedimg
+                        ? "1px solid black !important"
+                        : "",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => setSelectedimg(image?.image)} 
                     >
                       <img
                         src={image.image}
                         alt={`Img ${index}`}
-                        style={{ width: "100%" }}
+                        style={{ width: "100%",height: "84px !important", }}
                       />
                     </Grid>
                   ))}
@@ -385,7 +359,7 @@ const handleAddToCart = () => {
                     <Box>
                        
                        <img
-                        src={ProductDetails?.main_image}
+                         src={(selectedimg || ProductDetails?.main_image?ProductDetails.main_image:"https://easytrady.net/default_images/default_product.png")?.replace(/\ /g, "%20")}
                         alt={ProductDetails?.name}
                         style={{ width: "100%" }}
                         onClick={handleOpenDialog}
@@ -596,6 +570,7 @@ const handleAddToCart = () => {
                         textWrap: "nowrap",
                       }}
                     >
+                      
                       <Button variant="outlined" disabled sx={{ ml: 3 }}>
                         9/10
                       </Button>
@@ -622,7 +597,7 @@ const handleAddToCart = () => {
                   <Button
                     variant="contained"
                     sx={{ mt: 4, width: "100%", fontFamily: "cairo" }}
-                    onClick={handleAddToCart}
+                    onClick={AddProductToCart}
                     
                   >
                     {t("Add to Cart")}
@@ -734,6 +709,9 @@ const handleAddToCart = () => {
           </Box>
         </Box>
       </ResponsiveLayout>
+      <CartPopup openCartPopup={openCartPopup} handleCloseCartPopup={handleCloseCartPopup}/>
+      {ResponseAddProductToCart.successAlert}
+      {ResponseAddProductToCart.failAlert}
     </Box>
   );
 };

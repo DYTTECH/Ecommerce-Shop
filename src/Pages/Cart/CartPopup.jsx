@@ -31,6 +31,8 @@ import { styled, alpha } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import ProductCart from "../../Components/Cart/ProductCart";
+import { DarkButton } from "../../Style/StyledComponents/Buttons";
 const StyledMenu = styled((props) => (
   <Menu
     elevation={0}
@@ -79,45 +81,29 @@ const CartPopup = ({ openCartPopup, handleCloseCartPopup }) => {
   const theme = useTheme();
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
   const cartItems = JSON.parse(localStorage.getItem("cartItems"));
-  const ProductDetails = useSelector((state) => state.productdetails.value);
+  const CartDetails = useSelector((state) => state.cart.value);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  console.log(cartItems);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const openDropDown = Boolean(anchorEl);
-  const [open, setOpen] = useState(false);
-
-  const handleClick = () => {
-    setOpen(true);
-  };
-  const handleClickDropDown = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleCloseDropDown = () => {
-    setAnchorEl(null);
-  };
-  const [RequestGetProductDetails, ResponseGetProductDetails] = useRequest({
+  const [RequestGetProductsCart, ResponseGetProductsCart] = useRequest({
     method: "Get",
-    path: `${PRODUCTS}/${shopInfo?.id}/products/${cartItems[0]?.id}`,
+    path: `${PRODUCTS}${shopInfo?.id}/cart/details/`,
   });
-  const GetProductDetails = () => {
-    RequestGetProductDetails({
+  const GetProductsCart = () => {
+    RequestGetProductsCart({
       onSuccess: (res) => {
-        dispatch({ type: "productdetails/set", payload: res.data });
+        dispatch({ type: "cart/set", payload: res.data });
       },
     });
   };
 
   useEffect(() => {
-    GetProductDetails();
+    GetProductsCart();
   }, [shopInfo?.id]);
-  const handleCloseDialog = () => {
-    handleCloseCartPopup();
-  };
+ 
   return (
     <Dialog
       open={openCartPopup}
-      onClose={handleCloseDialog}
+      onClose={handleCloseCartPopup}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
@@ -136,14 +122,19 @@ const CartPopup = ({ openCartPopup, handleCloseCartPopup }) => {
         >
           {t("MY BASKET")}
         </BlackText>
-        <Box sx={{ p: 4, cursor: "pointer" }} onClick={handleCloseDialog}>
+        <Box sx={{ p: 4, cursor: "pointer" }} onClick={handleCloseCartPopup}>
           <CloseIcon />
         </Box>
       </Box>
       <DialogContent>
-        <Grid container spacing={3} sx={{ alignItems: "center" }}>
+        {CartDetails.products&&
+        
+        CartDetails.products.map((item) => (
+          <ProductCart key={item.id} {...item} isPending={ResponseGetProductsCart.isPending} />
+        ))}
+        {/* <Grid container spacing={3} sx={{ alignItems: "center" }}>
           <Grid item xs={12} sm={6} md={4}>
-            {ResponseGetProductDetails.isPending ? (
+            {ResponseGetProductsCart.isPending ? (
               <Box
                 sx={{
                   display: "flex",
@@ -256,12 +247,12 @@ const CartPopup = ({ openCartPopup, handleCloseCartPopup }) => {
               </Box>
             </Grid>
           </Grid>
-        </Grid>
+        </Grid> */}
         <Box>
           <Box sx={{ display: "flex", justifyContent: "space-between", pt: 4 }}>
             <DarkText>{t("Subtotal")}</DarkText>
             <MainTitle sx={{ fontWeight: theme.font.fontWeight.semibold }}>
-              {ProductDetails?.final_price} {t("SAR")}
+              {CartDetails?.sub_total} {t("SAR")}
             </MainTitle>
           </Box>
           <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
@@ -269,16 +260,14 @@ const CartPopup = ({ openCartPopup, handleCloseCartPopup }) => {
             <DarkText>20.00 {t("SAR")}</DarkText>
           </Box>
           <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
-            <Button
+            <DarkButton
               sx={{
-                color: theme.palette.primary.light,
-                bgcolor: theme.palette.primary.dark,
                 width: "60%",
                 paddingY: 3,
               }}
             >
               {t("Check Out")}
-            </Button>
+            </DarkButton>
             <Button
               sx={{ border: "1px solid", width: "35%" }}
               onClick={() => {

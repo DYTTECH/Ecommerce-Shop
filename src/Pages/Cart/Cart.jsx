@@ -26,11 +26,13 @@ import { PRODUCTS } from "../../Data/API";
 import useRequest from "../../Hooks/useRequest";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import CloseIcon from "@mui/icons-material/Close";
+import ProductCart from "../../Components/Cart/ProductCart";
+import { DarkButton } from "../../Style/StyledComponents/Buttons";
 
 const Cart = () => {
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
   const cartItems = JSON.parse(localStorage.getItem("cartItems"));
-  const ProductDetails = useSelector((state) => state.productdetails.value);
+  const cartDetails = useSelector((state) => state.cart.value);
   const { t } = useTranslation();
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -43,20 +45,22 @@ const Cart = () => {
     { label: `${t("Profile")}`, active: false },
     { label: `${t("My Cart")}`, active: false },
   ];
-  const [RequestGetProductDetails, ResponseGetProductDetails] = useRequest({
+  const [RequestGetCartDetails, ResponseGetCartDetails] = useRequest({
     method: "Get",
-    path: `${PRODUCTS}/${shopInfo?.id}/products/${cartItems[0]?.id}`,
+    path: `${PRODUCTS}${shopInfo?.id}/cart/details/`,
   });
-  const GetProductDetails = () => {
-    RequestGetProductDetails({
+
+ 
+  const GetCartDetails = () => {
+    RequestGetCartDetails({
       onSuccess: (res) => {
-        dispatch({ type: "productdetails/set", payload: res.data });
+        dispatch({ type: "cart/set", payload: res.data });
       },
     });
   };
 
   useEffect(() => {
-    GetProductDetails();
+    GetCartDetails();
   }, [shopInfo?.id]);
   return (
     <ResponsiveLayout>
@@ -89,79 +93,13 @@ const Cart = () => {
                 <DarkText sx={{ fontWeight: theme.font.fontWeight.semibold }}>
                   {t("My Cart")}
                 </DarkText>
-                <DarkText>(2 Items)</DarkText>
+                <DarkText>{cartDetails?.products.length?`(${cartDetails?.products?.length})Items`:'0 Items'}</DarkText>
               </Box>
-              <Grid container spacing={3} sx={{ alignItems: "center" }}>
-                <Grid item xs={12} sm={6} md={4}>
-                  {ResponseGetProductDetails.isPending ? (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        width: "100%",
-                        height: "70vh",
-                      }}
-                    >
-                      <CircularProgress size="3rem" color="primary" />
-                    </Box>
-                  ) : (
-                    <Box>
-                      <img
-                        src={ProductDetails?.main_image}
-                        alt={ProductDetails?.name}
-                        style={{ width: "100%" }}
-                      />
-                    </Box>
-                  )}
-                </Grid>
-                <Grid
-                  item
-                  xs={12}
-                  sm={6}
-                  md={8}
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Box>
-                    <MainTitle sx={{ pt: 2 }}>{ProductDetails?.name}</MainTitle>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        padding: 2,
-                      }}
-                    >
-                      <TextDiscount variant="body1">
-                        {ProductDetails?.price} {t("SAR")}
-                      </TextDiscount>
-                      <Typography variant="body1" sx={{ fontFamily: "Cairo" }}>
-                        {ProductDetails?.final_price} {t("SAR")}
-                      </Typography>
-                      <Typography variant="body1" sx={{ paddingRight: 2 }}>
-                        {ProductDetails?.discount} %
-                      </Typography>
-                    </Box>
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                      <Typography variant="body1" sx={{ fontFamily: "Cairo" }}>
-                        {t("deliver by")}&nbsp;
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{ color: theme.palette.primary.main }}
-                      >
-                        {t("10 Mar, Sunday")}
-                      </Typography>
-                    </Box>
-                  </Box>
-                  <Box sx={{ p: 4, cursor: "pointer" }} >
-          <CloseIcon />
-        </Box>
-                </Grid>
-              </Grid>
+              {cartDetails?.products&&
+                cartDetails?.products?.map((item) => (
+                  <ProductCart key={item.cart_item_id} {...item} isPending={ResponseGetCartDetails.isPending}/>
+                ))
+              }
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               {/* copoun */}
@@ -206,7 +144,7 @@ const Cart = () => {
                   <MainTitle
                     sx={{ fontWeight: theme.font.fontWeight.semibold }}
                   >
-                    {ProductDetails?.final_price} {t("SAR")}
+                    {cartDetails?.sub_total} {t("SAR")}
                   </MainTitle>
                 </Box>
                 <Box
@@ -217,7 +155,7 @@ const Cart = () => {
                   }}
                 >
                   <DarkText>{t("Shipping fee")}</DarkText>
-                  <DarkText>20.00 {t("SAR")}</DarkText>
+                  <DarkText>{cartDetails?.shipping} {t("SAR")}</DarkText>
                 </Box>
                 <Divider />
                 <Box
@@ -231,21 +169,20 @@ const Cart = () => {
                   <MainTitle
                     sx={{ fontWeight: theme.font.fontWeight.semibold }}
                   >
-                    {ProductDetails?.final_price} {t("SAR")}
+                    {cartDetails?.total} {t("SAR")}
                   </MainTitle>
                 </Box>
               </Box>
-              <Button
+              <DarkButton
               sx={{
-                color: theme.palette.primary.light,
-                bgcolor: theme.palette.primary.dark,
                 width: "100%",
                 paddingY: 2,
-                mt:3
+                mt:3,
+               
               }}
             >
               {t("Check Out")}
-            </Button>
+            </DarkButton>
             </Grid>
           </Grid>
         </Container>

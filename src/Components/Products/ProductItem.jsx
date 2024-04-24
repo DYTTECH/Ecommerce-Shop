@@ -32,7 +32,7 @@ export const ProductItem = ({
   id,
 }) => {
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
-  const product_route = `${name.replace(" ", "_")}/${id}`;
+  const product_route = `${name?.replace(" ", "_")}/${id}`;
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { i18n, t } = useTranslation();

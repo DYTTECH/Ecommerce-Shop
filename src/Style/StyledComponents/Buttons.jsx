@@ -6,6 +6,9 @@ export const ButtonStyle = styled(Button)(({ theme }) => ({
 export const DarkButton = styled(Button)(({ theme }) => ({
     color: theme.palette.primary.light,
     bgcolor: theme.palette.primary.dark,
+    ":hover": {
+        bgcolor: theme.palette.primary.dark
+    }
 
 }));
 export const TransparentButton = styled(Button)(({ theme }) => ({
