@@ -16,7 +16,6 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import "./index.css";
 import {
   BlackText,
   DarkText,

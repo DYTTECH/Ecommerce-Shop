@@ -3,10 +3,9 @@ import { createSlice } from "@reduxjs/toolkit";
 export const ShopInfoSlice = createSlice({
   name: "shopInfo",
   initialState: {
-    value: JSON.parse(localStorage.getItem("shopInfo")) ?? {
-        shop:{
-          
-        }
+    value: JSON.parse(localStorage.getItem("shopInfo")) ?? 
+    {
+        shop:{}
     },
   },
   reducers: {

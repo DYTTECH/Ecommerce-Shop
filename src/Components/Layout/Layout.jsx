@@ -238,13 +238,13 @@ const handleOpenLogin = () => {
       anchorElLang={openLangMenu}
     />
   );
-  const renderProfile = (
-    <ProfileMenu
-      openProfile={openProfile}
-      handleCloseProfile={handleCloseProfile}
-      anchorElProfile={openProfile}
-    />
-  );
+  // const renderProfile = (
+  //   <ProfileMenu
+  //     openProfile={openProfile}
+  //     handleCloseProfile={handleCloseProfile}
+  //     anchorElProfile={openProfile}
+  //   />
+  // );
   const [popperOpen, setPopperOpen] = useState(true);
 
   const ViewMainCategories = <CategoriesMenu />;
@@ -461,7 +461,7 @@ const handleOpenLogin = () => {
       </AppBar>
       
       {renderLanguage}
-      {renderProfile}
+      {/* {renderProfile} */}
       <AuthLogin openLogin={openLogin} handleCloseLogin={handleCloseLogin} />
       <AuthRegister
         openRegister={openRegister}
