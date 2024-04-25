@@ -18,7 +18,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { BlackText } from "../../Style/StyledComponents/Typography";
 import Snackbar from "@mui/material/Snackbar";
-
+import "./index.css";
 
 const AuthRegister = ({ openRegister, handleCloseRegister }) => {
   const { t } = useTranslation();
@@ -169,6 +169,7 @@ const AuthRegister = ({ openRegister, handleCloseRegister }) => {
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
       sx={{}}
+      className="gehad"
     >
       <BlackText
         sx={{

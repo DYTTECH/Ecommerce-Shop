@@ -110,7 +110,7 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
         "& .MuiPaper-root": {
           borderRadius: "10px",
           width: "100%",
-          height: "100%",
+          height: "67%",
           margin:"auto",
         },
       }}

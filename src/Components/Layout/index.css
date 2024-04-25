@@ -1,6 +1,9 @@
 /* navbar menu and profile dropdown */
 .css-1sucic7 .css-pwxzbm,
-.css-1j3mvvl .css-pwxzbm{
+.css-1j3mvvl .css-pwxzbm,
+/* profile menu and pop over */
+.css-3dzjca-MuiPaper-root-MuiPopover-paper-MuiMenu-paper,
+.css-3bmhjh-MuiPaper-root-MuiPopover-paper{
     top:95px !important;
 }
 /* navbar categories menu */
@@ -10,7 +13,6 @@
     top:133px !important;
     height: 20rem;
 }
-
 /* footer write email textfaild */
 .css-1x5jdmq{
     padding:10.5px 14px !important;
@@ -25,3 +27,5 @@
 .css-1q6ff5o .MuiPaper-root{
     top: 364px !important;
 }
+
+

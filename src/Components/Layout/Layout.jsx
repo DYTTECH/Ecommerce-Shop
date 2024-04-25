@@ -12,6 +12,7 @@ import {
   Button,
   Container,
   InputBase,
+  Popover,
   useScrollTrigger,
   useTheme,
 } from "@mui/material";
@@ -52,7 +53,9 @@ import AuthLogin from "../Authentication/LogInAuth";
 import CategoriesMenu from "./categoryMenu";
 import AuthRegister from "../Authentication/RegisterAuth";
 import CartPopup from "../../Pages/Cart/CartPopup";
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import ProfileMenu from "./ProfileMenu";
+
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
@@ -96,28 +99,28 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 const drawerWidth = 240;
 
 const grey = {
-  50: '#F3F6F9',
-  100: '#E5EAF2',
-  200: '#DAE2ED',
-  300: '#C7D0DD',
-  400: '#B0B8C4',
-  500: '#9DA8B7',
-  600: '#6B7A90',
-  700: '#434D5B',
-  800: '#303740',
-  900: '#1C2025',
+  50: "#F3F6F9",
+  100: "#E5EAF2",
+  200: "#DAE2ED",
+  300: "#C7D0DD",
+  400: "#B0B8C4",
+  500: "#9DA8B7",
+  600: "#6B7A90",
+  700: "#434D5B",
+  800: "#303740",
+  900: "#1C2025",
 };
 
-const PopupBody = styled('div')(
+const PopupBody = styled("div")(
   ({ theme }) => `
   width: max-content;
   padding: 12px 16px;
   margin: 8px;
   border-radius: 8px;
-  border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : grey[200]};
-  background-color: ${theme.palette.mode === 'dark' ? grey[900] : '#fff'};
+  border: 1px solid ${theme.palette.mode === "dark" ? grey[700] : grey[200]};
+  background-color: ${theme.palette.mode === "dark" ? grey[900] : "#fff"};
   box-shadow: ${
-    theme.palette.mode === 'dark'
+    theme.palette.mode === "dark"
       ? `0px 4px 8px rgb(0 0 0 / 0.7)`
       : `0px 4px 8px rgb(0 0 0 / 0.1)`
   };
@@ -125,22 +128,19 @@ const PopupBody = styled('div')(
   font-weight: 500;
   font-size: 0.875rem;
   z-index: 1;
-`,
+`
 );
 
 function ResponsiveLayout(props) {
   // const shopInfo=useSelector((state)=>state.shopInfo.value.shop)
   const { window } = props;
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [isClosing, setIsClosing] = React.useState(false);
-  const [anchorEl, setAnchorEl] = React.useState(null);
- 
-const handleOpenLogin = () => {
-  setOpenLogin(true);
-}
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+
   // menu lang state
-  const [anchorElLang, setAnchorElLang] = React.useState(null);
-  const [anchorElProfile, setAnchorElProfile] = React.useState(null);
+  const [anchorElLang, setAnchorElLang] = useState(null);
+  const [anchorElProfile, setAnchorElProfile] = useState(null);
 
   const { t, i18n } = useTranslation(); // Retrieve translation functions
   const openLangMenu = Boolean(anchorElLang);
@@ -149,7 +149,11 @@ const handleOpenLogin = () => {
   // const dispatch = useDispatch();
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-  const [anchor, setAnchor] = useState(null);
+
+  //Popover
+  const [anchorElPopover, setAnchorElPopover] = useState(null);
+  const open = Boolean(anchorElPopover);
+  const id = open ? "simple-popover" : undefined;
 
   const lang = localStorage.getItem("language");
   const trigger = useScrollTrigger({
@@ -176,15 +180,14 @@ const handleOpenLogin = () => {
     setAnchorElLang(null);
   };
   const handleProfileMenuOpen = (event) => {
-    setAnchorElProfile(event.currentTarget);
-    setAnchor(event.currentTarget);
+    if (userInfo === null) {
+      setAnchorElProfile(event.currentTarget);
+    }
   };
-  const open = Boolean(anchor);
-  const id = open ? 'simple-popup' : undefined;
 
   const handleCloseProfile = () => {
     setAnchorElProfile(null);
-    setAnchor(null);
+    setAnchorElPopover(null);
   };
   const handleViewWishList = () => {
     navigate(`/t2/${shopInfo.sub_domain}/wishlist`);
@@ -238,31 +241,15 @@ const handleOpenLogin = () => {
       anchorElLang={openLangMenu}
     />
   );
-  // const renderProfile = (
-  //   <ProfileMenu
-  //     openProfile={openProfile}
-  //     handleCloseProfile={handleCloseProfile}
-  //     anchorElProfile={openProfile}
-  //   />
-  // );
-  const [popperOpen, setPopperOpen] = useState(true);
 
   const ViewMainCategories = <CategoriesMenu />;
-  useEffect(() => {
-    // Close the Popper after 10 seconds
-    const timer = setTimeout(() => {
-      setPopperOpen(false);
-    }, 10000);
-
-    return () => clearTimeout(timer); // Clear the timer on component unmount
-  }, []);
   useEffect(() => {
     i18n.changeLanguage("ar");
   }, [i18n]);
 
   const [openLogin, setOpenLogin] = useState(false);
   const [openRegister, setOpenRegister] = useState(false);
-  
+
   const handleCloseLogin = () => {
     setOpenLogin(false);
   };
@@ -275,6 +262,24 @@ const handleOpenLogin = () => {
   const handleClickOpenRegister = () => {
     setOpenRegister(true);
   };
+
+  const [openPopover, setOpenPopover] = useState(false);
+
+  // Function to open the popover after a delay
+  const openPopoverAfterDelay = () => {
+    setOpenPopover(true); // Open the popover
+    // Close the popover after 30 seconds (30000 milliseconds)
+    setTimeout(() => {
+      setOpenPopover(false); // Close the popover
+    }, 30000); // 30 seconds
+  };
+
+  // Call the function to open the popover after component mount
+  useEffect(() => {
+    if (userInfo === null) {
+      openPopoverAfterDelay();
+    }
+  }, [userInfo]);
   return (
     <Box
       className="layout"
@@ -377,64 +382,18 @@ const handleOpenLogin = () => {
                 <GrayIcon onClick={handleClickOpenCartPopup}>
                   <ShoppingCartIcon />
                 </GrayIcon>
-                <PopupState variant="popper" popupId="demo-popup-popper">
-                  {(popupState) => (
-                    <div>
-                      <GrayIcon
-                        variant="contained"
-                        {...bindToggle(popupState)}
-                        size="large"
-                        edge="end"
-                        aria-label="account of current user"
-                        aria-controls={menuId}
-                        aria-haspopup="true"
-                        onClick={handleProfileMenuOpen}
-                      >
-                        <AccountCircle />
-                      </GrayIcon>
-                      <Popper
-                        open={popperOpen}
-                        transition
-                        className={lang === "en" ? "popper-en" : ""}
-                        sx={{
-                          top: "96px !important",
-                          left: lang === "en" ? "unset !important" : "0",
-                          right: lang === "en" ? "0" : "unset",
-                          zIndex: "1000",
-                        }}
-                      >
-                        {({ TransitionProps }) => (
-                          <Fade {...TransitionProps} timeout={350}>
-                            <Paper sx={{ p: 3, textAlign: "center" }}>
-                            
-                              <Button
-                                sx={{
-                                  bgcolor: theme.palette.primary.dark,
-                                  color: theme.palette.primary.light,
-                                  width: "100%",
-                                  fontFamily: "Cairo",
-                                }}
-                                onClick={handleClickOpenLogin}
-                              >
-                                
-                                {t("Sign In")}
-                              </Button>
-                              <GrayText sx={{ pt: 2, pX: 2 }}>
-                                {t("New Customer?")}{" "}
-                                <MainText
-                                  sx={{ cursor: "pointer", display: "inline" }}
-                                  onClick={handleClickOpenRegister}
-                                >
-                                  {t("Register")}
-                                </MainText>
-                              </GrayText>
-                            </Paper>
-                          </Fade>
-                        )}
-                      </Popper>
-                    </div>
-                  )}
-                </PopupState>
+
+                <GrayIcon
+                  variant="contained"
+                  size="large"
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-controls={menuId}
+                  aria-haspopup="true"
+                  onClick={handleProfileMenuOpen}
+                >
+                  <AccountCircle />
+                </GrayIcon>
 
                 <GrayIcon
                   size="large"
@@ -459,7 +418,7 @@ const handleOpenLogin = () => {
           </BoxStyle>
         </Toolbar>
       </AppBar>
-      
+
       {renderLanguage}
       {/* {renderProfile} */}
       <AuthLogin openLogin={openLogin} handleCloseLogin={handleCloseLogin} />
@@ -471,6 +430,47 @@ const handleOpenLogin = () => {
         openCartPopup={openCartPopup}
         handleCloseCartPopup={handleCloseCartPopup}
       />
+      <ProfileMenu
+        openProfile={openProfile}
+        handleCloseProfile={handleCloseProfile}
+        anchorElProfile={anchorElProfile}
+      />
+      <Popover
+        id={id}
+        open={openPopover}
+        anchorEl={anchorElPopover}
+        onClose={handleCloseProfile}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+      >
+         <Box sx={{ p: 3, textAlign: "center" }}>
+                      <Button
+                        sx={{
+                          bgcolor: theme.palette.primary.dark,
+                          color: theme.palette.primary.light,
+                          width: "100%",
+                          fontFamily: "Cairo",
+                        }}
+                        onClick={handleClickOpenLogin}
+                      >
+                        {t("Sign In")}
+                      </Button>
+                      <GrayText sx={{ pt: 2, pX: 2 }}>
+                        {t("New Customer?")}{" "}
+                        <MainText
+                          sx={{
+                            cursor: "pointer",
+                            display: "inline",
+                          }}
+                          onClick={handleClickOpenRegister}
+                        >
+                          {t("Register")}
+                        </MainText>
+                      </GrayText>
+                    </Box>
+      </Popover>
       <Box
         component="nav"
         // sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
@@ -516,7 +516,6 @@ const handleOpenLogin = () => {
         {props.children}
         <Footer />
       </Box>
-     
     </Box>
   );
 }

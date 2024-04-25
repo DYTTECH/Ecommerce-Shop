@@ -16,7 +16,6 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import "./index.css";
 import {
   BlackText,
   DarkText,
@@ -111,7 +110,7 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
         "& .MuiPaper-root": {
           borderRadius: "10px",
           width: "100%",
-          height: "100%",
+          height: "67%",
           margin:"auto",
         },
       }}
