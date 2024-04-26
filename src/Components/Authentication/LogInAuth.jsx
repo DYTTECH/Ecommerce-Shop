@@ -46,6 +46,7 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
   const [LoginRequest, LoginResponse] = useRequest({
     path: `${BASEURL}shop/${shopInfo?.id}/customer/login/`,
     method: "post",
+    successMessage:"تم تسجيل الدخول بنجاح"
   });
 
   
@@ -77,12 +78,6 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
     },
   ]);
 
-  const [open, setOpen] = useState(false);
-
-  const handleClick = () => {
-    setOpen(true);
-  };
-
   const handleSubmit = () => {
     validate().then((output) => {
       if (!output.isOk) return;
@@ -91,7 +86,8 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
         body: controls,
         onSuccess: (res) => {
          dispatch({ type: "userInfo/setToken", payload: res.data.token })
-          console.log(res.data);
+         handleCloseLogin()
+          
          resetControls()
         },
         // Handle other cases if needed
@@ -209,7 +205,7 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
                         <Button
                           onClick={() => {
                             handleSubmit();
-                            handleClick();
+                           
                           }}
                           type="button"
                           variant="contained"

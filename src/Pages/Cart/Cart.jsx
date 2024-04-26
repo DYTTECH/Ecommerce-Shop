@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import ResponsiveLayout from "../../Components/Layout/Layout";
 import PageMeta from "../../Components/Layout/MetaPage";
 import {
@@ -8,6 +8,8 @@ import {
   Container,
   Divider,
   Grid,
+  Stack,
+  TextField,
   Typography,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
@@ -31,8 +33,10 @@ import { DarkButton } from "../../Style/StyledComponents/Buttons";
 
 const Cart = () => {
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
-  const cartItems = JSON.parse(localStorage.getItem("cartItems"));
+  const token=JSON.parse(localStorage.getItem("userinfo"))
   const cartDetails = useSelector((state) => state.cart.value);
+  const [coupon,setCoupon]=useState("")
+  const [openCoupon,setOpenCoupon]=useState(false)
   const { t } = useTranslation();
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -48,6 +52,7 @@ const Cart = () => {
   const [RequestGetCartDetails, ResponseGetCartDetails] = useRequest({
     method: "Get",
     path: `${PRODUCTS}${shopInfo?.id}/cart/details/`,
+    token:token?`Token ${token}`:null,
   });
 
  
@@ -59,6 +64,23 @@ const Cart = () => {
     });
   };
 
+  // add coupon to cart
+  const [RequestPostCoupon, ResponsePostCoupon] = useRequest({
+    method: "POST",
+    path: `${PRODUCTS}dashboard/coupons/`,
+    token:token?`Token ${token}`:null,
+  });
+  const handleAddCoupon=()=>{
+    RequestPostCoupon({
+      body:{
+        coupon_code:coupon
+      },
+      onSuccess: (res) => {
+        setCoupon("")
+        GetCartDetails();
+      },
+    });
+  }
   useEffect(() => {
     GetCartDetails();
   }, [shopInfo?.id]);
@@ -103,12 +125,11 @@ const Cart = () => {
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               {/* copoun */}
+              <Stack direction="column" sx={{  bgcolor: "#f4fffc",  padding: 3,
+                  borderRadius: "3px",
+                  mt: 3,}}>
               <Box
                 sx={{
-                  bgcolor: "#f4fffc",
-                  padding: 3,
-                  borderRadius: "3px",
-                  mt: 3,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
@@ -121,9 +142,24 @@ const Cart = () => {
                   </ItemsTitle>
                 </Box>
                 <Box>
-                  <ItemsDes>{t("Select")}</ItemsDes>
+                  <ItemsDes onClick={()=>setOpenCoupon((prev)=>!prev)} sx={{cursor:"pointer"}}>{t("Select")}</ItemsDes>
+                 
                 </Box>
+                
               </Box>
+              {openCoupon&&
+              <Stack direction="row" justifyContent={"space-between"} sx={{ mt: 3 }}>
+                 <DarkButton variant="contained" sx={{ width: "100px",fontFamily:"Cairo" }} onClick={handleAddCoupon}>{t("Apply")}</DarkButton>
+                <TextField
+                name="coupon"
+                placeholder= {t("Enter coupon or promo code")}
+               value={coupon}
+                onChange={((e)=>setCoupon(e.target.value))}
+                sx={{ fontFamily:"Cairo" }}
+                />
+               
+              </Stack>}
+              </Stack>
               {/* order details */}
               <Box
                 sx={{

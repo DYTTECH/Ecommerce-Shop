@@ -30,8 +30,10 @@ export const ProductItem = ({
   final_price,
   is_favorite,
   id,
+  type
 }) => {
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
+  const token=JSON.parse(localStorage.getItem("userinfo"))
   const product_route = `${name?.replace(" ", "_")}/${id}`;
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -40,16 +42,31 @@ export const ProductItem = ({
   const [RequestAddProductToFavorite, ResponseAddProductToFavorite] =
     useRequest({
       method: "POST",
-      path: `${PRODUCTS}/${shopInfo?.id}/favorites/`,
+      path: PRODUCTS+shopInfo?.id+`/favorites/`,
+      token:`Token ${token}`
     });
 
-  const AddProductToFavorite = () => {
+  const AddProductToFavorite = (id) => {
     RequestAddProductToFavorite({
       body: {
         product: id,
       },
       onSuccess: (res) => {
-        dispatch({ type: "wishlist/addItem", payload: res.data });
+        if(type==="newarrive"){
+          dispatch({ type: "newarrive/favoriteItem", payload: {id:id} });
+        }else if(type==="bestseller"){
+          dispatch({ type: "bestseller/favoriteItem", payload: {id:id} });
+        }else if(type==="recommendation"){
+          dispatch({ type: "recommendation/favoriteItem", payload: {id:id} });
+        }else if(type==="mostviewed"){
+          dispatch({ type: "mostviewed/favoriteItem", payload: {id:id} });
+        }else if(type===" mostrated"){
+          dispatch({ type: "mostrated/favoriteItem", payload: {id:id} });
+        }
+        else if(type==="wishlist"){
+        dispatch({ type: "wishlist/deleteItem", payload: {id:id} });
+        }
+        
       },
     });
   };
@@ -57,15 +74,29 @@ export const ProductItem = ({
     useRequest({
       method: "Delete",
       path: `${PRODUCTS}/${shopInfo?.id}/favorites/`,
+      token:token?`Token ${token}`:null
     });
 
-  const DeleteProductFromFavorite = () => {
+  const DeleteProductFromFavorite = (id) => {
     RequestDeleteProductFromFavorite({
       body: {
         product: id,
       },
       onSuccess: (res) => {
-        dispatch({ type: "wishlist/deleteItem", payload: res.data });
+        if(type==="newarrive"){
+          dispatch({ type: "newarrive/favoriteItem", payload: {id:id} });
+        }else if(type==="bestseller"){
+          dispatch({ type: "bestseller/favoriteItem", payload: {id:id} });
+        }else if(type==="recommendation"){
+          dispatch({ type: "recommendation/favoriteItem", payload: {id:id} });
+        }else if(type==="mostviewed"){
+          dispatch({ type: "mostviewed/favoriteItem", payload: {id:id} });
+        }else if(type===" mostrated"){
+          dispatch({ type: "mostrated/favoriteItem", payload: {id:id} });
+        }
+        else if(type==="wishlist"){
+        dispatch({ type: "wishlist/deleteItem", payload: {id:id} });
+        }
       },
     });
   };
@@ -77,9 +108,7 @@ export const ProductItem = ({
     <Box
       className="product"
       sx={{ position: "relative" }}
-      onClick={() => {
-        navigate(`/t2/${shopInfo?.sub_domain}/products/${product_route}`);
-      }}
+     
     >
       <Avatar
         sx={{
@@ -93,10 +122,10 @@ export const ProductItem = ({
         {is_favorite ? (
           <FavoriteIcon
             sx={{ color: "red" }}
-            onClick={DeleteProductFromFavorite}
+            onClick={() => DeleteProductFromFavorite(id)}
           />
         ) : (
-          <FavoriteBorderIcon onClick={AddProductToFavorite} />
+          <FavoriteBorderIcon onClick={()=> AddProductToFavorite(id)} />
         )}
       </Avatar>
       <Card
@@ -106,6 +135,10 @@ export const ProductItem = ({
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
+
+        }}
+        onClick={() => {
+          navigate(`/t2/${shopInfo?.sub_domain}/products/${product_route}`);
         }}
       >
         <CardActionArea>
@@ -135,7 +168,7 @@ export const ProductItem = ({
                 WebkitLineClamp: 3, // Limit th
               }}
             >
-              {name.slice(0, 50)}
+              {name?.slice(0, 50)}
             </ItemsTitle>
             <Typography
               variant="body2"
@@ -149,7 +182,7 @@ export const ProductItem = ({
                 WebkitBoxOrient: "vertical",
                 WebkitLineClamp: 3, // Limit th
               }}
-              dangerouslySetInnerHTML={{ __html: description.slice(0, 50) }}
+              dangerouslySetInnerHTML={{ __html: description?.slice(0, 50) }}
             />
           </CardContent>
         </CardActionArea>

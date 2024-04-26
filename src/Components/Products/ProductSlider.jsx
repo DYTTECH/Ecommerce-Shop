@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 const ProductSlider = ({ title ,keyId}) => {
   const shopInfo =  JSON.parse(localStorage.getItem("shopInfo"))
+  const token=JSON.parse(localStorage.getItem("userinfo"))
   const bestseller=useSelector((state)=>state.bestseller.value)
   const recommendation=useSelector((state)=>state.recommendation.value)
   const newarrive=useSelector((state)=>state.newarrive.value)
@@ -25,6 +26,7 @@ const ProductSlider = ({ title ,keyId}) => {
   const [RequestGetProductSort, ResponseGetProductSort] = useRequest({
     method: "Get",
     path: PRODUCTS+shopInfo.id+`/products/?query_id=${keyId}`,
+    token:token?`Token ${token}`:null
   });
   const GetProductSort=(shop)=>{
 
@@ -121,7 +123,7 @@ const ProductSlider = ({ title ,keyId}) => {
       
       {bestseller.results.slice(0, 4).map((product, index) => (
         
-        <ProductItem {...product} key={index} />
+        <ProductItem {...product} key={index} type={ "bestseller"}/>
       ))}
     </Carousel>
     
@@ -136,7 +138,7 @@ const ProductSlider = ({ title ,keyId}) => {
         direction={lang === 'en' ? 'rtl' : 'ltr'}
       >
         {recommendation.results.slice(0, 4).map((product, index) => (
-          <ProductItem {...product} key={index} />
+          <ProductItem {...product} key={index} type={"recommendation"}/>
         ))}
       </Carousel>:null
     ):keyId==3?(
@@ -150,7 +152,7 @@ const ProductSlider = ({ title ,keyId}) => {
       direction={lang === 'en' ? 'rtl' : 'ltr'}
     >
       {newarrive.results.slice(0, 4).map((product, index) => (
-        <ProductItem {...product} key={index} />
+        <ProductItem {...product} key={index} type={"newarrive"} />
       ))}
     </Carousel>:null
     ):keyId==4?(
@@ -164,7 +166,7 @@ const ProductSlider = ({ title ,keyId}) => {
       direction={lang === 'en' ? 'rtl' : 'ltr'}
     >
       {mostviewed.results.slice(0, 4).map((product, index) => (
-        <ProductItem {...product} key={index} />
+        <ProductItem {...product} key={index} type={"mostviewed"} />
       ))}
     </Carousel>:null
     ):keyId==5&&
@@ -180,7 +182,7 @@ const ProductSlider = ({ title ,keyId}) => {
 
     >
       {mostrated.results.slice(0, 4).map((product, index) => (
-        <ProductItem {...product} key={index} />
+        <ProductItem {...product} key={index} type={"mostrated"} />
       ))}
     </Carousel>:null
     )}

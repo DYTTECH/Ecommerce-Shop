@@ -176,7 +176,6 @@ const handleViewWishList=()=>{
   };
   const handleLogOut = () => {
     localStorage.removeItem("userinfo");
-    navigate("/signin");
     handleMenuClose();
   };
   const handleMenuClose = () => {
