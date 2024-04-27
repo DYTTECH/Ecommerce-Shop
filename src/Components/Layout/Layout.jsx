@@ -54,7 +54,7 @@ import CategoriesMenu from "./categoryMenu";
 import AuthRegister from "../Authentication/RegisterAuth";
 import CartPopup from "../../Pages/Cart/CartPopup";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import ProfileMenu from "./ProfileMenu";
+import ProfileMenu from "../Profile/ProfileMenu"
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -148,7 +148,7 @@ function ResponsiveLayout(props) {
 
   // const dispatch = useDispatch();
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const userInfo = JSON.parse(localStorage.getItem("userinfo"));
 
   //Popover
   const [anchorElPopover, setAnchorElPopover] = useState(null);
@@ -180,9 +180,7 @@ function ResponsiveLayout(props) {
     setAnchorElLang(null);
   };
   const handleProfileMenuOpen = (event) => {
-    if (userInfo === null) {
       setAnchorElProfile(event.currentTarget);
-    }
   };
 
   const handleCloseProfile = () => {

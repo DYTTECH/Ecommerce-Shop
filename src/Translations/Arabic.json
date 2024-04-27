@@ -77,5 +77,14 @@
     "Enter coupon or promo code":"أدخل الكوبون أو كود الخصم",
     "Select":"حدد",
     "Order Details":"تفاصيل الطلب",
-    "Total Amount":"إجمالي المبلغ"
+    "Total Amount":"إجمالي المبلغ",
+    "MY PROFILE":"ملفي",
+    "Store Credit : ":"رصيد المتجر : ",
+    "REFER & EARN":"أوصى واربح",
+    "MY ORDERS":"طلباتي",
+    "MY RETURN/EXCHANGE":"عودتي / الصرف",
+    "MY WISHLIST":"قائمة أمنياتي",
+    "MY ADDRESS BOOK":"دفتر العناوين",
+    "PAYMENTS":"الدفعات",
+    "LOGOUT":"تسجيل الخروج"
 }
