@@ -22,6 +22,14 @@ const MostViewedSlice = createSlice({
 				results: [],
 			};
 		},
+		favoriteItem: (state, action) => {
+			console.log(action.payload);
+            const index = state.value.results.findIndex((item) => item.id === action.payload.id);
+            state.value.results[index] = {
+                ...state.value.results[index],
+				 is_favorite: !state.value.results[index].is_favorite,
+            };
+		}
 		
 	},
 });

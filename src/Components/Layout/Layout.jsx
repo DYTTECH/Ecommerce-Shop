@@ -208,6 +208,10 @@ function ResponsiveLayout(props) {
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
   };
+  const handleLogOut = () => {
+    localStorage.removeItem("userinfo");
+    handleMenuClose();
+  };
   const handleMenuClose = () => {
     setAnchorEl(null);
     // handleMobileMenuClose();

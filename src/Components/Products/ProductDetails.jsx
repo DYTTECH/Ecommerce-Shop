@@ -53,6 +53,7 @@ import "../../App.css";
 import { RWebShare } from "react-web-share";
 import Specification from "./ProductSpecification";
 import CartPopup from "../../Pages/Cart/CartPopup";
+import AuthLogin from "../Authentication/LogInAuth";
 const StyledMenu = styled((props) => (
   <Menu
     elevation={0}
@@ -108,6 +109,7 @@ const ProductDetails = () => {
   const params = useParams();
   const ProductDetails = useSelector((state) => state.productdetails.value);
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
+  const token=JSON.parse(localStorage.getItem("userinfo"));
   const [openCartPopup, setOpenCartPopup] = useState(false);
   const [selectedimg, setSelectedimg] = useState("");
   const dispatch = useDispatch();
@@ -118,6 +120,7 @@ const ProductDetails = () => {
   const mostviewed = useSelector((state) => state.mostviewed.value);
   const [open, setOpen] = React.useState(false);
   const [openShare, setOpenShare] = React.useState(false);
+  const [openLogin,setOpenLogin]=useState(false)
 
   const handleOpenShareDialog = () => {
     setOpenShare(true);
@@ -143,18 +146,27 @@ const ProductDetails = () => {
 
   const handleCloseCartPopup = () => {
     setOpenCartPopup(false);
-  }
+  };
   // Get shop home component
   const [RequestGetProductSort, ResponseGetProductSort] = useRequest({
     method: "Get",
     path: HOMECOMPONENTS + shopInfo?.id + "/products/?query_id=4",
+    token:token?`Token ${token}`:null
   });
-
-  // add to cart 
+  const GetProductSort = () => {
+    RequestGetProductSort({
+      onSuccess: (res) => {
+        dispatch({ type: "mostviewed/set", payload: res?.data });
+        console.log(res.data);
+      },
+    });
+  };
+  // add to cart
   const [RequestAddProductToCart, ResponseAddProductToCart] = useRequest({
     method: "POST",
     path: `${PRODUCTS}${shopInfo?.id}/cart/items/`,
-  })
+    token:token?`Token ${token}`:null
+  });
   const AddProductToCart = () => {
     RequestAddProductToCart({
       body: {
@@ -162,19 +174,12 @@ const ProductDetails = () => {
         quantity: 1,
       },
       onSuccess: (res) => {
-        setOpenCartPopup(true)
-        dispatch({ type: "cart/addItem", payload: res.data });
-      },
-    });
-  }
-  const GetProductSort = () => {
-    RequestGetProductSort({
-      onSuccess: (res) => {
-        dispatch({ type: "mostviewed/set", payload: res.data });
-        console.log(res.data);
+        setOpenCartPopup(true);
+        dispatch({ type: "cart/addItem", payload: res?.data });
       },
     });
   };
+  
   const [RequestGetProductDetails, ResponseGetProductDetails] = useRequest({
     method: "Get",
     path: `${PRODUCTS}/${shopInfo?.id}/products/${params?.id}/`,
@@ -187,13 +192,13 @@ const ProductDetails = () => {
       },
     });
   };
-  
 
   // add to favorite
   const [RequestAddProductToFavorite, ResponseAddProductToFavorite] =
     useRequest({
       method: "POST",
       path: `${PRODUCTS}/${shopInfo?.id}/favorites/`,
+      token:token?`Token ${token}`:null
     });
 
   const AddProductToFavorite = () => {
@@ -202,7 +207,7 @@ const ProductDetails = () => {
         product: params?.id,
       },
       onSuccess: (res) => {
-        dispatch({ type: "wishlist/addItem", payload: res.data });
+        dispatch({ type: "productdetails/favoriteItem", payload: res.data });
       },
     });
   };
@@ -219,7 +224,7 @@ const ProductDetails = () => {
         product: params?.id,
       },
       onSuccess: (res) => {
-        dispatch({ type: "wishlist/deleteItem", payload: res.data });
+        dispatch({ type: "productdetails/favoriteItem", payload: {id:params?.id} });
       },
     });
   };
@@ -227,7 +232,7 @@ const ProductDetails = () => {
   useEffect(() => {
     GetProductDetails();
     GetProductSort();
-  }, [shopInfo?.id]);
+  }, []);
 
   useEffect(() => {
     if (ProductDetails["images"]?.length) {
@@ -237,46 +242,26 @@ const ProductDetails = () => {
 
   const shareData = {
     text: ProductDetails.name,
-    url: window.location.href.replace(" ","%20"),
-    title: ProductDetails.name
+    url: window.location.href.replace(" ", "%20"),
+    title: ProductDetails.name,
   };
   const crumbs = [
-    { label: `${t('Home')}`, link: `/t2/${shopInfo?.sub_domain}`, active: false },
-    { label: `${t('Products')}`, link: `/t2/${shopInfo?.sub_domain}/products/`, active: false },
-    { label: `${ProductDetails?.name}`, link: `/t2/${shopInfo?.sub_domain}/products/${ProductDetails?.name}`, active: false },
-  ];    
-
-
-
-// Define state to manage the local cart items
-const [cartItems, setCartItems] = useState(
-  JSON.parse(localStorage.getItem("cartItems")) || []
-);
-
-// Function to handle adding the product to the cart
-const handleAddToCart = () => {
-  // Check if the product is already in the cart
-  const existingItemIndex = cartItems.findIndex(
-    (item) => item.id === ProductDetails?.id
-  );
-
-  if (existingItemIndex !== -1) {
-    // If the product is already in the cart, update its quantity
-    const updatedCartItems = [...cartItems];
-    updatedCartItems[existingItemIndex].quantity += 1;
-    setCartItems(updatedCartItems);
-  } else {
-    // If the product is not in the cart, add it with quantity 1
-    const newItem = {
-      id: ProductDetails?.id,
-      quantity: 1,
-    };
-    setCartItems([...cartItems, newItem]);
-  }
-
-  // Store the updated cart items in localStorage
-  localStorage.setItem("cartItems", JSON.stringify(cartItems));
-};
+    {
+      label: `${t("Home")}`,
+      link: `/t2/${shopInfo?.sub_domain}`,
+      active: false,
+    },
+    {
+      label: `${t("Products")}`,
+      link: `/t2/${shopInfo?.sub_domain}/products/`,
+      active: false,
+    },
+    {
+      label: `${ProductDetails?.name}`,
+      link: `/t2/${shopInfo?.sub_domain}/products/${ProductDetails?.name}`,
+      active: false,
+    },
+  ];
 
 
   return (
@@ -289,16 +274,16 @@ const handleAddToCart = () => {
           type={shopInfo?.shop_type_name}
           image={shopInfo?.logo}
         />
-       
+
         <Box sx={{ marginY: { lg: "90px", md: 2, sm: 2, xs: 2 } }}>
           <Box
             sx={{
               pr: 5,
-              mb: 2
+              mb: 2,
             }}
           >
             <GrayText>
-              <HeroTitle  crumbs={crumbs}/>
+              <HeroTitle crumbs={crumbs} />
             </GrayText>
           </Box>
           <Divider />
@@ -325,19 +310,22 @@ const handleAddToCart = () => {
                       item
                       xs={2}
                       key={index}
-                      sx={{ maxWidth: "50% !important",
-                      borderRadius: "8px", objectFit: "cover", border:
-                      image?.image === selectedimg
-                        ? "1px solid black !important"
-                        : "",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => setSelectedimg(image?.image)} 
+                      sx={{
+                        maxWidth: "50% !important",
+                        borderRadius: "8px",
+                        objectFit: "cover",
+                        border:
+                          image?.image === selectedimg
+                            ? "1px solid black !important"
+                            : "",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => setSelectedimg(image?.image)}
                     >
                       <img
                         src={image.image}
                         alt={`Img ${index}`}
-                        style={{ width: "100%",height: "84px !important", }}
+                        style={{ width: "100%", height: "84px !important" }}
                       />
                     </Grid>
                   ))}
@@ -357,14 +345,16 @@ const handleAddToCart = () => {
                     </Box>
                   ) : (
                     <Box>
-                       
-                       <img
-                         src={(selectedimg || ProductDetails?.main_image?ProductDetails.main_image:"https://easytrady.net/default_images/default_product.png")?.replace(/\ /g, "%20")}
+                      <img
+                        src={(selectedimg || ProductDetails?.main_image
+                          ? ProductDetails.main_image
+                          : "https://easytrady.net/default_images/default_product.png"
+                        )?.replace(/\ /g, "%20")}
                         alt={ProductDetails?.name}
                         style={{ width: "100%" }}
                         onClick={handleOpenDialog}
                       />
-                      
+
                       <Dialog
                         open={open}
                         TransitionComponent={Transition}
@@ -396,8 +386,8 @@ const handleAddToCart = () => {
                             </Box>
                           ))}
                         </Box>
-                      </Dialog> 
-                    </Box> 
+                      </Dialog>
+                    </Box>
                   )}
                 </Grid>
                 <Grid item lg={6} md={6} xs={12}>
@@ -405,24 +395,29 @@ const handleAddToCart = () => {
                     sx={{ display: "flex", justifyContent: "flex-end", pt: 2 }}
                   >
                     <Avatar>
-                    {ProductDetails?.is_favorite ? (
-          <FavoriteIcon
-            sx={{ color: "red" }}
-            onClick={DeleteProductFromFavorite}
-          />
-        ) : (
-          <FavoriteBorderIcon onClick={AddProductToFavorite} />
-        )}
+                      {ProductDetails?.is_favorite ? (
+                        <FavoriteIcon
+                          sx={{ color: "red" }}
+                          onClick={DeleteProductFromFavorite}
+                        />
+                      ) : (
+                        <FavoriteBorderIcon onClick={AddProductToFavorite} />
+                      )}
                     </Avatar>
                     <Avatar sx={{ mr: 3 }} onClick={handleOpenShareDialog}>
-                    <RWebShare
-            data={shareData}
-            sites={["whatsapp", "facebook", "telegram","twitter","copy"]}
-            onClick={() => console.log("shared successfully!")}
-          >
-             <ShareIcon />
-          </RWebShare>
-                     
+                      <RWebShare
+                        data={shareData}
+                        sites={[
+                          "whatsapp",
+                          "facebook",
+                          "telegram",
+                          "twitter",
+                          "copy",
+                        ]}
+                        onClick={() => console.log("shared successfully!")}
+                      >
+                        <ShareIcon />
+                      </RWebShare>
                     </Avatar>
                   </Box>
                   {ResponseGetProductDetails.isPending ? (
@@ -476,9 +471,7 @@ const handleAddToCart = () => {
                         padding: 2,
                       }}
                     >
-                      <TextDiscount
-                        variant="body1"
-                      >
+                      <TextDiscount variant="body1">
                         {ProductDetails?.price} {t("SAR")}
                       </TextDiscount>
                       <Typography variant="body1" sx={{ fontFamily: "Cairo" }}>
@@ -570,7 +563,85 @@ const handleAddToCart = () => {
                         textWrap: "nowrap",
                       }}
                     >
-                      
+                      {/* {typeof ProductDetails?.variants_details === "object" ? (
+                        Object.keys(ProductDetails.variants_details).map(
+                          (variant, index) => (
+                            <React.Fragment key={index}>
+                              <BlackText sx={{ ml: "0 !important" }}>
+                                {variant}
+                              </BlackText>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  gap: 1,
+                                }}
+                              >
+                                {Array.isArray(
+                                  ProductDetails.variants_details[variant]
+                                ) ? (
+                                  ProductDetails.variants_details[variant].map(
+                                    (item, innerIndex) =>
+                                      item.is_color == false ? (
+                                        <Box
+                                          key={innerIndex}
+                                          component="button"
+                                          value={item.variant_id}
+                                          onClick={(e) => {
+                                            console.log(e.target.value);
+                                            SetSizeandColor((old) => ({
+                                              ...old,
+                                              variant_id: e.target.value,
+                                            }));
+                                          }}
+                                          sx={{
+                                            ...ButtonSize.__emotion_styles[0],
+                                            cursor: "pointer",
+                                            borderColor: SizeandColor?.variant_id===item?.variant_id? "#000" : "transparent",
+                                           borderStyle:"solid",
+                                           borderWidth:'1px',
+                                            padding: "8px",
+                                            width: "fit-content",
+                                          }}
+                                        >
+                                          {item.is_color === false
+                                            ? item.value
+                                            : null}
+                                        </Box>
+                                      ) : (
+                                        <Box
+                                          key={innerIndex}
+                                          component="button"
+                                          value={item?.variant_id}
+                                          onClick={(e) => {
+                                            console.log(e.target.value);
+                                            SetSizeandColor((old) => ({
+                                              ...old,
+                                              variant_id: e.target.value,
+                                            }));
+                                          }}
+                                          sx={{
+                                            ...ButtonSize.__emotion_styles[0],
+                                            cursor: "pointer",
+                                            border: SizeandColor.variant_id===item.variant_id ? "1px solid #000" : "transparent",
+                                            padding: "8px",
+                                            width: "24px",
+                                            background: item.value,
+                                          }}
+                                        />
+                                      )
+                                  )
+                                ) : (
+                                  <></>
+                                )}
+                              </Box>
+                            </React.Fragment>
+                          )
+                        )
+                      ) : (
+                        <></>
+                      )} */}
+
                       <Button variant="outlined" disabled sx={{ ml: 3 }}>
                         9/10
                       </Button>
@@ -597,8 +668,16 @@ const handleAddToCart = () => {
                   <Button
                     variant="contained"
                     sx={{ mt: 4, width: "100%", fontFamily: "cairo" }}
-                    onClick={AddProductToCart}
-                    
+                    onClick={()=>{
+                      if(token){
+                        AddProductToCart()
+                      }else{
+                        setOpenLogin(true)
+                      }
+                     
+                    }
+                      
+                      }
                   >
                     {t("Add to Cart")}
                   </Button>
@@ -666,7 +745,7 @@ const handleAddToCart = () => {
                       <BlackText variant="body1" sx={{ pr: 3 }}>
                         {t("Product Attributes")}
                       </BlackText>
-                     <Specification/>
+                      <Specification />
                     </Grid>
                   </Grid>
                 </AccordionDetails>
@@ -709,7 +788,11 @@ const handleAddToCart = () => {
           </Box>
         </Box>
       </ResponsiveLayout>
-      <CartPopup openCartPopup={openCartPopup} handleCloseCartPopup={handleCloseCartPopup}/>
+      <CartPopup
+        openCartPopup={openCartPopup}
+        handleCloseCartPopup={handleCloseCartPopup}
+      />
+      <AuthLogin openLogin={openLogin} handleCloseLogin={()=>setOpenLogin(false)}/>
       {ResponseAddProductToCart.successAlert}
       {ResponseAddProductToCart.failAlert}
     </Box>

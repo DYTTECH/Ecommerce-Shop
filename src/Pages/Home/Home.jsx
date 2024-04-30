@@ -13,10 +13,13 @@ import ProductSkeleton from "../../Components/Skeleton/ProductSkeleton";
 import BrandSkeleton from "../../Components/Skeleton/BrandSkeleton";
 import BannerSkeleton from "../../Components/Skeleton/BannerSkeleton";
 import SubCategorySkeleton from "../../Components/Skeleton/SubCategorySkeleton";
+import { checkTokenExpiration } from "../../Components/Authentication/SessionExpireToken";
 
 const Home = () => {
   const homecomponents = useSelector((state) => state.homecomponents.value);
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
+  const userInfo=JSON.parse(localStorage.getItem("userInfo"))
+  
   // const shopInfo = useSelector((state) => state.shopInfo.value)
   const dispatch = useDispatch();
 
@@ -36,7 +39,13 @@ const Home = () => {
       },
     });
   };
-console.log(shopInfo);
+
+
+  useEffect(()=>{
+   
+    checkTokenExpiration()
+  },[])
+
   // Get shop home component
   const [RequestGetHomeComponent, ResponseGetHomeComponent] = useRequest({
     method: "Get",

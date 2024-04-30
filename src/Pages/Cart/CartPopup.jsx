@@ -80,13 +80,14 @@ const CartPopup = ({ openCartPopup, handleCloseCartPopup }) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
-  const cartItems = JSON.parse(localStorage.getItem("cartItems"));
+  const token = JSON.parse(localStorage.getItem("userinfo"));
   const CartDetails = useSelector((state) => state.cart.value);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [RequestGetProductsCart, ResponseGetProductsCart] = useRequest({
     method: "Get",
     path: `${PRODUCTS}${shopInfo?.id}/cart/details/`,
+    token:token?`Token ${token}`:null
   });
   const GetProductsCart = () => {
     RequestGetProductsCart({

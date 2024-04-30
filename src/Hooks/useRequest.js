@@ -8,6 +8,7 @@ import { useSelector, useDispatch } from "react-redux";
 const useRequest = ({
   path = null,
   method = null,
+  token=null,
   successMessage = "sent successfully!",
   responseType = null,
 }) => {
@@ -89,8 +90,9 @@ const useRequest = ({
         : `${customPath ? customPath : path}${id ? `${id}/` : ""}`,
       ...(!noHeaders && {
         headers: {
+          "Authorization":token ?`${token}`:"",
           //prettier-ignore
-        //  "Authorization": Boolean(customAuthorization) ? `${customAuthorization}` : ` ${Boolean(customToken) ? customToken :Boolean(userInfo)?`Token ${userInfo}`:""}`,
+          //  "Authorization": Boolean(customAuthorization) ? `${customAuthorization}` : ` ${Boolean(customToken) ? customToken :""}`,
           "Accept-Language": "en-US,en;"
         },
       }),

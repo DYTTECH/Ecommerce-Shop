@@ -21,21 +21,21 @@ const ProductCart = ({product_id,
     purchase,
     cart_item_id,isPending}) => {
       const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
+      const token=JSON.parse(localStorage.getItem("userinfo"))
         const {t} = useTranslation()
         const dispatch=useDispatch()
         const theme=useTheme()
         const [RequestDeleteProductCart, ResponseDeleteProductCart] = useRequest({
           method: "DELETE",
-          path: `${PRODUCTS}${shopInfo?.id}/cart/details/`,
+          path: `${PRODUCTS}${shopInfo?.id}/cart/details/${cart_item_id}/`,
+          token:token?`Token ${token}`:null
         });
       
         const handleRemoveFromCart = async (product) => {
           RequestDeleteProductCart({
-            body: {
-              product: product.id,
-            },
+
             onSuccess: (res) => {
-              dispatch({ type: "cart/deleteItem", payload: { id: product.id } });
+              dispatch({ type: "cart/deleteItem", payload: { id: cart_item_id } });
             },
           });
         }

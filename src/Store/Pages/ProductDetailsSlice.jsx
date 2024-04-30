@@ -14,6 +14,14 @@ const ProductDetailsSlice = createSlice({
 			state.value = {
 			};
 		},
+		favoriteItem: (state, action) => {
+			console.log(action.payload);
+			const index = Object.keys(state.value).findIndex((item) => item === action.payload);
+			state.value[index] = {
+				...state.value[index],
+				is_favorite: !state.value[index].is_favorite,
+			}
+		}
 		
 	},
 });

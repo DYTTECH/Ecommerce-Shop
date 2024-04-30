@@ -13,6 +13,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 const Wishlist = () => {
     const wishlist = useSelector((state) => state.wishlist.value);
     const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
+    const token=JSON.parse(localStorage.getItem("userinfo"))
     const [page, setPage] = useState(1);
     const dispatch = useDispatch();
 
@@ -23,6 +24,7 @@ const Wishlist = () => {
     const [RequestGetWishList, ResponseGetWishList] = useRequest({
       method: "Get",
       path: PRODUCTS + shopInfo?.id + "/products/?favorite=True",
+      token:token?`Token ${token}`:null
     });
     const GetProductsWishList = () => {
         RequestGetWishList({
