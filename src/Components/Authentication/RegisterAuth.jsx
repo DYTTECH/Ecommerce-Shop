@@ -138,7 +138,7 @@ const AuthRegister = ({ openRegister, handleCloseRegister }) => {
         onSuccess: (res) => {
           console.log(res);
           setSnackbarSeverity("success");
-          setSnackbarMessage("تم إرسال الرسالة !");
+          setSnackbarMessage(t("Code has been sent!"));
           setOpenSnackbar(true);
         },
         // Handle other cases if needed

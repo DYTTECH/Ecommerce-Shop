@@ -15,10 +15,17 @@ export const ShopInfoSlice = createSlice({
       localStorage.setItem("shopInfo", JSON.stringify(state.value.shop));
   
     },
-    setUserInfo: (state, action) => {
-      state.value = { shop: state.value.shop, ...action.payload };
-      localStorage.setItem("userInfo", JSON.stringify(state.value));
-    },
+
+    // make a conflict >>>>>> already done in UserInfo Profile
+
+
+    // setUserInfo: (state, action) => {
+    //   state.value = { shop: state.value.shop, ...action.payload };
+    //   localStorage.setItem("userInfo", JSON.stringify(state.value));
+    // },
+
+
+    
     clearShop: (state) => {
      
       localStorage.removeItem("shopInfo");

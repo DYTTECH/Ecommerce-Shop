@@ -86,5 +86,8 @@
     "MY WISHLIST":"قائمة أمنياتي",
     "MY ADDRESS BOOK":"دفتر العناوين",
     "PAYMENTS":"الدفعات",
-    "LOGOUT":"تسجيل الخروج"
+    "LOGOUT":"تسجيل الخروج",
+    "Save":"حفظ",
+    "Data has been modified!":"تم تعديل البيانات!",
+    "Code has been sent!":"تم إرسال الكود!"
 }

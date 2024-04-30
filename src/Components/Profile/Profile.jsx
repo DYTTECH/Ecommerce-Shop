@@ -1,10 +1,10 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ResponsiveLayout from "../Layout/Layout";
 import {
-    Alert,
+  Alert,
   Box,
   Button,
   Container,
@@ -41,8 +41,12 @@ import CreditCardIcon from "@mui/icons-material/CreditCard";
 import LogoutIcon from "@mui/icons-material/Logout";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { useState } from "react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import useRequest from "../../Hooks/useRequest";
+import BASEURL from "../../Data/API";
+import dayjs from "dayjs";
+import "dayjs/locale/en";
+import useControls from "../../Hooks/useControls";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -84,6 +88,9 @@ function a11yProps(index: number) {
 
 const Profile = () => {
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
+  const token = JSON.parse(localStorage.getItem("userinfo"));
+  const userDetails = useSelector((state) => state.userInfo.value);
+
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -96,13 +103,61 @@ const Profile = () => {
     { label: `${t("Profile")}`, active: false },
   ];
   const [value, setValue] = React.useState(0);
+  const [showDatePicker, setShowDatePicker] = useState(false); // State to control visibility of date picker
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
-  const [gender, setGender] = useState("F");
-  const [birthDate, setBirthDate] = useState(null); 
-  const [showPassword, setShowPassword] = useState(false);
+  const [gender, setGender] = useState(userDetails?.gender || "");
+  const [birthDate, setBirthDate] = useState(userDetails?.birth_date || {});
+
+  //git customer profile
+  const [RequestUserInfo, ResponseUserInfo] = useRequest({
+    method: "GET",
+    path: `${BASEURL}/shop/${shopInfo?.id}/customer/profile/`,
+    token: token ? `Token ${token}` : null,
+  });
+  //update profile
+  const [updateRequest, updateResponse] = useRequest({
+    path: `${BASEURL}shop/${shopInfo?.id}/customer/profile/`,
+    method: "PATCH",
+    token: token ? `Token ${token}` : null,
+  });
+
+  const [
+    { controls, invalid, required },
+    { setControl, resetControls, validate, setInvalid },
+  ] = useControls([
+    { control: "full_name", value: userDetails?.full_name },
+    {
+      control: "customer_email",
+      value: userDetails?.customer_email,
+      validations: [
+        {
+          test: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+          message: "not valid email",
+        },
+      ],
+    },
+    { control: "phone", value: userDetails?.phone },
+    { control: "gender", value: gender },
+    { control: "birth_date", value: birthDate }, // Step 3: Add birth_date control
+  ]);
+
+  const getUserInfo = () => {
+    RequestUserInfo({
+      onSuccess: (res) => {
+        console.log(res);
+        dispatch({ type: "userInfo/setUserInfo", payload: res.data });
+        setGender(res.data.gender || "");
+        setBirthDate(userDetails?.birth_date); // Set the birth_date state
+        console.log("Birth Date:", userDetails?.birth_date);
+      },
+    });
+  };
+  useEffect(() => {
+    getUserInfo();
+  }, [shopInfo?.id]);
 
   const datePickerStyles = {
     "& .MuiOutlinedInput-root": {
@@ -115,20 +170,15 @@ const Profile = () => {
       },
     },
   };
+  const formatDate = (date) => {
+    return date ? dayjs(date).format("YYYY-MM-DD") : ""; // Adjust the format as needed
+  };
+
   const handleGenderChange = (event) => {
-    setGender(event.target.value);
-    // setControl('gender', event.target.value);
-    console.log(event.target.value);
+    const selectedGender = event.target.value;
+    setGender(selectedGender); // Update the gender state
+    setControl("gender", selectedGender); // Update the control value for useControls
   };
-
-  const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
-
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // Default to success
@@ -140,15 +190,55 @@ const Profile = () => {
     setOpen(true);
   };
 
-
   const handleCloseSnackbar = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
     // Reset Snackbar state when it is closed
     setOpenSnackbar(false);
-    setSnackbarSeverity('success'); // Reset severity to default
-    setSnackbarMessage('');
+    setSnackbarSeverity("success"); // Reset severity to default
+    setSnackbarMessage("");
+  };
+
+  const handleSubmit = () => {
+    validate().then((output) => {
+      if (!output.isOk) return;
+      const requestBody = {};
+
+      // Check each field and update the requestBody accordingly
+      requestBody.full_name = controls?.full_name || userDetails?.full_name;
+      requestBody.customer_email =
+        controls?.customer_email || userDetails?.customer_email;
+      requestBody.phone = controls?.phone || userDetails?.phone;
+      requestBody.gender = gender || userDetails?.gender;
+      requestBody.birth_date = birthDate || userDetails?.birth_date;
+      updateRequest({
+        body: requestBody,
+        onSuccess: (res) => {
+          console.log(res);
+          setSnackbarSeverity("success");
+          setSnackbarMessage(t("Data has been modified!"));
+          setOpenSnackbar(true);
+        },
+        // Handle other cases if needed
+      }).then((res) => {
+        let response = res?.response?.data;
+        console.log(res);
+        // Check if the response contains errors
+        if (response && response.errors) {
+          // Extract error messages and display them in the Snackbar
+          const errorMessages = Object.values(response.errors).flat();
+          const errorMessage = errorMessages.join(", ");
+
+          // Show error Snackbar
+          setSnackbarSeverity("error");
+          setSnackbarMessage(errorMessage);
+          setOpenSnackbar(true);
+        } else {
+          setInvalid(response);
+        }
+      });
+    });
   };
 
   const tabInfoArray = [
@@ -167,16 +257,15 @@ const Profile = () => {
                   width: "100%",
                 }}
                 type="text"
-                // value={controls?.full_name}
-                // onChange={(e) => {
-                //   setControl("full_name", e.target.value);
-                //   console.log(e.target.value); // Print the value in the console
-                // }}
+                value={controls.full_name || userDetails?.full_name}
+                onChange={(e) => {
+                  setControl("full_name", e.target.value);
+                  console.log(e.target.value); // Print the value in the console
+                }}
                 // required={required.includes("full_name")}
-                // error={Boolean(invalid?.full_name)}
-                // helperText={invalid?.full_name}
+                error={Boolean(invalid?.full_name)}
+                helperText={invalid?.full_name}
                 name="full_name"
-                placeholder={t("Full Name")}
               ></TextField>
               <TextField
                 variant="outlined"
@@ -185,55 +274,17 @@ const Profile = () => {
                   width: "100%",
                 }}
                 type="text"
-                // value={controls?.customer_email}
-                // onChange={(e) => {
-                //   setControl("customer_email", e.target.value);
-                //   console.log(e.target.value); // Print the value in the console
-                // }}
+                value={controls?.customer_email || userDetails?.customer_email}
+                onChange={(e) => {
+                  setControl("customer_email", e.target.value);
+                  console.log(e.target.value); // Print the value in the console
+                }}
                 // required={required.includes("customer_email")}
-                // error={Boolean(invalid?.customer_email)}
-                // helperText={invalid?.customer_email}
+                error={Boolean(invalid?.customer_email)}
+                helperText={invalid?.customer_email}
                 name="customer_email"
-                placeholder={t("Email address")}
               ></TextField>
-              <TextField
-                variant="outlined"
-                sx={{
-                  padding: "10.5px 14px !important",
-                  width: "100%",
-                }}
-                name="password"
-                // value={controls?.password}
-                // onChange={(e) => {
-                //   setControl("password", e.target.value);
-                //   console.log(e.target.value); // Print the value in the console
-                // }}
-                // required={required.includes("password")}
-                // error={Boolean(invalid?.password)}
-                // helperText={invalid?.password}
-                // type={showPassword ? "text" : "password"}
-                placeholder={t("Password")}
-              ></TextField>
-              <InputAdornment
-                sx={{
-                  position: "absolute",
-                  top: "38%",
-                  left: "0",
-                  padding: "0",
-                  transform: "translate(5px, -50%)",
-                }}
-                position="end"
-              >
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                  sx={{ color: "#344054" }}
-                >
-                  {showPassword ? <Visibility /> : <VisibilityOff />}
-                </IconButton>
-              </InputAdornment>
+
               <TextField
                 variant="outlined"
                 sx={{
@@ -242,29 +293,27 @@ const Profile = () => {
                 }}
                 name="phone"
                 type="text"
-                // value={controls?.phone}
-                // onChange={(e) => {
-                //   setControl("phone", e.target.value);
-                //   console.log(e.target.value); // Print the value in the console
-                // }}
+                value={controls?.phone || userDetails?.phone}
+                onChange={(e) => {
+                  setControl("phone", e.target.value);
+                  console.log(e.target.value); // Print the value in the console
+                }}
                 // required={required.includes("phone")}
-                // error={Boolean(invalid?.phone)}
-                // helperText={invalid?.phone}
-                placeholder={t("Phone Number")}
+                error={Boolean(invalid?.phone)}
+                helperText={invalid?.phone}
               ></TextField>
               <FormControl>
                 <RadioGroup
                   aria-labelledby="demo-radio-buttons-group-label"
                   name="gender"
-                  //value={gender} // Set the value of the radio group to the state
-                  //onChange={handleGenderChange} // Handle radio button selection changes
+                  value={gender}
+                  onChange={handleGenderChange}
                   sx={{ flexDirection: "row" }}
                 >
                   <FormControlLabel
                     value="F"
                     control={<Radio />}
                     label={t("Female")}
-                    sx={{ marginRight: "0 !important" }}
                   />
                   <FormControlLabel
                     value="M"
@@ -274,39 +323,53 @@ const Profile = () => {
                 </RadioGroup>
               </FormControl>
               <Box>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker
-                    inputFormat={t("dd-MM-yyyy")}
-                    sx={{
-                      maxHeight: "48px !important",
-                      width: "90%",
-                      margin: "10px 15px",
-                    }}
-                    name="birth_date"
-                    // value={birthDate} // Step 4: Set value from birthDate state
-                    // onChange={(date) => {
-                    //   const formattedDate = dayjs(date)
-                    //     .startOf("day")
-                    //     .format("YYYY-MM-DD");
-                    //   setBirthDate(formattedDate); // Step 4: Update birthDate state
-                    //   setControl("birth_date", formattedDate);
-                    //   console.log(formattedDate); // Step 5: Set value in useControls
-                    // }}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        variant="outlined"
-                        style={datePickerStyles}
-                      />
-                    )}
-                  />
-                </LocalizationProvider>
+                <TextField
+                  variant="outlined"
+                  sx={{
+                    padding: "10.5px 14px !important",
+                    width: "100%",
+                  }}
+                  name="phone"
+                  type="text"
+                  value={userDetails?.birth_date}
+                  onFocus={() => setShowDatePicker(true)} // Show date picker when input is focused
+                ></TextField>
+                {showDatePicker && (
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      inputFormat={t("dd-MM-yyyy")}
+                      sx={{
+                        maxHeight: "48px !important",
+                        width: "90%",
+                        margin: "10px 15px",
+                      }}
+                      name="birth_date"
+                      value={formatDate(birthDate)} 
+                      onChange={(date) => {
+                        const formattedDate = dayjs(date)
+                          .startOf("day")
+                          .format("YYYY-MM-DD");
+                        setBirthDate(formattedDate); // Step 4: Update birthDate state
+                        setControl("birth_date", formattedDate);
+                        console.log(formattedDate); // Step 5: Set value in useControls
+                        setShowDatePicker(false); // Hide date picker after selection
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          variant="outlined"
+                          style={datePickerStyles}
+                        />
+                      )}
+                    />
+                  </LocalizationProvider>
+                )}
               </Box>
 
               <Stack spacing={2} sx={{ width: "90%", margin: "30px 15px" }}>
                 <Button
                   onClick={() => {
-                    // handleSubmit();
+                    handleSubmit();
                     handleClick();
                   }}
                   type="button"
@@ -318,7 +381,7 @@ const Profile = () => {
                     fontFamily: "Cairo",
                   }}
                 >
-                  {t("Sign up")}
+                  {t("Save")}
                 </Button>
                 <Snackbar
                   open={openSnackbar}
@@ -440,3 +503,4 @@ const Profile = () => {
 };
 
 export default Profile;
+

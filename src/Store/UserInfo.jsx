@@ -19,7 +19,7 @@ export const userInfo = createSlice({
     },
     setUserInfo: (state, action) => {
       state.value = { token: state.value.access, ...action.payload };
-      localStorage.setItem("userInfo", JSON.stringify(state.value));
+      localStorage.setItem("userDetails", JSON.stringify(state.value));
     },
     logout: (state) => {
      
