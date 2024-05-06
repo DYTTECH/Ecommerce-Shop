@@ -86,12 +86,8 @@ const CartPopup = ({ openCartPopup, handleCloseCartPopup }) => {
   const dispatch = useDispatch();
   const [RequestGetProductsCart, ResponseGetProductsCart] = useRequest({
     method: "Get",
-<<<<<<< HEAD
     path: `${PRODUCTS}${shopInfo?.id}/cart/details/`,
     token:token?`Token ${token}`:null
-=======
-    path: `${PRODUCTS}/${shopInfo?.id}/products/${cartItems?.at(0)?.id}`,
->>>>>>> main
   });
   const GetProductsCart = () => {
     RequestGetProductsCart({
