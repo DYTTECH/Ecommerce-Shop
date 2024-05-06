@@ -21,7 +21,7 @@ const createRoutes = () => {
       path: "/t2/:name",
       element: <Home />,
        index: true,
-      errorElement: <ErrorPage />,
+      // errorElement: <ErrorPage />,
     },
     {
       path: "/t2/:name/products",

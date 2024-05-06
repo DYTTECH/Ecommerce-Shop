@@ -44,7 +44,7 @@ import Fade from "@mui/material/Fade";
 import Paper from "@mui/material/Paper";
 import { useState } from "react";
 import "../../App.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { GrayIcon } from "../../Style/StyledComponents/IconButton";
 import { BoxStyle } from "../../Style/StyledComponents/Box";
 import Footer from "./footer";
@@ -53,6 +53,8 @@ import CategoriesMenu from "./categoryMenu";
 import AuthRegister from "../Authentication/RegisterAuth";
 import CartPopup from "../../Pages/Cart/CartPopup";
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import useRequest from "../../Hooks/useRequest";
+import { PRODUCTS } from "../../Data/API";
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
@@ -101,7 +103,8 @@ function ResponsiveLayout(props) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
- 
+ const wishlist=useSelector((state)=>state.wishlist.value)
+ const cart=useSelector(((state)=>state.cart.value))
 const handleOpenLogin = () => {
   setOpenLogin(true);
 }
@@ -110,8 +113,9 @@ const handleOpenLogin = () => {
 
   const { t, i18n } = useTranslation(); // Retrieve translation functions
   const openLangMenu = Boolean(anchorElLang);
-  // const dispatch = useDispatch();
+   const dispatch = useDispatch();
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
+  const token = JSON.parse(localStorage.getItem("userinfo"));
   const lang = localStorage.getItem("language");
   const trigger = useScrollTrigger({
     target: window ? window() : undefined,
@@ -129,7 +133,7 @@ const handleOpenLogin = () => {
   };
   const handleClickOpenCartPopup = () => {
     setOpenCartPopup(true);
-    console.log(openCartPopup);
+    
   };
 
   const handleCloseLogin = () => {
@@ -195,6 +199,28 @@ const handleViewWishList=()=>{
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
+    // Get wishlist request
+    const [RequestGetWishList, ResponseGetWishList] = useRequest({
+      method: "Get",
+      path: PRODUCTS + shopInfo?.id + "/products/?favorite=True",
+      token:token?`Token ${token}`:null
+    });
+    const GetProductsWishList = () => {
+        RequestGetWishList({
+        onSuccess: (res) => {
+          dispatch({ type: "wishlist/set", payload: res.data });
+        },
+        onError: (err) => {
+          dispatch({ type: "wishlist/reset", payload: err.message });
+        },
+      });
+    };
+  
+    useEffect(() => {
+      GetProductsWishList();
+    }, [shopInfo?.id]);
+
   useEffect(() => {
     i18n.language == "ar" ? (document.dir = "rtl") : (document.dir = "ltr");
   }, [i18n.language]);
@@ -271,8 +297,6 @@ useEffect(() => {
         position="fixed"
         sx={{
           transition: "0.8s all",
-          // width: { sm: `calc(100% - ${drawerWidth}px)` },
-          // mr: { sm: lang === 'ar' ?`${drawerWidth}px`:"auto" },
           paddingInline: "2%",
           paddingBlock: trigger ? "0.4%" : "0.4%",
           background: theme.palette.primary.light,
@@ -344,16 +368,15 @@ useEffect(() => {
                   />
                 </Search>
                 <div>|</div>
-                <GrayIcon size="large" aria-label="show 17 new notifications">
-                  <Badge badgeContent={17} color="error">
-                    <NotificationsNoneOutlinedIcon />
+                <GrayIcon onClick={handleViewWishList}>
+                <Badge badgeContent={wishlist?.count} color="error">
+                  <FavoriteBorderOutlinedIcon/>
                   </Badge>
                 </GrayIcon>
-                <GrayIcon onClick={handleViewWishList}>
-                  <FavoriteBorderOutlinedIcon/>
-                </GrayIcon>
                 <GrayIcon onClick={handleClickOpenCartPopup}>
+                <Badge badgeContent={cart?.products?.length} color="error">
                   <ShoppingCartIcon/>
+                  </Badge>
                 </GrayIcon>
                 <PopupState variant="popper" popupId="demo-popup-popper">
                   {(popupState) => (
