@@ -1,15 +1,29 @@
 import { useTheme } from "@emotion/react";
-import { Button, Fade, Menu, MenuItem, Paper, Popper } from "@mui/material";
+import {
+  Box,
+  Button,
+  Fade,
+  Menu,
+  MenuItem,
+  Paper,
+  Popper,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Navigate, useNavigate } from "react-router-dom";
 import AuthLogin from "../Authentication/LogInAuth";
 import AuthRegister from "../Authentication/RegisterAuth";
 import { useSelector } from "react-redux";
-import { GrayText, MainText } from "../../Style/StyledComponents/Typography";
+import {
+  GrayText,
+  MainText,
+  MainTitle,
+} from "../../Style/StyledComponents/Typography";
 import PopupState, { bindToggle } from "material-ui-popup-state";
 import { GrayIcon } from "../../Style/StyledComponents/IconButton";
 import { AccountCircle } from "@mui/icons-material";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import ProfileTabs from "./ProfileTabs";
 
 const ProfileMenu = ({ openProfile, handleCloseProfile, anchorElProfile }) => {
   const { t } = useTranslation();
@@ -23,7 +37,6 @@ const ProfileMenu = ({ openProfile, handleCloseProfile, anchorElProfile }) => {
   const [openLogin, setOpenLogin] = useState(false);
   const [openRegister, setOpenRegister] = useState(false);
   const lang = localStorage.getItem("language");
-
 
   const handleLogOut = () => {
     localStorage.removeItem("userinfo");
@@ -88,18 +101,7 @@ const ProfileMenu = ({ openProfile, handleCloseProfile, anchorElProfile }) => {
             </MenuItem>
           </>
         ) : (
-          <>
-            <MenuItem
-              onClick={() => {
-                navigate(`/t2/${shopInfo.sub_domain}/profile`); // Navigate to profile
-                handleCloseProfile(); // Close the menu
-              }}
-            >
-              {t("Profile")}
-            </MenuItem>
-            <MenuItem onClick={handleCloseProfile}>{t("My account")}</MenuItem>
-            <MenuItem onClick={handleLogOut}>{t("Log Out")}</MenuItem>
-          </>
+          <ProfileTabs />
         )}
       </Menu>
 
@@ -112,4 +114,4 @@ const ProfileMenu = ({ openProfile, handleCloseProfile, anchorElProfile }) => {
   );
 };
 
-export default ProfileMenu
+export default ProfileMenu;

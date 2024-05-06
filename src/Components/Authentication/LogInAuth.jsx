@@ -87,11 +87,10 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
         body: controls,
         onSuccess: (res) => {
          dispatch({ type: "userInfo/setToken", payload: res.data.token })
-         handleCloseLogin()
-          
-         resetControls()
-         handleCloseLogin(); 
+         handleCloseLogin();
+         resetControls();
          navigate(`/t2/${shopInfo.sub_domain}/`);
+        window.location.reload(); 
         },
         // Handle other cases if needed
       

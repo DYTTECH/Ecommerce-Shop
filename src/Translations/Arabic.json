@@ -89,5 +89,11 @@
     "LOGOUT":"تسجيل الخروج",
     "Save":"حفظ",
     "Data has been modified!":"تم تعديل البيانات!",
-    "Code has been sent!":"تم إرسال الكود!"
+    "Code has been sent!":"تم إرسال الكود!",
+    "There is no orders.":"لا يوجد طلبات.",
+    "There is no RETURN/EXCHANGE.":"لا يوجد مرتجعات.",
+    "You have no configured addresses.":"لا يوجد حساب معرّف.",
+    "There is no PAYMENTS.":"لا يوجد مدفوعات.",
+    "Add New Address":"أضف عنوان جديد",
+    "Address Added Succefully!":"تم إضافة العنوان بنجاح"
 }
