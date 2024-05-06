@@ -98,7 +98,7 @@ const CartPopup = ({ openCartPopup, handleCloseCartPopup }) => {
   };
   const [RequestGetProductDetails, ResponseGetProductDetails] = useRequest({
     method: "Get",
-    path: `${PRODUCTS}/${shopInfo?.id}/products/${cartItems[0]?.id}`,
+    path: `${PRODUCTS}/${shopInfo?.id}/products/${cartItems?.at(0)?.id}`,
   });
   const GetProductDetails = () => {
     RequestGetProductDetails({
