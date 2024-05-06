@@ -315,7 +315,9 @@ useEffect(() => {
               display: { lg: "flex", md: "flex", sm: "none", xs: "none" },
               justifyContent: "start",
               width: "15rem",
+              cursor:"pointer"
             }}
+            onClick={()=>navigate(`/t2/${shopInfo?.sub_domain}/`)}
           >
             <Avatar
               src={shopInfo?.logo}
@@ -477,7 +479,6 @@ useEffect(() => {
       <Box
         component="main"
         sx={{
-          flexGrow: 1,
           pt: { lg: 0, md: 4, sm: 4, xs: '38px' },
           direction: i18n.language == "ar" ? "rtl" : "ltr",
           // height:'auto'
@@ -486,7 +487,9 @@ useEffect(() => {
       >
         <Toolbar className="gehad" sx={{marginBottom:{lg:'35px', md:'0', sm:'0',xs:'0'}}} />
         {ViewMainCategories}
+        <Box mt={"50px"}>
         {props.children}
+        </Box>
         <Footer />
       </Box>
      

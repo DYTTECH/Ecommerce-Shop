@@ -211,7 +211,7 @@ const CartPopup = ({ openCartPopup, handleCloseCartPopup }) => {
           <Box sx={{ display: "flex", justifyContent: "space-between", pt: 4 }}>
             <DarkText>{t("Subtotal")}</DarkText>
             <MainTitle sx={{ fontWeight: theme.font.fontWeight.semibold }}>
-              {CartDetails?.sub_total} {t("SAR")}
+              {CartDetails?.sub_total} {CartDetails?.currency}
             </MainTitle>
           </Box>
           <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
