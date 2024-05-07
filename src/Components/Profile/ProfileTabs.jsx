@@ -125,7 +125,7 @@ const ProfileTabs = () => {
 
   useEffect(() => {
     GetProductsWishList();
-  }, [shopInfo?.id]);
+  }, []);
 
   const tabInfoArray = [
     {

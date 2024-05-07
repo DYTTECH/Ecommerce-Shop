@@ -2,6 +2,7 @@ import { useTheme } from "@emotion/react";
 import {
   Box,
   Button,
+  Divider,
   Fade,
   Menu,
   MenuItem,
@@ -23,7 +24,8 @@ import PopupState, { bindToggle } from "material-ui-popup-state";
 import { GrayIcon } from "../../Style/StyledComponents/IconButton";
 import { AccountCircle } from "@mui/icons-material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import ProfileTabs from "./ProfileTabs";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 const ProfileMenu = ({ openProfile, handleCloseProfile, anchorElProfile }) => {
   const { t } = useTranslation();
@@ -101,7 +103,27 @@ const ProfileMenu = ({ openProfile, handleCloseProfile, anchorElProfile }) => {
             </MenuItem>
           </>
         ) : (
-          <ProfileTabs />
+          <Box sx={{width:'11rem'}}>
+            <MenuItem
+              onClick={() => navigate(`/t2/${shopInfo?.sub_domain}/profile`)}
+            >
+              <AccountCircle />
+              <GrayText  sx={{ padding:'10px 20px' }}>{t("Profile")}</GrayText>
+            </MenuItem>
+            <MenuItem
+              onClick={() => navigate(`/t2/${shopInfo?.sub_domain}/cart`)}
+            >
+                  <ShoppingCartIcon />
+              <GrayText sx={{ padding:'10px 20px'}}>{t("My Cart")}</GrayText>
+            </MenuItem>
+            <Divider />
+            <MenuItem
+              onClick={() => navigate(``)}
+            >
+              <LogoutIcon />
+              <GrayText  sx={{ padding:'10px 20px' }}>{t("Log Out")}</GrayText>
+            </MenuItem>
+          </Box>
         )}
       </Menu>
 

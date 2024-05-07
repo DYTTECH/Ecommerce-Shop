@@ -134,7 +134,7 @@ const Address = () => {
         <Box>
           <MainTitle sx={{mb:4}}>{t("MY ADDRESS BOOK")}</MainTitle>
           <Divider />
-          {Object.values(userAddresses).length > 0 ? (
+          {userAddresses && Object.values(userAddresses).length > 0 ? (
             Object.values(userAddresses)?.map((address, index) => (
                 <Grid container spacing={2} key={index} sx={{mt:3, alignItems:'center'}}>
                   <Grid item xs={8} sx={{bgcolor:theme.palette.primary.mainLight, borderRadius:'7px', p:2}}>

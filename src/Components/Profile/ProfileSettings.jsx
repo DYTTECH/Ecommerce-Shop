@@ -166,8 +166,9 @@ const ProfileSettings = () => {
   };
 
   useEffect(() => {
+    // Fetch user info when component mounts
     getUserInfo();
-  }, [shopInfo?.id]);
+  }, []); // Run only once on component mount
 
   return (
     <Box>
