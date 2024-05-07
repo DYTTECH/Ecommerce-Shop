@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import {
   Alert,
   Box,
+  CircularProgress,
   FormControl,
   FormControlLabel,
   InputAdornment,
@@ -344,7 +345,7 @@ const AuthRegister = ({ openRegister, handleCloseRegister }) => {
                             height:'50px'
                           }}
                         >
-                          {Boolean(LoginResponse.isPending)? <CircularProgress/>:t("Sign in")}
+                          {Boolean(RegisterResponse.isPending)? <CircularProgress />:t("Sign in")}
                         </Button>
                       </Stack>
         </FormControl>
