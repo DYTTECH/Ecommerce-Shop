@@ -12,6 +12,7 @@ import {
   Button,
   Container,
   InputBase,
+  Popover,
   useScrollTrigger,
   useTheme,
 } from "@mui/material";
@@ -55,6 +56,8 @@ import CartPopup from "../../Pages/Cart/CartPopup";
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import useRequest from "../../Hooks/useRequest";
 import { PRODUCTS } from "../../Data/API";
+import ProfileMenu from "../Profile/ProfileMenu"
+
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
@@ -97,6 +100,39 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 const drawerWidth = 240;
 
+const grey = {
+  50: "#F3F6F9",
+  100: "#E5EAF2",
+  200: "#DAE2ED",
+  300: "#C7D0DD",
+  400: "#B0B8C4",
+  500: "#9DA8B7",
+  600: "#6B7A90",
+  700: "#434D5B",
+  800: "#303740",
+  900: "#1C2025",
+};
+
+const PopupBody = styled("div")(
+  ({ theme }) => `
+  width: max-content;
+  padding: 12px 16px;
+  margin: 8px;
+  border-radius: 8px;
+  border: 1px solid ${theme.palette.mode === "dark" ? grey[700] : grey[200]};
+  background-color: ${theme.palette.mode === "dark" ? grey[900] : "#fff"};
+  box-shadow: ${
+    theme.palette.mode === "dark"
+      ? `0px 4px 8px rgb(0 0 0 / 0.7)`
+      : `0px 4px 8px rgb(0 0 0 / 0.1)`
+  };
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 500;
+  font-size: 0.875rem;
+  z-index: 1;
+`
+);
+
 function ResponsiveLayout(props) {
   // const shopInfo=useSelector((state)=>state.shopInfo.value.shop)
   const { window } = props;
@@ -105,17 +141,21 @@ function ResponsiveLayout(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
  const wishlist=useSelector((state)=>state.wishlist.value)
  const cart=useSelector(((state)=>state.cart.value))
-const handleOpenLogin = () => {
-  setOpenLogin(true);
-}
   // menu lang state
-  const [anchorElLang, setAnchorElLang] = React.useState(null);
-
+  const [anchorElLang, setAnchorElLang] = useState(null);
+  const [anchorElProfile, setAnchorElProfile] = useState(null);
   const { t, i18n } = useTranslation(); // Retrieve translation functions
   const openLangMenu = Boolean(anchorElLang);
    const dispatch = useDispatch();
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
-  const token = JSON.parse(localStorage.getItem("userinfo"));
+  const userInfo = JSON.parse(localStorage.getItem("userinfo"));
+  const openProfile = Boolean(anchorElProfile)
+
+  //Popover
+  const [anchorElPopover, setAnchorElPopover] = useState(null);
+  const open = Boolean(anchorElPopover);
+  const id = open ? "simple-popover" : undefined;
+
   const lang = localStorage.getItem("language");
   const trigger = useScrollTrigger({
     target: window ? window() : undefined,
@@ -123,10 +163,8 @@ const handleOpenLogin = () => {
     threshold: 100,
   });
 
-  const [openLogin, setOpenLogin] = useState(false);
-  const [openRegister, setOpenRegister] = useState(false);
   const [openCartPopup, setOpenCartPopup] = useState(false);
-
+  const menuId = "primary-search-account-menu";
 
   const handleCloseCartPopup = () => {
     setOpenCartPopup(false);
@@ -136,32 +174,23 @@ const handleOpenLogin = () => {
     
   };
 
-  const handleCloseLogin = () => {
-    setOpenLogin(false);
-  };
-  const handleClickOpenLogin = () => {
-    setOpenLogin(true);
-  };
-  const handleCloseRegister = () => {
-    setOpenRegister(false);
-  };
-  const handleClickOpenRegister = () => {
-    setOpenRegister(true);
-  };
-
   const handleLanguageMenuOpen = (event) => {
     setAnchorElLang(event.currentTarget);
   };
   const handleCloseLang = () => {
     setAnchorElLang(null);
   };
-const handleViewWishList=()=>{
   
-  navigate(`/t2/${shopInfo.sub_domain}/wishlist`);
-}
+
+  const handleCloseProfile = () => {
+    setAnchorElProfile(null);
+    setAnchorElPopover(null);
+  };
+  const handleViewWishList = () => {
+    navigate(`/t2/${shopInfo.sub_domain}/wishlist`);
+  };
   // dark mode and light mode
 
-  const isMenuOpen = Boolean(anchorEl);
   const theme = useTheme();
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const navigate = useNavigate();
@@ -204,57 +233,28 @@ const handleViewWishList=()=>{
     const [RequestGetWishList, ResponseGetWishList] = useRequest({
       method: "Get",
       path: PRODUCTS + shopInfo?.id + "/products/?favorite=True",
-      token:token?`Token ${token}`:null
+      token:userInfo?`Token ${userInfo}`:null
     });
     const GetProductsWishList = () => {
         RequestGetWishList({
         onSuccess: (res) => {
           dispatch({ type: "wishlist/set", payload: res.data });
         },
-        onError: (err) => {
-          dispatch({ type: "wishlist/reset", payload: err.message });
-        },
+       
       });
     };
-  
-    useEffect(() => {
-      GetProductsWishList();
-    }, [shopInfo?.id]);
 
   useEffect(() => {
+    GetProductsWishList();
     i18n.language == "ar" ? (document.dir = "rtl") : (document.dir = "ltr");
   }, [i18n.language]);
-
 
   // sidebar button links
   const drawer = <Container>hjh</Container>;
   // Remove this const when copying and pasting into your project.
   const container =
     window !== undefined ? () => window().document.body : undefined;
-  const menuId = "primary-search-account-menu";
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleClickOpenRegister}>{t("Register")}</MenuItem>
-      <MenuItem onClick={handleClickOpenLogin}>{t("Sign In")}</MenuItem>
-      <MenuItem onClick={handleMenuClose}>{t("Profile")}</MenuItem>
-      <MenuItem onClick={handleMenuClose}>{t("My account")}</MenuItem>
-      <MenuItem onClick={handleLogOut}>{t("Log Out")}</MenuItem>
-    </Menu>
-  );
+
   const renderLanguage = (
     <MainMenuLang
       open={openLangMenu}
@@ -262,23 +262,46 @@ const handleViewWishList=()=>{
       anchorElLang={openLangMenu}
     />
   );
-  const [popperOpen, setPopperOpen] = useState(true);
 
-  const ViewMainCategories=(<CategoriesMenu/>)
+  const ViewMainCategories = <CategoriesMenu />;
+  useEffect(() => {
+    i18n.changeLanguage("ar");
+  }, [i18n]);
 
-useEffect(() => {
-  // Close the Popper after 10 seconds
-  const timer = setTimeout(() => {
-    setPopperOpen(false);
-  }, 10000);
+  const [openLogin, setOpenLogin] = useState(false);
+  const [openRegister, setOpenRegister] = useState(false);
 
-  return () => clearTimeout(timer); // Clear the timer on component unmount
-}, []);
-useEffect(() => {
-  i18n.changeLanguage("ar");
-  
-}, [i18n]);
+  const handleCloseLogin = () => {
+    setOpenLogin(false);
+  };
+  const handleClickOpenLogin = () => {
+    setOpenLogin(true);
+  };
+  const handleCloseRegister = () => {
+    setOpenRegister(false);
+  };
+  const handleClickOpenRegister = () => {
+    setOpenRegister(true);
+  };
 
+  const [openPopover, setOpenPopover] = useState(false);
+
+  // Function to open the popover after a delay
+  const openPopoverAfterDelay = () => {
+    setOpenPopover(true); // Open the popover
+    // Close the popover after 30 seconds (30000 milliseconds)
+    setTimeout(() => {
+      setOpenPopover(false); // Close the popover
+    }, 30000); // 30 seconds
+    
+  };
+
+  // Call the function to open the popover after component mount
+  // useEffect(() => {
+    
+  //     openPopoverAfterDelay();
+    
+  // }, []);
   return (
     <Box
       className="layout"
@@ -371,55 +394,27 @@ useEffect(() => {
                 </Search>
                 <div>|</div>
                 <GrayIcon onClick={handleViewWishList}>
-                <Badge badgeContent={wishlist?.count} color="error">
-                  <FavoriteBorderOutlinedIcon/>
+                  <Badge badgeContent={wishlist?.count} color="error">
+                  <FavoriteBorderOutlinedIcon />
                   </Badge>
                 </GrayIcon>
                 <GrayIcon onClick={handleClickOpenCartPopup}>
-                <Badge badgeContent={cart?.products?.length} color="error">
-                  <ShoppingCartIcon/>
+                  <Badge badgeContent={cart?.products?.length} color="error">
+                  <ShoppingCartIcon />
                   </Badge>
                 </GrayIcon>
-                <PopupState variant="popper" popupId="demo-popup-popper">
-                  {(popupState) => (
-                    <div>
-                      <GrayIcon
-                        variant="contained"
-                        {...bindToggle(popupState)}
-                        size="large"
-                        edge="end"
-                        aria-label="account of current user"
-                        aria-controls={menuId}
-                        aria-haspopup="true"
-                        onClick={handleProfileMenuOpen}
-                      >
-                        <AccountCircle />
-                      </GrayIcon>
-                      <Popper
-                        open={popperOpen}
-                        transition
-                        className={lang === "en" ? "popper-en" : ""}
-                        sx={{
-                          top: "96px !important",
-                          left: lang === "en" ? "unset !important" : "0",
-                          right: lang === "en" ? "0" : "unset",
-                          zIndex: "1000",
-                        }}
-                      >
-                        {({ TransitionProps }) => (
-                          <Fade {...TransitionProps} timeout={350}>
-                            <Paper sx={{p:3, textAlign:'center'}}>
-                              <Button sx={{bgcolor:theme.palette.primary.main, color:theme.palette.primary.light, width:'100%', fontFamily:"Cairo"}}>{t("Sign In")}</Button>
-                              <GrayText sx={{ pt: 2, pX:2 }}>
-                                {t("New Customer?")} <MainText sx={{ cursor:'pointer', display:'inline'}}>{t("Register")}</MainText>
-                              </GrayText>
-                            </Paper>
-                          </Fade>
-                        )}
-                      </Popper>
-                    </div>
-                  )}
-                </PopupState>
+
+                <GrayIcon
+                  variant="contained"
+                  size="large"
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-controls={menuId}
+                  aria-haspopup="true"
+                  onClick={handleProfileMenuOpen}
+                >
+                  <AccountCircle />
+                </GrayIcon>
 
                 <GrayIcon
                   size="large"
@@ -444,11 +439,59 @@ useEffect(() => {
           </BoxStyle>
         </Toolbar>
       </AppBar>
+
       {renderLanguage}
-      {renderMenu}
+      {/* {renderProfile} */}
       <AuthLogin openLogin={openLogin} handleCloseLogin={handleCloseLogin} />
-      <AuthRegister openRegister={openRegister} handleCloseRegister={handleCloseRegister} />
-      <CartPopup openCartPopup={openCartPopup} handleCloseCartPopup={handleCloseCartPopup} />
+      <AuthRegister
+        openRegister={openRegister}
+        handleCloseRegister={handleCloseRegister}
+      />
+      <CartPopup
+        openCartPopup={openCartPopup}
+        handleCloseCartPopup={handleCloseCartPopup}
+      />
+      {/* <ProfileMenu
+        openProfile={openProfile}
+        handleCloseProfile={handleCloseProfile}
+        anchorElProfile={anchorElProfile}
+      /> */}
+      {/* <Popover
+        id={id}
+        open={openPopover}
+        anchorEl={anchorElPopover}
+        onClose={()=>handleCloseProfile()}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+      >
+         <Box sx={{ p: 3, textAlign: "center" }}>
+                      <Button
+                        sx={{
+                          bgcolor: theme.palette.primary.dark,
+                          color: theme.palette.primary.light,
+                          width: "100%",
+                          fontFamily: "Cairo",
+                        }}
+                        onClick={()=>handleClickOpenLogin()}
+                      >
+                        {t("Sign In")}
+                      </Button>
+                      <GrayText sx={{ pt: 2, pX: 2 }}>
+                        {t("New Customer?")}{" "}
+                        <MainText
+                          sx={{
+                            cursor: "pointer",
+                            display: "inline",
+                          }}
+                          onClick={()=>handleClickOpenRegister()}
+                        >
+                          {t("Register")}
+                        </MainText>
+                      </GrayText>
+                    </Box>
+      </Popover> */}
       <Box
         component="nav"
         // sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
@@ -485,14 +528,16 @@ useEffect(() => {
           width: "100%",
         }}
       >
-        <Toolbar className="gehad" sx={{marginBottom:{lg:'35px', md:'0', sm:'0',xs:'0'}}} />
+        <Toolbar
+          className="gehad"
+          sx={{ marginBottom: { lg: "35px", md: "0", sm: "0", xs: "0" } }}
+        />
         {ViewMainCategories}
         <Box mt={"50px"}>
         {props.children}
         </Box>
         <Footer />
       </Box>
-     
     </Box>
   );
 }

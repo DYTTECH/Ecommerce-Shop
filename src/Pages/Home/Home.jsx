@@ -14,13 +14,11 @@ import BrandSkeleton from "../../Components/Skeleton/BrandSkeleton";
 import BannerSkeleton from "../../Components/Skeleton/BannerSkeleton";
 import SubCategorySkeleton from "../../Components/Skeleton/SubCategorySkeleton";
 import { checkTokenExpiration } from "../../Components/Authentication/SessionExpireToken";
-import { Navigate, useNavigate } from "react-router-dom";
 
 const Home = () => {
   const homecomponents = useSelector((state) => state.homecomponents.value);
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
   const userInfo=JSON.parse(localStorage.getItem("userInfo"))
-  const navigate=useNavigate()
   
   // const shopInfo = useSelector((state) => state.shopInfo.value)
   const dispatch = useDispatch();
@@ -34,11 +32,7 @@ const Home = () => {
     RequestGetShop({
       id: shop.split("/")[0],
       onSuccess: (res) => {
-        if(res?.data?.template_number==1){
         dispatch({ type: "shopInfo/setShop", payload: res.data });
-      }else{
-        navigate('/errorpage')
-      }
       },
       onError: (err) => {
         dispatch({ type: "shopInfo/clearShop", payload: err.message });

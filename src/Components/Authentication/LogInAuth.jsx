@@ -16,7 +16,6 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import "./index.css";
 import {
   BlackText,
   DarkText,
@@ -29,6 +28,7 @@ import useRequest from "../../Hooks/useRequest";
 import BASEURL from "../../Data/API";
 import useControls from "../../Hooks/useControls";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const AuthLogin = ({ openLogin, handleCloseLogin }) => {
   const { t } = useTranslation();
@@ -36,6 +36,7 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
   const dispatch=useDispatch()
   const [showPassword, setShowPassword] = useState(false);
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
+  const navigate = useNavigate();
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -86,9 +87,10 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
         body: controls,
         onSuccess: (res) => {
          dispatch({ type: "userInfo/setToken", payload: res.data.token })
-         handleCloseLogin()
-          
-         resetControls()
+         handleCloseLogin();
+         resetControls();
+         navigate(`/t2/${shopInfo.sub_domain}/`);
+        window.location.reload(); 
         },
         // Handle other cases if needed
       
@@ -107,7 +109,7 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
         "& .MuiPaper-root": {
           borderRadius: "10px",
           width: "100%",
-          height: "100%",
+          height: "66%",
           margin:"auto",
         },
       }}
@@ -160,7 +162,7 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
           <InputAdornment
             sx={{
               position: "absolute",
-              top: "38.5%",
+              top: "44%",
               left: "0",
               padding: "0",
               transform: "translate(5px, -50%)",
@@ -201,12 +203,9 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
               {t("Forget Password")}
             </BlackText>
           </Box>
-          <Stack spacing={2} sx={{ width: '90%',margin: "30px 15px" }}>
+          <Stack spacing={2} sx={{ width: '90%',margin: "30px 15px 0 15px" }}>
                         <Button
-                          onClick={() => {
-                            handleSubmit();
-                           
-                          }}
+                          onClick={handleSubmit}
                           type="button"
                           variant="contained"
                           sx={{
@@ -214,6 +213,7 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
                             color: theme.palette.primary.light,
                             width: "100%",
                             fontFamily: "Cairo",
+                            height:'50px'
                           }}
                         >
                           {Boolean(LoginResponse.isPending)? <CircularProgress/>:t("Sign in")}

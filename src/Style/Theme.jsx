@@ -18,6 +18,7 @@ const Theme = () => {
         third: "#A1A1A1",
         forth:"#757575",
         mainLight: "#F9f9f9",
+        semiLight: "#F3f3f3",
         secondLight: "#f6f6f6",
         background: "#ddf2fd",
         red: "#d12229",

@@ -7,6 +7,8 @@ import ProductDetails from "../Components/Products/ProductDetails";
 import Discount from "../Pages/Discount/Discount";
 import Wishlist from "../Pages/WishList/Wishlist";
 import Cart from "../Pages/Cart/Cart";
+import Profile from "../Components/Profile/ProfileSettings";
+import ProfileTabs from "../Components/Profile/ProfileTabs";
 
 const createRoutes = () => {
   
@@ -46,6 +48,16 @@ const createRoutes = () => {
     {
       path: "/t2/:name/cart",
       element: <Cart />,
+      // errorElement: <ErrorPage />,
+    },
+    {
+      path: "/t2/:name/profile",
+      element: <ProfileTabs />,
+      // errorElement: <ErrorPage />,
+    },
+    {
+      path: "/t2/:name/address",
+      element: <Profile />,
       // errorElement: <ErrorPage />,
     },
     // Add more routes if needed

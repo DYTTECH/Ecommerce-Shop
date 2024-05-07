@@ -1,3 +1,4 @@
-.css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input{
-    padding: 10.5px 14px !important;
+/* Register edit height */
+.css-1t1j96h-MuiPaper-root-MuiDialog-paper{
+    max-height: calc(110% - 64px) !important;
 }
