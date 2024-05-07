@@ -33,48 +33,6 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import ProductCart from "../../Components/Cart/ProductCart";
 import { DarkButton } from "../../Style/StyledComponents/Buttons";
-const StyledMenu = styled((props) => (
-  <Menu
-    elevation={0}
-    anchorOrigin={{
-      vertical: "bottom",
-      horizontal: "right",
-    }}
-    transformOrigin={{
-      vertical: "top",
-      horizontal: "right",
-    }}
-    {...props}
-  />
-))(({ theme }) => ({
-  "& .MuiPaper-root": {
-    borderRadius: 6,
-    marginTop: theme.spacing(1),
-    minWidth: 76,
-    color:
-      theme.palette.mode === "light"
-        ? "rgb(55, 65, 81)"
-        : theme.palette.grey[300],
-    boxShadow:
-      "rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px",
-    "& .MuiMenu-list": {
-      padding: "4px 0",
-    },
-    "& .MuiMenuItem-root": {
-      "& .MuiSvgIcon-root": {
-        fontSize: 18,
-        color: theme.palette.text.secondary,
-        marginRight: theme.spacing(1.5),
-      },
-      "&:active": {
-        backgroundColor: alpha(
-          theme.palette.primary.main,
-          theme.palette.action.selectedOpacity
-        ),
-      },
-    },
-  },
-}));
 
 const CartPopup = ({ openCartPopup, handleCloseCartPopup }) => {
   const { t } = useTranslation();
@@ -86,12 +44,8 @@ const CartPopup = ({ openCartPopup, handleCloseCartPopup }) => {
   const dispatch = useDispatch();
   const [RequestGetProductsCart, ResponseGetProductsCart] = useRequest({
     method: "Get",
-<<<<<<< HEAD
     path: `${PRODUCTS}${shopInfo?.id}/cart/details/`,
     token:token?`Token ${token}`:null
-=======
-    path: `${PRODUCTS}/${shopInfo?.id}/products/${cartItems?.at(0)?.id}`,
->>>>>>> main
   });
   const GetProductsCart = () => {
     RequestGetProductsCart({
@@ -257,7 +211,7 @@ const CartPopup = ({ openCartPopup, handleCloseCartPopup }) => {
           <Box sx={{ display: "flex", justifyContent: "space-between", pt: 4 }}>
             <DarkText>{t("Subtotal")}</DarkText>
             <MainTitle sx={{ fontWeight: theme.font.fontWeight.semibold }}>
-              {CartDetails?.sub_total} {t("SAR")}
+              {CartDetails?.sub_total} {CartDetails?.currency}
             </MainTitle>
           </Box>
           <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>

@@ -331,38 +331,22 @@ const AuthRegister = ({ openRegister, handleCloseRegister }) => {
               />
             </LocalizationProvider>
           </Box>
-
-          <Stack spacing={2} sx={{ width: "90%", margin: "30px 15px" }}>
-            <Button
-              onClick={() => {
-                handleSubmit();
-                handleClick();
-              }}
-              type="button"
-              variant="contained"
-              sx={{
-                bgcolor: theme.palette.primary.dark,
-                color: theme.palette.primary.light,
-                width: "100%",
-                fontFamily: "Cairo",
-              }}
-            >
-              {t("Sign up")}
-            </Button>
-            <Snackbar
-              open={openSnackbar}
-              autoHideDuration={6000}
-              onClose={handleCloseSnackbar}
-            >
-              <Alert
-                onClose={handleCloseSnackbar}
-                severity={snackbarSeverity}
-                sx={{ width: "100%" }}
-              >
-                {snackbarMessage}
-              </Alert>
-            </Snackbar>
-          </Stack>
+          <Stack spacing={2} sx={{ width: '90%',margin: "30px 15px 0 15px" }}>
+                        <Button
+                          onClick={handleSubmit}
+                          type="button"
+                          variant="contained"
+                          sx={{
+                            bgcolor: theme.palette.primary.dark,
+                            color: theme.palette.primary.light,
+                            width: "100%",
+                            fontFamily: "Cairo",
+                            height:'50px'
+                          }}
+                        >
+                          {Boolean(LoginResponse.isPending)? <CircularProgress/>:t("Sign in")}
+                        </Button>
+                      </Stack>
         </FormControl>
       </DialogContent>
     </Dialog>

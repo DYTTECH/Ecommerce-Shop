@@ -45,7 +45,7 @@ import Fade from "@mui/material/Fade";
 import Paper from "@mui/material/Paper";
 import { useState } from "react";
 import "../../App.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { GrayIcon } from "../../Style/StyledComponents/IconButton";
 import { BoxStyle } from "../../Style/StyledComponents/Box";
 import Footer from "./footer";
@@ -53,7 +53,9 @@ import AuthLogin from "../Authentication/LogInAuth";
 import CategoriesMenu from "./categoryMenu";
 import AuthRegister from "../Authentication/RegisterAuth";
 import CartPopup from "../../Pages/Cart/CartPopup";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import useRequest from "../../Hooks/useRequest";
+import { PRODUCTS } from "../../Data/API";
 import ProfileMenu from "../Profile/ProfileMenu"
 
 const Search = styled("div")(({ theme }) => ({
@@ -134,21 +136,20 @@ const PopupBody = styled("div")(
 function ResponsiveLayout(props) {
   // const shopInfo=useSelector((state)=>state.shopInfo.value.shop)
   const { window } = props;
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [isClosing, setIsClosing] = React.useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+ const wishlist=useSelector((state)=>state.wishlist.value)
+ const cart=useSelector(((state)=>state.cart.value))
   // menu lang state
   const [anchorElLang, setAnchorElLang] = useState(null);
   const [anchorElProfile, setAnchorElProfile] = useState(null);
-
   const { t, i18n } = useTranslation(); // Retrieve translation functions
   const openLangMenu = Boolean(anchorElLang);
-  const openProfile = Boolean(anchorElProfile);
-
-  // const dispatch = useDispatch();
+   const dispatch = useDispatch();
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
   const userInfo = JSON.parse(localStorage.getItem("userinfo"));
+  const openProfile = Boolean(anchorElProfile)
 
   //Popover
   const [anchorElPopover, setAnchorElPopover] = useState(null);
@@ -170,7 +171,7 @@ function ResponsiveLayout(props) {
   };
   const handleClickOpenCartPopup = () => {
     setOpenCartPopup(true);
-    console.log(openCartPopup);
+    
   };
 
   const handleLanguageMenuOpen = (event) => {
@@ -179,9 +180,7 @@ function ResponsiveLayout(props) {
   const handleCloseLang = () => {
     setAnchorElLang(null);
   };
-  const handleProfileMenuOpen = (event) => {
-      setAnchorElProfile(event.currentTarget);
-  };
+  
 
   const handleCloseProfile = () => {
     setAnchorElProfile(null);
@@ -226,7 +225,27 @@ function ResponsiveLayout(props) {
     }
   };
 
+  const handleProfileMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+    // Get wishlist request
+    const [RequestGetWishList, ResponseGetWishList] = useRequest({
+      method: "Get",
+      path: PRODUCTS + shopInfo?.id + "/products/?favorite=True",
+      token:userInfo?`Token ${userInfo}`:null
+    });
+    const GetProductsWishList = () => {
+        RequestGetWishList({
+        onSuccess: (res) => {
+          dispatch({ type: "wishlist/set", payload: res.data });
+        },
+       
+      });
+    };
+
   useEffect(() => {
+    GetProductsWishList();
     i18n.language == "ar" ? (document.dir = "rtl") : (document.dir = "ltr");
   }, [i18n.language]);
 
@@ -274,14 +293,15 @@ function ResponsiveLayout(props) {
     setTimeout(() => {
       setOpenPopover(false); // Close the popover
     }, 30000); // 30 seconds
+    
   };
 
   // Call the function to open the popover after component mount
-  useEffect(() => {
-    if (userInfo === null) {
-      openPopoverAfterDelay();
-    }
-  }, [userInfo]);
+  // useEffect(() => {
+    
+  //     openPopoverAfterDelay();
+    
+  // }, []);
   return (
     <Box
       className="layout"
@@ -300,8 +320,6 @@ function ResponsiveLayout(props) {
         position="fixed"
         sx={{
           transition: "0.8s all",
-          // width: { sm: `calc(100% - ${drawerWidth}px)` },
-          // mr: { sm: lang === 'ar' ?`${drawerWidth}px`:"auto" },
           paddingInline: "2%",
           paddingBlock: trigger ? "0.4%" : "0.4%",
           background: theme.palette.primary.light,
@@ -320,7 +338,9 @@ function ResponsiveLayout(props) {
               display: { lg: "flex", md: "flex", sm: "none", xs: "none" },
               justifyContent: "start",
               width: "15rem",
+              cursor:"pointer"
             }}
+            onClick={()=>navigate(`/t2/${shopInfo?.sub_domain}/`)}
           >
             <Avatar
               src={shopInfo?.logo}
@@ -373,16 +393,15 @@ function ResponsiveLayout(props) {
                   />
                 </Search>
                 <div>|</div>
-                <GrayIcon size="large" aria-label="show 17 new notifications">
-                  <Badge badgeContent={17} color="error">
-                    <NotificationsNoneOutlinedIcon />
+                <GrayIcon onClick={handleViewWishList}>
+                  <Badge badgeContent={wishlist?.count} color="error">
+                  <FavoriteBorderOutlinedIcon />
                   </Badge>
                 </GrayIcon>
-                <GrayIcon onClick={handleViewWishList}>
-                  <FavoriteBorderOutlinedIcon />
-                </GrayIcon>
                 <GrayIcon onClick={handleClickOpenCartPopup}>
+                  <Badge badgeContent={cart?.products?.length} color="error">
                   <ShoppingCartIcon />
+                  </Badge>
                 </GrayIcon>
 
                 <GrayIcon
@@ -432,16 +451,16 @@ function ResponsiveLayout(props) {
         openCartPopup={openCartPopup}
         handleCloseCartPopup={handleCloseCartPopup}
       />
-      <ProfileMenu
+      {/* <ProfileMenu
         openProfile={openProfile}
         handleCloseProfile={handleCloseProfile}
         anchorElProfile={anchorElProfile}
-      />
-      <Popover
+      /> */}
+      {/* <Popover
         id={id}
         open={openPopover}
         anchorEl={anchorElPopover}
-        onClose={handleCloseProfile}
+        onClose={()=>handleCloseProfile()}
         anchorOrigin={{
           vertical: "top",
           horizontal: "left",
@@ -455,7 +474,7 @@ function ResponsiveLayout(props) {
                           width: "100%",
                           fontFamily: "Cairo",
                         }}
-                        onClick={handleClickOpenLogin}
+                        onClick={()=>handleClickOpenLogin()}
                       >
                         {t("Sign In")}
                       </Button>
@@ -466,13 +485,13 @@ function ResponsiveLayout(props) {
                             cursor: "pointer",
                             display: "inline",
                           }}
-                          onClick={handleClickOpenRegister}
+                          onClick={()=>handleClickOpenRegister()}
                         >
                           {t("Register")}
                         </MainText>
                       </GrayText>
                     </Box>
-      </Popover>
+      </Popover> */}
       <Box
         component="nav"
         // sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
@@ -503,8 +522,7 @@ function ResponsiveLayout(props) {
       <Box
         component="main"
         sx={{
-          flexGrow: 1,
-          pt: { lg: 0, md: 4, sm: 4, xs: "38px" },
+          pt: { lg: 0, md: 4, sm: 4, xs: '38px' },
           direction: i18n.language == "ar" ? "rtl" : "ltr",
           // height:'auto'
           width: "100%",
@@ -515,7 +533,9 @@ function ResponsiveLayout(props) {
           sx={{ marginBottom: { lg: "35px", md: "0", sm: "0", xs: "0" } }}
         />
         {ViewMainCategories}
+        <Box mt={"50px"}>
         {props.children}
+        </Box>
         <Footer />
       </Box>
     </Box>

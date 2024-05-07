@@ -228,10 +228,17 @@ const ProductDetails = () => {
       },
     });
   };
-
+ // add to favorite
+ const [RequestProductView, ResponseProductView] =
+ useRequest({
+   method: "POST",
+   path: `${PRODUCTS}/${shopInfo?.id}/products/${params?.id}/view/`,
+   token:token?`Token ${token}`:null
+ });
   useEffect(() => {
     GetProductDetails();
     GetProductSort();
+    RequestProductView()
   }, []);
 
   useEffect(() => {

@@ -20,7 +20,7 @@ const Wishlist = () => {
     const handleChange = (event, value) => {
         setPage(value);
       };
-    // Get discount request
+    // Get wishlist request
     const [RequestGetWishList, ResponseGetWishList] = useRequest({
       method: "Get",
       path: PRODUCTS + shopInfo?.id + "/products/?favorite=True",
@@ -42,7 +42,7 @@ const Wishlist = () => {
   
     useEffect(() => {
       GetProductsWishList();
-    }, []);
+    }, [shopInfo?.id]);
 
   return (
    <ResponsiveLayout>

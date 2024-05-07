@@ -205,10 +205,7 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
           </Box>
           <Stack spacing={2} sx={{ width: '90%',margin: "30px 15px 0 15px" }}>
                         <Button
-                          onClick={() => {
-                            handleSubmit();
-                           
-                          }}
+                          onClick={handleSubmit}
                           type="button"
                           variant="contained"
                           sx={{
