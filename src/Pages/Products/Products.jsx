@@ -191,8 +191,6 @@ export const Products = () => {
         type="website"
         image="URL_to_your_image"
       />
-
-      <CategoryMenu />
       <Grid
         container
         spacing={2}

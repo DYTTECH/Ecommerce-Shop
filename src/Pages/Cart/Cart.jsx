@@ -33,10 +33,10 @@ import { DarkButton } from "../../Style/StyledComponents/Buttons";
 
 const Cart = () => {
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
-  const token=JSON.parse(localStorage.getItem("userinfo"))
+  const token = JSON.parse(localStorage.getItem("userinfo"));
   const cartDetails = useSelector((state) => state.cart.value);
-  const [coupon,setCoupon]=useState("")
-  const [openCoupon,setOpenCoupon]=useState(false)
+  const [coupon, setCoupon] = useState("");
+  const [openCoupon, setOpenCoupon] = useState(false);
   const { t } = useTranslation();
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -52,10 +52,9 @@ const Cart = () => {
   const [RequestGetCartDetails, ResponseGetCartDetails] = useRequest({
     method: "Get",
     path: `${PRODUCTS}${shopInfo?.id}/cart/details/`,
-    token:token?`Token ${token}`:null,
+    token: token ? `Token ${token}` : null,
   });
 
- 
   const GetCartDetails = () => {
     RequestGetCartDetails({
       onSuccess: (res) => {
@@ -68,19 +67,19 @@ const Cart = () => {
   const [RequestPostCoupon, ResponsePostCoupon] = useRequest({
     method: "POST",
     path: `${PRODUCTS}dashboard/coupons/`,
-    token:token?`Token ${token}`:null,
+    token: token ? `Token ${token}` : null,
   });
-  const handleAddCoupon=()=>{
+  const handleAddCoupon = () => {
     RequestPostCoupon({
-      body:{
-        coupon_code:coupon
+      body: {
+        coupon_code: coupon,
       },
       onSuccess: (res) => {
-        setCoupon("")
+        setCoupon("");
         GetCartDetails();
       },
     });
-  }
+  };
   useEffect(() => {
     GetCartDetails();
   }, [shopInfo?.id]);
@@ -115,50 +114,76 @@ const Cart = () => {
                 <DarkText sx={{ fontWeight: theme.font.fontWeight.semibold }}>
                   {t("My Cart")}
                 </DarkText>
-                <DarkText>{cartDetails?.products.length?`(${cartDetails?.products?.length})Items`:'0 Items'}</DarkText>
+                <DarkText>
+                  {cartDetails?.products.length
+                    ? `(${cartDetails?.products?.length})Items`
+                    : "0 Items"}
+                </DarkText>
               </Box>
-              {cartDetails?.products&&
+              {cartDetails?.products &&
                 cartDetails?.products?.map((item) => (
-                  <ProductCart key={item.cart_item_id} {...item} isPending={ResponseGetCartDetails.isPending}/>
-                ))
-              }
+                  <ProductCart
+                    key={item.cart_item_id}
+                    {...item}
+                    isPending={ResponseGetCartDetails.isPending}
+                  />
+                ))}
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               {/* copoun */}
-              <Stack direction="column" sx={{  bgcolor: "#f4fffc",  padding: 3,
-                  borderRadius: "3px",
-                  mt: 3,}}>
-              <Box
+              <Stack
+                direction="column"
                 sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
+                  bgcolor: "#f4fffc",
+                  padding: 3,
+                  borderRadius: "3px",
+                  mt: 3,
                 }}
               >
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <LocalOfferIcon />
-                  <ItemsTitle sx={{ pr: 2 }}>
-                    {t("Enter coupon or promo code")}
-                  </ItemsTitle>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <LocalOfferIcon />
+                    <ItemsTitle sx={{ pr: 2 }}>
+                      {t("Enter coupon or promo code")}
+                    </ItemsTitle>
+                  </Box>
+                  <Box>
+                    <ItemsDes
+                      onClick={() => setOpenCoupon((prev) => !prev)}
+                      sx={{ cursor: "pointer" }}
+                    >
+                      {t("Select")}
+                    </ItemsDes>
+                  </Box>
                 </Box>
-                <Box>
-                  <ItemsDes onClick={()=>setOpenCoupon((prev)=>!prev)} sx={{cursor:"pointer"}}>{t("Select")}</ItemsDes>
-                 
-                </Box>
-                
-              </Box>
-              {openCoupon&&
-              <Stack direction="row" justifyContent={"space-between"} sx={{ mt: 3 }}>
-                 <DarkButton variant="contained" sx={{ width: "100px",fontFamily:"Cairo" }} onClick={handleAddCoupon}>{t("Apply")}</DarkButton>
-                <TextField
-                name="coupon"
-                placeholder= {t("Enter coupon or promo code")}
-               value={coupon}
-                onChange={((e)=>setCoupon(e.target.value))}
-                sx={{ fontFamily:"Cairo" }}
-                />
-               
-              </Stack>}
+                {openCoupon && (
+                  <Stack
+                    direction="row"
+                    justifyContent={"space-between"}
+                    sx={{ mt: 3 }}
+                  >
+                    <DarkButton
+                      variant="contained"
+                      sx={{ width: "100px", fontFamily: "Cairo" }}
+                      onClick={handleAddCoupon}
+                    >
+                      {t("Apply")}
+                    </DarkButton>
+                    <TextField
+                      name="coupon"
+                      placeholder={t("Enter coupon or promo code")}
+                      value={coupon}
+                      onChange={(e) => setCoupon(e.target.value)}
+                      sx={{ fontFamily: "Cairo" }}
+                    />
+                  </Stack>
+                )}
               </Stack>
               {/* order details */}
               <Box
@@ -191,7 +216,11 @@ const Cart = () => {
                   }}
                 >
                   <DarkText>{t("Shipping fee")}</DarkText>
-                  <DarkText>{cartDetails?.shipping} {t("SAR")}</DarkText>
+                  <MainTitle
+                    sx={{ fontWeight: theme.font.fontWeight.semibold }}
+                  >
+                    {cartDetails?.shipping_cost} {t("SAR")}
+                  </MainTitle>
                 </Box>
                 <Divider />
                 <Box
@@ -210,15 +239,14 @@ const Cart = () => {
                 </Box>
               </Box>
               <DarkButton
-              sx={{
-                width: "100%",
-                paddingY: 2,
-                mt:3,
-               
-              }}
-            >
-              {t("Check Out")}
-            </DarkButton>
+                sx={{
+                  width: "100%",
+                  paddingY: 2,
+                  mt: 3,
+                }}
+              >
+                {t("Check Out")}
+              </DarkButton>
             </Grid>
           </Grid>
         </Container>

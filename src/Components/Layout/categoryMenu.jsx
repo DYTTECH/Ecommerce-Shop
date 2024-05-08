@@ -95,6 +95,7 @@ const CategoriesMenu = () => {
       }
     }, 5000);
   }, [shopInfo?.id, dispatch]);
+  
   useEffect(() => {
     if (shopInfo?.id) {
       GetSubCategories();
