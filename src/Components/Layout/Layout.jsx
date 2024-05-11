@@ -195,26 +195,9 @@ function ResponsiveLayout(props) {
     navigate(`/t2/${shopInfo?.sub_domain}/wishlist`);
   };
 
-   // Get wishlist request
-   const [RequestGetWishList, ResponseGetWishList] = useRequest({
-    method: "Get",
-    path: PRODUCTS + shopInfo?.id + "/products/?favorite=True",
-    token:userInfo?`Token ${userInfo}`:null
-  });
-  const GetProductsWishList = () => {
-      RequestGetWishList({
-      onSuccess: (res) => {
-        dispatch({ type: "wishlist/set", payload: res.data });
-      },
-      onError: (err) => {
-        dispatch({ type: "wishlist/reset", payload: err.message });
-      },
-    });
-  };
+ 
 
-  useEffect(() => {
-    GetProductsWishList();
-  }, [shopInfo?.id]);
+ 
 
   // dark mode and light mode
 
@@ -299,7 +282,7 @@ function ResponsiveLayout(props) {
     // Close the popover after 30 seconds (30000 milliseconds)
     setTimeout(() => {
       setOpenPopover(false); // Close the popover
-    }, 30000); // 30 seconds
+    },5000); // 30 seconds
   };
 
   // Call the function to open the popover after component mount

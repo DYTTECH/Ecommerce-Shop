@@ -479,13 +479,13 @@ const ProductDetails = () => {
                       }}
                     >
                       <TextDiscount variant="body1">
-                        {ProductDetails?.price} {t("SAR")}
+                        {ProductDetails?.discount>0?ProductDetails?.price:""} {ProductDetails?.currency||t("SAR")}
                       </TextDiscount>
                       <Typography variant="body1" sx={{ fontFamily: "Cairo" }}>
-                        {ProductDetails?.final_price} {t("SAR")}
+                        {ProductDetails?.final_price} {ProductDetails?.currency||t("SAR")}
                       </Typography>
                       <Typography variant="body1" sx={{ paddingRight: 2 }}>
-                        {ProductDetails?.discount} %
+                        {ProductDetails?.discount>0?`${ProductDetails?.discount}%`:""} 
                       </Typography>
                     </Box>
                   )}

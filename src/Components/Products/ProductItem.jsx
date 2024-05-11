@@ -30,7 +30,8 @@ export const ProductItem = ({
   final_price,
   is_favorite,
   id,
-  type
+  type,
+  currency
 }) => {
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
   const token=JSON.parse(localStorage.getItem("userinfo"))
@@ -207,7 +208,7 @@ export const ProductItem = ({
           </Typography>
           {/* <Typography variant='body1' sx={{ paddingRight: 2 }}>{discount} %</Typography> */}
           <Typography variant="body1" sx={{ fontFamily: "Cairo" }}>
-            {final_price} {t("SAR")}
+            {final_price} {currency||t("SAR")}
           </Typography>
         </Box>
       </Card>

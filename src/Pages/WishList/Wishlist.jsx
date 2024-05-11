@@ -42,7 +42,7 @@ const Wishlist = () => {
   
     useEffect(() => {
       GetProductsWishList();
-    }, [shopInfo?.id]);
+    }, [shopInfo?.id,page]);
 
   return (
    <ResponsiveLayout>
