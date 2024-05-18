@@ -3,6 +3,7 @@ import ResponsiveLayout from "../../Components/Layout/Layout";
 import PageMeta from "../../Components/Layout/MetaPage";
 import {
   Accordion,
+  AccordionActions,
   AccordionDetails,
   AccordionSummary,
   Box,
@@ -29,6 +30,7 @@ import CategoryMenu from "../../Components/Layout/categoryMenu";
 import { InputPrice } from "../../Style/StyledComponents/Inputs";
 import { TransparentButton } from "../../Style/StyledComponents/Buttons";
 import { useTranslation } from "react-i18next";
+import { BlackText } from "../../Style/StyledComponents/Typography";
 
 export const Products = () => {
   const Products = useSelector((state) => state.products.value);
@@ -93,7 +95,6 @@ export const Products = () => {
     }
     setFilterData((old) => ({ ...old, rate: updatedRates }));
   };
-  
 
   const handleAttributesChange = (e, index, attribute) => {
     let data = filterdata?.filters ? [...filterdata.filters] : [];
@@ -115,7 +116,7 @@ export const Products = () => {
 
     setFilterData((old) => ({ ...old, filters: data }));
   };
-// params to send in request for filter
+  // params to send in request for filter
   let params = {};
 
   if (location?.state?.keys?.brand_id || filterdata?.brands) {
@@ -151,12 +152,12 @@ export const Products = () => {
   const queryString = Object.keys(params)
     .map((key) => `${key}=${params[key]}`)
     .join("&");
-// filter data to view products
+  // filter data to view products
   const [RequestGetProductFilterd, ResponseGetProductFilterd] = useRequest({
     method: "Get",
     path: PRODUCTS + shopInfo.id + `/products/?${queryString}`,
   });
-// view filter sidebar
+  // view filter sidebar
   const [RequestGetFilter, ResponseGetFilter] = useRequest({
     method: "Get",
     path: PRODUCTS + shopInfo.id + `/filter-attributes/`,
@@ -185,7 +186,7 @@ export const Products = () => {
   return (
     <ResponsiveLayout>
       <PageMeta
-        title="My Products"
+        title={`${shopInfo.sub_domain} - My Products`}
         desc="Description of my page for SEO"
         name="Your Name"
         type="website"
@@ -196,7 +197,7 @@ export const Products = () => {
         spacing={2}
         sx={{ marginTop: { lg: "69px", md: "0", sm: "0", xs: "0" } }}
       >
-        <Grid item md={3} xs={0} position={"sticky"}>
+        <Grid item md={3} xs={0}  sx={{ height: "calc(100vh - 100px)", overflowY: "auto" }}>
           {ResponseGetFilter.isPending ? (
             <FilterSkeleton />
           ) : (
@@ -211,7 +212,17 @@ export const Products = () => {
                   aria-controls="panel1bh-content"
                   id="panel1bh-header"
                 >
-                  <Typography sx={{ flexShrink: 0 }}>{key}</Typography>
+                  <BlackText sx={{ flexShrink: 0, fontFamily: "Cairo" }}>
+                    {key === "Price"
+                      ? t("Price")
+                      : key === "Rate"
+                      ? t("Rates")
+                      : key === "brands"
+                      ? t("Brands")
+                      : key === "attributes"
+                      ? t("Attributes")
+                      : key}
+                  </BlackText>
                 </AccordionSummary>
                 <AccordionDetails>
                   {Array.isArray(filter[key]) ? (
@@ -280,29 +291,107 @@ export const Products = () => {
                             fontWeight: "600",
                             fontSize: "14px",
                             width: "40%",
+                            ".MuiFormControlLabel-label": {
+                              fontFamily: "Cairo",
+                            },
                           }}
                         />
                       ))
                     ) : (
-                      key === "Attributes" &&
-                      filter[key].map((item, index) => (
-                        <FormControlLabel
+                      key === "attributes" &&
+                      filter[key].map((attribute, index) => (
+                        <Accordion
+                          disableGutters
+                          elevation={0}
                           key={index}
-                          control={
-                            <Checkbox
-                            // checked={ItemChecked(item)}
-                            // onChange={()=>HandleCheckBox(item)}
-                            // name={item}
-                            />
-                          }
-                          label={item.name}
-                          sx={{
-                            textTransform: "capitalize",
-                            fontWeight: "600",
-                            fontSize: "14px",
-                            width: "40%",
-                          }}
-                        />
+                          sx={{ width: "100%" }}
+                        >
+                          <AccordionSummary
+                            expandIcon={<ExpandMoreIcon />}
+                            aria-controls="panel1a-content"
+                            id="panel1a-header"
+                          >
+                            <BlackText>{attribute?.name}</BlackText>
+                          </AccordionSummary>
+                          <AccordionActions>
+                            <Stack
+                              gap={1}
+                              flexDirection={"row"}
+                              justifyContent={"flex-start"}
+                              flexWrap={"wrap"}
+                              width={"100%"}
+                            >
+                              {attribute.values.map((value) =>
+                                value.iscolor == true ? (
+                                  <Checkbox
+                                    key={value.id}
+                                    name={`${value?.value_name}`}
+                                    label=""
+                                    id={index}
+                                    sx={{
+                                      bgcolor: value?.color_value,
+                                      ":hover": {
+                                        bgcolor: value?.color_value,
+                                      },
+                                      "& .MuiSvgIcon-root": {
+                                        display: "none", // Hide the checkbox icon
+                                      },
+                                      "& .Mui-checked": {
+                                        "& .MuiIconButton-root": {
+                                          border: "2px solid #fff",
+                                          bgcolor: value?.color_value,
+                                        },
+                                      },
+                                      height: "20px",
+                                      width: "20px",
+                                    }}
+                                    value={value.attribute_id}
+                                    checked={Boolean(
+                                      filterdata?.filters?.includes(value.id)
+                                    )}
+                                    onChange={(e) => {
+                                      handleAttributesChange(
+                                        e,
+                                        index,
+                                        value.id
+                                      );
+                                    }}
+                                  />
+                                ) : (
+                                  value.iscolor == false && (
+                                    <FormControlLabel
+                                      control={
+                                        <Checkbox
+                                          name={value.value_name}
+                                          id={index}
+                                          value={value.attribute_id}
+                                          checked={Boolean(
+                                            filterdata?.filters?.includes(
+                                              value.id
+                                            )
+                                          )}
+                                          onChange={(e) => {
+                                            handleAttributesChange(
+                                              e,
+                                              index,
+                                              value.id
+                                            );
+                                          }}
+                                        />
+                                      }
+                                      label={value?.value_name}
+                                      sx={{
+                                        ".MuiFormControlLabel-label": {
+                                          fontFamily: "Cairo",
+                                        },
+                                      }}
+                                    />
+                                  )
+                                )
+                              )}
+                            </Stack>
+                          </AccordionActions>
+                        </Accordion>
                       ))
                     )
                   ) : null}
@@ -311,7 +400,7 @@ export const Products = () => {
             ))
           )}
         </Grid>
-        <Grid item md={9} xs={12}>
+        <Grid item md={9} xs={12} sx={{ height: "calc(100vh - 100px)", overflowY: "auto" ,overflowX:"hidden"}}>
           <Grid container spacing={3} px={2}>
             {ResponseGetProductFilterd.isPending ? (
               <ViewProductsSkeleton />
@@ -330,7 +419,7 @@ export const Products = () => {
             mb={2}
             justifyContent="center"
             alignItems="center"
-            sx={{paddingY: 4}}
+            sx={{ paddingY: 4 }}
           >
             {Products?.count > 0 && Products?.count > 8 && (
               <Pagination

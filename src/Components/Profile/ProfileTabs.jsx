@@ -41,14 +41,9 @@ import Profile from "./ProfileSettings";
 import Address from "./Address";
 import { PRODUCTS } from "../../Data/API";
 import { useNavigate } from "react-router-dom";
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-  tabInfo: { icon: React.ReactNode, name: string }; // Icon component and tab name
-}
 
-function TabPanel(props: TabPanelProps) {
+
+function TabPanel(props) {
   const { children, value, index, tabInfo, ...other } = props;
   const { t } = useTranslation();
 
@@ -72,7 +67,7 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-function a11yProps(index: number) {
+function a11yProps(index) {
   return {
     id: `vertical-tab-${index}`,
     "aria-controls": `vertical-tabpanel-${index}`,
@@ -96,7 +91,7 @@ const ProfileTabs = () => {
     { label: `${t("Profile")}`, active: false },
   ];
   const [value, setValue] = useState(0);
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 

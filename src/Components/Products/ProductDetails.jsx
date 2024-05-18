@@ -109,9 +109,13 @@ const ProductDetails = () => {
   const params = useParams();
   const ProductDetails = useSelector((state) => state.productdetails.value);
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
-  const token=JSON.parse(localStorage.getItem("userinfo"));
+  const token = JSON.parse(localStorage.getItem("userinfo"));
   const [openCartPopup, setOpenCartPopup] = useState(false);
   const [selectedimg, setSelectedimg] = useState("");
+  const [variants,setVariants]=useState({
+    variant_id: "",
+    
+  });
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const theme = useTheme();
@@ -120,7 +124,7 @@ const ProductDetails = () => {
   const mostviewed = useSelector((state) => state.mostviewed.value);
   const [open, setOpen] = React.useState(false);
   const [openShare, setOpenShare] = React.useState(false);
-  const [openLogin,setOpenLogin]=useState(false)
+  const [openLogin, setOpenLogin] = useState(false);
 
   const handleOpenShareDialog = () => {
     setOpenShare(true);
@@ -151,7 +155,7 @@ const ProductDetails = () => {
   const [RequestGetProductSort, ResponseGetProductSort] = useRequest({
     method: "Get",
     path: HOMECOMPONENTS + shopInfo?.id + "/products/?query_id=4",
-    token:token?`Token ${token}`:null
+    token: token ? `Token ${token}` : null,
   });
   const GetProductSort = () => {
     RequestGetProductSort({
@@ -165,13 +169,15 @@ const ProductDetails = () => {
   const [RequestAddProductToCart, ResponseAddProductToCart] = useRequest({
     method: "POST",
     path: `${PRODUCTS}${shopInfo?.id}/cart/items/`,
-    token:token?`Token ${token}`:null
+    token: token ? `Token ${token}` : null,
   });
   const AddProductToCart = () => {
     RequestAddProductToCart({
       body: {
         product: params?.id,
         quantity: 1,
+        color_id: variants?.color_id,
+        size_id: variants?.size_id,
       },
       onSuccess: (res) => {
         setOpenCartPopup(true);
@@ -179,7 +185,7 @@ const ProductDetails = () => {
       },
     });
   };
-  
+
   const [RequestGetProductDetails, ResponseGetProductDetails] = useRequest({
     method: "Get",
     path: `${PRODUCTS}/${shopInfo?.id}/products/${params?.id}/`,
@@ -198,7 +204,7 @@ const ProductDetails = () => {
     useRequest({
       method: "POST",
       path: `${PRODUCTS}/${shopInfo?.id}/favorites/`,
-      token:token?`Token ${token}`:null
+      token: token ? `Token ${token}` : null,
     });
 
   const AddProductToFavorite = () => {
@@ -224,21 +230,23 @@ const ProductDetails = () => {
         product: params?.id,
       },
       onSuccess: (res) => {
-        dispatch({ type: "productdetails/favoriteItem", payload: {id:params?.id} });
+        dispatch({
+          type: "productdetails/favoriteItem",
+          payload: { id: params?.id },
+        });
       },
     });
   };
- // add to favorite
- const [RequestProductView, ResponseProductView] =
- useRequest({
-   method: "POST",
-   path: `${PRODUCTS}/${shopInfo?.id}/products/${params?.id}/view/`,
-   token:token?`Token ${token}`:null
- });
+  // add to favorite
+  const [RequestProductView, ResponseProductView] = useRequest({
+    method: "POST",
+    path: `${PRODUCTS}/${shopInfo?.id}/products/${params?.id}/view/`,
+    token: token ? `Token ${token}` : null,
+  });
   useEffect(() => {
     GetProductDetails();
     GetProductSort();
-    RequestProductView()
+    RequestProductView();
   }, []);
 
   useEffect(() => {
@@ -246,6 +254,19 @@ const ProductDetails = () => {
       setSelectedimg(ProductDetails["images"][0]?.image);
     }
   }, [ProductDetails["images"]]);
+
+  useEffect(()=>{
+    if (ProductDetails && ProductDetails?.variants_details && Object.keys(ProductDetails?.variants_details).length > 0) {
+      const firstVariantKey = Object.keys(ProductDetails.variants_details).at(0)
+      const firstVariantArray = ProductDetails?.variants_details[firstVariantKey];
+      
+      if (firstVariantArray && firstVariantArray.length > 0) {
+        setVariants({
+          variant_id: firstVariantArray[0]?.variant_id,
+        });
+      }
+    }
+  },[ProductDetails])
 
   const shareData = {
     text: ProductDetails.name,
@@ -269,7 +290,6 @@ const ProductDetails = () => {
       active: false,
     },
   ];
-
 
   return (
     <Box>
@@ -479,13 +499,19 @@ const ProductDetails = () => {
                       }}
                     >
                       <TextDiscount variant="body1">
-                        {ProductDetails?.discount>0?ProductDetails?.price:""} {ProductDetails?.currency||t("SAR")}
+                        {ProductDetails?.discount > 0
+                          ? ProductDetails?.price
+                          : ""}{" "}
+                        {ProductDetails?.currency || t("SAR")}
                       </TextDiscount>
                       <Typography variant="body1" sx={{ fontFamily: "Cairo" }}>
-                        {ProductDetails?.final_price} {ProductDetails?.currency||t("SAR")}
+                        {ProductDetails?.final_price}{" "}
+                        {ProductDetails?.currency || t("SAR")}
                       </Typography>
                       <Typography variant="body1" sx={{ paddingRight: 2 }}>
-                        {ProductDetails?.discount>0?`${ProductDetails?.discount}%`:""} 
+                        {ProductDetails?.discount > 0
+                          ? `${ProductDetails?.discount}%`
+                          : ""}
                       </Typography>
                     </Box>
                   )}
@@ -563,15 +589,17 @@ const ProductDetails = () => {
                         </MenuItem>
                       </StyledMenu>
                     </Box>
-                    <Box
+                    <Stack
                       sx={{
                         width: "50%",
-                        overflowX: "scroll",
+                        overflowX: "auto",
                         textWrap: "nowrap",
+                        gap: 2,
+                        flexDirection: "column",
                       }}
                     >
-                      {/* {typeof ProductDetails?.variants_details === "object" ? (
-                        Object.keys(ProductDetails.variants_details).map(
+                      {typeof ProductDetails?.variants_details === "object" ? (
+                        Object.keys(ProductDetails?.variants_details).map(
                           (variant, index) => (
                             <React.Fragment key={index}>
                               <BlackText sx={{ ml: "0 !important" }}>
@@ -585,58 +613,76 @@ const ProductDetails = () => {
                                 }}
                               >
                                 {Array.isArray(
-                                  ProductDetails.variants_details[variant]
+                                  ProductDetails?.variants_details[variant]
                                 ) ? (
-                                  ProductDetails.variants_details[variant].map(
-                                    (item, innerIndex) =>
-                                      item.is_color == false ? (
-                                        <Box
-                                          key={innerIndex}
-                                          component="button"
-                                          value={item.variant_id}
-                                          onClick={(e) => {
-                                            console.log(e.target.value);
-                                            SetSizeandColor((old) => ({
-                                              ...old,
-                                              variant_id: e.target.value,
-                                            }));
-                                          }}
-                                          sx={{
-                                            ...ButtonSize.__emotion_styles[0],
-                                            cursor: "pointer",
-                                            borderColor: SizeandColor?.variant_id===item?.variant_id? "#000" : "transparent",
-                                           borderStyle:"solid",
-                                           borderWidth:'1px',
-                                            padding: "8px",
-                                            width: "fit-content",
-                                          }}
-                                        >
-                                          {item.is_color === false
-                                            ? item.value
-                                            : null}
-                                        </Box>
-                                      ) : (
-                                        <Box
-                                          key={innerIndex}
-                                          component="button"
-                                          value={item?.variant_id}
-                                          onClick={(e) => {
-                                            console.log(e.target.value);
-                                            SetSizeandColor((old) => ({
-                                              ...old,
-                                              variant_id: e.target.value,
-                                            }));
-                                          }}
-                                          sx={{
-                                            ...ButtonSize.__emotion_styles[0],
-                                            cursor: "pointer",
-                                            border: SizeandColor.variant_id===item.variant_id ? "1px solid #000" : "transparent",
-                                            padding: "8px",
-                                            width: "24px",
-                                            background: item.value,
-                                          }}
-                                        />
-                                      )
+                                  ProductDetails?.variants_details[
+                                    variant
+                                  ]?.map((item, innerIndex) =>
+                                    item?.is_color === false ? (
+                                      <Button
+                                        key={innerIndex}
+                                        variant="outlined"
+                                        
+                                        sx={{
+                                           
+                                          ml: 3,
+                                          bgcolor: item?.value,
+                                          borderColor: variants?.variant_id===item?.variant_id? "#000" : "transparent",
+                                          borderStyle:"solid",
+                                          borderWidth:'1px',
+                                         }}
+                                        value={item?.variant_id}
+                                        onClick={(e) => {
+                                          setVariants((old) => ({
+                                            ...old,
+                                            variant_id: e.currentTarget.value,
+                                          }));
+                                        }}
+                                        // sx={{
+                                        //   ...ButtonSize.__emotion_styles[0],
+                                        //   cursor: "pointer",
+                                        //    borderColor: SizeandColor?.variant_id===item?.variant_id? "#000" : "transparent",
+                                        //  borderStyle:"solid",
+                                        //  borderWidth:'1px',
+                                        //   padding: "8px",
+                                        //   width: "fit-content",
+                                        // }}
+                                      >
+                                        {item?.is_color === false
+                                          ? item?.value
+                                          : null}
+                                      </Button>
+                                    ) : (
+                                      <Button
+                                        variant="outlined"
+                                        disabled
+                                        sx={{
+                                          ml: 3,
+                                          bgcolor: item?.value,
+                                          height: "34px",
+                                          width: "34px",
+                                          borderColor: variants?.variant_id===item?.variant_id? "#000" : "transparent",
+                                          borderStyle:"solid",
+                                          borderWidth:'1px',
+                                        }}
+                                        value={item?.variant_id}
+                                        onClick={(e) => {
+
+                                          setVariants((old) => ({
+                                            ...old,
+                                            variant_id: e.currentTarget.value,
+                                          }));
+                                        }}
+                                        // sx={{
+                                        //   ...ButtonSize.__emotion_styles[0],
+                                        //   cursor: "pointer",
+                                        //   border: SizeandColor.variant_id===item.variant_id ? "1px solid #000" : "transparent",
+                                        //   padding: "8px",
+                                        //   width: "24px",
+                                        //   background: item.value,
+                                        // }}
+                                      />
+                                    )
                                   )
                                 ) : (
                                   <></>
@@ -647,44 +693,19 @@ const ProductDetails = () => {
                         )
                       ) : (
                         <></>
-                      )} */}
-
-                      <Button variant="outlined" disabled sx={{ ml: 3 }}>
-                        9/10
-                      </Button>
-                      <Button variant="outlined" sx={{ ml: 3 }}>
-                        9/10
-                      </Button>
-                      <Button variant="outlined" sx={{ ml: 3 }}>
-                        9/10
-                      </Button>
-                      <Button variant="outlined" disabled sx={{ ml: 3 }}>
-                        9/10
-                      </Button>
-                      <Button variant="outlined" disabled sx={{ ml: 3 }}>
-                        9/10
-                      </Button>
-                      <Button variant="outlined" disabled sx={{ ml: 3 }}>
-                        9/10
-                      </Button>
-                      <Button variant="outlined" disabled sx={{ ml: 3 }}>
-                        9/10
-                      </Button>
-                    </Box>
+                      )}
+                    </Stack>
                   </Box>
                   <Button
                     variant="contained"
                     sx={{ mt: 4, width: "100%", fontFamily: "cairo" }}
-                    onClick={()=>{
-                      if(token){
-                        AddProductToCart()
-                      }else{
-                        setOpenLogin(true)
+                    onClick={() => {
+                      if (token) {
+                        AddProductToCart();
+                      } else {
+                        setOpenLogin(true);
                       }
-                     
-                    }
-                      
-                      }
+                    }}
                   >
                     {t("Add to Cart")}
                   </Button>
@@ -799,7 +820,10 @@ const ProductDetails = () => {
         openCartPopup={openCartPopup}
         handleCloseCartPopup={handleCloseCartPopup}
       />
-      <AuthLogin openLogin={openLogin} handleCloseLogin={()=>setOpenLogin(false)}/>
+      <AuthLogin
+        openLogin={openLogin}
+        handleCloseLogin={() => setOpenLogin(false)}
+      />
       {ResponseAddProductToCart.successAlert}
       {ResponseAddProductToCart.failAlert}
     </Box>

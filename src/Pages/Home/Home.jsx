@@ -72,7 +72,7 @@ const Home = () => {
 
 
   useEffect(()=>{
-   
+    window.scrollTo( 10,0)
     checkTokenExpiration()
   },[])
 
@@ -90,7 +90,7 @@ const Home = () => {
       GetShopInfo(currentShopInfo);
     }
 
-    window.scrollTo(10, 0);
+    
   }, []);
 
   // useEffect(() => {

@@ -66,7 +66,7 @@ const Cart = () => {
   // add coupon to cart
   const [RequestPostCoupon, ResponsePostCoupon] = useRequest({
     method: "POST",
-    path: `${PRODUCTS}dashboard/coupons/`,
+    path: `${PRODUCTS}${shopInfo?.id}/cart/apply_coupon/`,
     token: token ? `Token ${token}` : null,
   });
   const handleAddCoupon = () => {
@@ -182,6 +182,7 @@ const Cart = () => {
                       onChange={(e) => setCoupon(e.target.value)}
                       sx={{ fontFamily: "Cairo" }}
                     />
+                    
                   </Stack>
                 )}
               </Stack>

@@ -60,6 +60,7 @@
     "Phone Number":"رقم الهاتف",
     "Male":"ذكر",
     "Female":"أنثى",
+    "Gender":"النوع",
     "Sign up":"إنشاء حساب",
     "Register for a unique shopping experience":"سجل للحصول على تجربة تسوق فريدة",
     "Forget Password":"نسيت كلمة المرور؟",
@@ -95,5 +96,10 @@
     "You have no configured addresses.":"لا يوجد حساب معرّف.",
     "There is no PAYMENTS.":"لا يوجد مدفوعات.",
     "Add New Address":"أضف عنوان جديد",
-    "Address Added Succefully!":"تم إضافة العنوان بنجاح"
+    "Address Added Succefully!":"تم إضافة العنوان بنجاح",
+    "Enter your OTP":"أدخل رمز التحقق الخاص بك",
+    "Send code":"ارسل الرمز",
+    "Rates":"التقييمات",
+    "Brands":"الماركات",
+    "Price":"السعر"
 }
