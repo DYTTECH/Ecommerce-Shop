@@ -26,6 +26,7 @@ import { AccountCircle } from "@mui/icons-material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import LogoutIcon from "@mui/icons-material/Logout";
+import ProfileSidBar from "./ProfileSidBar";
 
 const ProfileMenu = ({ openProfile, handleCloseProfile, anchorElProfile }) => {
   const { t } = useTranslation();
@@ -103,8 +104,8 @@ const ProfileMenu = ({ openProfile, handleCloseProfile, anchorElProfile }) => {
             </MenuItem>
           </>
         ) : (
-          <Box sx={{width:'11rem'}}>
-            <MenuItem
+          <Box sx={{width:'20rem'}}>
+            {/* <MenuItem
               onClick={() => navigate(`/t2/${shopInfo?.sub_domain}/profile`)}
             >
               <AccountCircle />
@@ -122,7 +123,8 @@ const ProfileMenu = ({ openProfile, handleCloseProfile, anchorElProfile }) => {
             >
               <LogoutIcon />
               <GrayText  sx={{ padding:'10px 20px' }}>{t("Log Out")}</GrayText>
-            </MenuItem>
+            </MenuItem> */}
+            <ProfileSidBar />
           </Box>
         )}
       </Menu>

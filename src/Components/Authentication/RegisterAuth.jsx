@@ -175,8 +175,6 @@ const AuthRegister = ({ openRegister, handleCloseRegister }) => {
       onClose={handleCloseRegister}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
-      sx={{}}
-      className="gehad"
     >
       <BlackText
         sx={{

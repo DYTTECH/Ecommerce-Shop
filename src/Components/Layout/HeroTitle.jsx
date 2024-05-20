@@ -1,8 +1,12 @@
 import { Box, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
-import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import React from "react";
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+
 const HeroTitle = ({ crumbs = [] }) => {
+  const lang = localStorage.getItem("language");
+
   return (
     <>
       <Box sx={{ display: "flex", alignItems: "center", flexDirection: "row" }}>
@@ -28,7 +32,13 @@ const HeroTitle = ({ crumbs = [] }) => {
               variant="span"
               component="span"
             >
-              {!crumb.active && <ArrowForwardIosOutlinedIcon style={{height:"12px",width:"16px",marginTop:"8px"}}/>}
+              {!crumb.active && (
+                lang === "ar" ? (
+                  <ArrowForwardIosIcon style={{height:"12px",width:"16px",marginTop:"8px"}} />
+                ) : (
+                  <ArrowBackIosNewIcon style={{height:"12px",width:"16px",marginTop:"8px"}} />
+                )
+              )}
             </Typography>
           </React.Fragment>
         ))}

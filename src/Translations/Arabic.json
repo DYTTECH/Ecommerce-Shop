@@ -95,5 +95,20 @@
     "You have no configured addresses.":"لا يوجد حساب معرّف.",
     "There is no PAYMENTS.":"لا يوجد مدفوعات.",
     "Add New Address":"أضف عنوان جديد",
-    "Address Added Succefully!":"تم إضافة العنوان بنجاح"
+    "Address Added Successfully!":"تم إضافة العنوان بنجاح!",
+    "Address Deleted Successfully!":"تم حذف العنوان بنجاح!",
+    "Address Updated Successfully!":"تم تعديل العنوان بنجاح!",
+    "Edit Address":"تعديل العنوان",
+    "Checkout":"إتمام عملية الدفع",
+    "Back to Shopping":"العودة للتسوق",
+    "Secure checkout":"الدفع الآمن",
+    "Delivering to":"التوصيل إلى",
+    "Deliver":"التوصيل",
+    "Payment":"الدفع",
+    "Payment Options":"طرق الدفع",
+    "PROCEED TO SECURE PAYMENT":"الإكمال للدفع الآمن",
+    "Delivery Options":"خيارات التوصيل",
+    "Payment type":"نوع الدفع",
+    "Cash on Delivery":"الدفع نقداً عند الاستلام",
+    "Take note! Cash payment orders will be charged an additional service fee per order.":"ملاحظة! سيتم فرض رسوم خدمة إضافية على طلبات الدفع النقدي لكل طلب."
 }

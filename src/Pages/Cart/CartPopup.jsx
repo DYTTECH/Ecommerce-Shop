@@ -224,6 +224,7 @@ const CartPopup = ({ openCartPopup, handleCloseCartPopup }) => {
                 width: "60%",
                 paddingY: 3,
               }}
+              onClick={() => navigate(`/t2/${shopInfo.sub_domain}/checkout`)} 
             >
               {t("Check Out")}
             </DarkButton>
@@ -252,6 +253,7 @@ const CartPopup = ({ openCartPopup, handleCloseCartPopup }) => {
               </span>
             </DarkText>
           </Box>
+         
         </Box>
       </DialogContent>
     </Dialog>

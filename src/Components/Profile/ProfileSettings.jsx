@@ -12,17 +12,24 @@ import {
   Alert,
   Box,
   Button,
+  Container,
+  Divider,
   FormControl,
   FormControlLabel,
+  Grid,
   Radio,
   RadioGroup,
   Snackbar,
   Stack,
   TextField,
 } from "@mui/material";
-import { MainTitle } from "../../Style/StyledComponents/Typography";
+import { GrayText, MainTitle } from "../../Style/StyledComponents/Typography";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import ProfileSidBar from "./ProfileSidBar";
+import ResponsiveLayout from "../Layout/Layout";
+import PageMeta from "../Layout/MetaPage";
+import HeroTitle from "../Layout/HeroTitle";
 
 const ProfileSettings = () => {
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
@@ -171,7 +178,47 @@ const ProfileSettings = () => {
   }, []); // Run only once on component mount
 
   return (
-    <Box>
+    <ResponsiveLayout>
+      <PageMeta
+        title={`${shopInfo?.sub_domain}-${t("My Cart")}`}
+        desc="Description of my page for SEO"
+        name={shopInfo?.full_name}
+        type={shopInfo?.shop_type_name}
+        image={shopInfo?.logo}
+      />
+      <Box sx={{ marginY: { lg: "90px", md: 2, sm: 2, xs: 2 } }}>
+        <Box
+          sx={{
+            pr: 5,
+            mb: 2,
+          }}
+        >
+          <GrayText>
+            <HeroTitle crumbs={crumbs} />
+          </GrayText>
+        </Box>
+        <Divider />
+    <Container
+      maxWidth="xl"
+      sx={{ marginTop: { lg: "69px", md: "0", sm: "0", xs: "0" } }}
+    >
+<Grid
+        container
+        spacing={2}
+        sx={{
+          flexGrow: 1,
+          bgcolor: "background.paper",
+          display: "flex",
+          height: "100%",
+          overflow: "hidden",
+          
+        }}
+      >
+        <Grid className="GridItem" lg={4} md={4} xs={12} sm={12} sx={{paddingLeft:"50px"}} >
+          <ProfileSidBar />
+        </Grid>
+        <Grid lg={8} md={4} xs={12} sm={12}>
+          <Box>
       <MainTitle>{t("MY PROFILE")}</MainTitle>
       <Box>
         <FormControl>
@@ -324,6 +371,11 @@ const ProfileSettings = () => {
         </FormControl>
       </Box>
     </Box>
+        </Grid>
+      </Grid>
+    </Container>
+      </Box>
+    </ResponsiveLayout>
   );
 };
 

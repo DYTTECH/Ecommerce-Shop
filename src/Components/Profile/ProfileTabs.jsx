@@ -40,12 +40,12 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import Profile from "./ProfileSettings";
 import Address from "./Address";
 import { PRODUCTS } from "../../Data/API";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
   value: number;
-  tabInfo: { icon: React.ReactNode, name: string }; // Icon component and tab name
+  tabInfo: { icon: React.ReactNode, name: string, tabName: string }; // Icon component and tab name
 }
 
 function TabPanel(props: TabPanelProps) {
@@ -99,6 +99,7 @@ const ProfileTabs = () => {
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+  const { profile, addresses, referAndEarn, orders, returns, payments, logout } = useParams();
 
   const [page, setPage] = useState(1);
 
@@ -126,17 +127,19 @@ const ProfileTabs = () => {
   useEffect(() => {
     GetProductsWishList();
   }, []);
-
+  
   const tabInfoArray = [
     {
       icon: <AccountCircle />,
       name: t("MY PROFILE"),
       content: [<Profile />],
+      tabName: "profile",
     },
     {
       icon: <WalletIcon />,
       name: t("REFER & EARN"),
       content: [<Typography>Refer & Earn content</Typography>],
+      tabName: "referAndEarn",
     },
     {
       icon: <ListAltIcon />,
@@ -147,6 +150,7 @@ const ProfileTabs = () => {
           <ItemsDes sx={{ pt: 3 }}>{t("There is no orders.")}</ItemsDes>
         </>,
       ],
+      tabName: "orders",
     },
     {
       icon: <RotateLeftIcon />,
@@ -159,60 +163,21 @@ const ProfileTabs = () => {
           </ItemsDes>
         </>,
       ],
+      tabName: "returns",
     },
     {
       icon: <FavoriteBorderOutlinedIcon />,
       name: t("MY WISHLIST"),
       content: [
-        <>
-          <MainTitle>{t("MY WISHLIST")}</MainTitle>
-          {/* <ItemsDes sx={{pt:3}}>{t("There is no orders.")}</ItemsDes> */}
-          <Grid container spacing={3}>
-            {ResponseGetWishList.isPending ? (
-              <ViewProductsSkeleton />
-            ) : wishlist?.results?.length ? (
-              wishlist?.results?.map((product) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={product?.id}>
-                  <ProductItem {...product} />
-                </Grid>
-              ))
-            ) : (
-              <GrayText>No data to show</GrayText>
-            )}
-            {/* Your products will be displayed here. You can */}
-            <Stack
-              spacing={2}
-              mt={3}
-              mb={3}
-              justifyContent="center"
-              alignItems="center"
-              sx={{ width: "100%" }}
-            >
-              {wishlist?.count > 0 && wishlist?.count > 8 && (
-                <Pagination
-                  count={Math.ceil(wishlist?.count / 8)}
-                  page={page}
-                  onChange={handleChange}
-                  renderItem={(item) => (
-                    <PaginationItem
-                      slots={{
-                        previous: ArrowBackIcon,
-                        next: ArrowForwardIcon,
-                      }}
-                      {...item}
-                    />
-                  )}
-                />
-              )}
-            </Stack>
-          </Grid>
-        </>,
+        ,
       ],
+      tabName: "wishlist",
     },
     {
       icon: <LocationOnIcon />,
       name: t("MY ADDRESS BOOK"),
       content: [<Address />],
+      tabName: "addresses"
     },
     {
       icon: <CreditCardIcon />,
@@ -223,6 +188,7 @@ const ProfileTabs = () => {
           <ItemsDes sx={{ pt: 3 }}>{t("There is no PAYMENTS.")}</ItemsDes>
         </>,
       ],
+      tabName: "payments",
     },
     {
       icon: <LogoutIcon />,
@@ -233,9 +199,17 @@ const ProfileTabs = () => {
           <ItemsDes sx={{ pt: 3 }}>{t("There is no orders.")}</ItemsDes>
         </>,
       ],
+      tabName: "logout",
     },
     // Add more tab info objects as needed
   ];
+
+  useEffect(() => {
+  const tabIndex = tabInfoArray.findIndex((tabInfo) => tabInfo.tabName === profile || tabInfo.tabName === referAndEarn || tabInfo.tabName === orders || tabInfo.tabName === returns || tabInfo.tabName === addresses || tabInfo.tabName === payments || tabInfo.tabName === logout);
+  if (tabIndex !== -1) {
+    setValue(tabIndex);
+  }
+}, [profile, addresses, referAndEarn, orders, returns, payments, logout, navigate, shopInfo?.sub_domain]);
 
   return (
     <ResponsiveLayout>
@@ -290,6 +264,7 @@ const ProfileTabs = () => {
                     spacing={1}
                     alignItems="center"
                     justifyContent="space-between"
+                    onClick={() => navigate(`/t2/${shopInfo?.sub_domain}/profile/${tabInfo.tabName}`)}
                   >
                     <Grid item>{tabInfo.icon}</Grid>
                     <Grid item>{t(tabInfo.name)}</Grid>

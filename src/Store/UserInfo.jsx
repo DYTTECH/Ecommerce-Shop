@@ -21,10 +21,10 @@ export const userInfo = createSlice({
       state.value = { token: state.value.access, ...action.payload };
       localStorage.setItem("userDetails", JSON.stringify(state.value));
     },
-    setUserAddresses: (state, action) => {
-      state.value = { token: state.value.access, ...action.payload };
-      localStorage.setItem("userAddresses", JSON.stringify(state.value));
-    },
+    // setUserAddresses: (state, action) => {
+    //   state.value = { token: state.value.access, ...action.payload };
+    //   localStorage.setItem("userAddresses", JSON.stringify(state.value));
+    // },
     logout: (state) => {
      
       localStorage.removeItem("userinfo");
