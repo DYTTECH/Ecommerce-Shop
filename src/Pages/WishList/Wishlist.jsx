@@ -42,7 +42,7 @@ const Wishlist = () => {
   
     useEffect(() => {
       GetProductsWishList();
-    }, [shopInfo?.id]);
+    }, [shopInfo?.id,page]);
 
   return (
    <ResponsiveLayout>
@@ -53,8 +53,8 @@ const Wishlist = () => {
         type="website"
         image="URL_to_your_image"
       />
-      <Container maxWidth='xl' >
-    <Grid container  spacing={3}>
+      <Container maxWidth='xl'>
+    <Grid container  spacing={3} pt={"24px"}>
         {ResponseGetWishList.isPending ? (
           <ViewProductsSkeleton />
         ) : (wishlist?.results?.length?

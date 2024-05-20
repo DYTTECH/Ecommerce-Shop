@@ -44,14 +44,13 @@ const Brands = ({ props, items ,title}) => {
           transition: "0.8s all",
           paddingInline: "2%",
           paddingBottom: trigger ? "5%" : "0%",
-  
-          paddingTop: trigger ? "1%" : "0",
+          paddingTop: trigger ? "1%" : "0.5%",
+          
         }}
         
       >
          <Stack
     gap={1}
-    co
     className={lang === 'en' ? 'productStack' : ''}
     sx={{
       ".react-multi-carousel-list": {
@@ -81,7 +80,7 @@ const Brands = ({ props, items ,title}) => {
               <Tooltip title={brand?.name} arrow>
                 <Grid xs={2} key={index}>
                   <Card
-                  onClick={() => navigate(`/t2/${shopInfo.sub_domain}/products`,{state:{keys:{
+                  onClick={() => navigate(`/t2/${shopInfo?.sub_domain}/products`,{state:{keys:{
                    brand_id:brand?.id
                    }}})}
                     sx={{
@@ -90,13 +89,14 @@ const Brands = ({ props, items ,title}) => {
                       justifyContent: "space-around",
                       bgcolor: "#f2f2f2",
                       flexDirection:"column",
-                      pb: 3
+                      pb: 3,
+                      cursor:"pointer"
                     }}
                   >
                     <img
                       src={brand?.logo}
                       alt={brand?.name}
-                      style={{ width: "100%" }}
+                      style={{ width: "100%" ,height:"250px",objectFit:"cover"}}
                     />
                     <ItemsTitle>{brand?.name}</ItemsTitle>
                   </Card>

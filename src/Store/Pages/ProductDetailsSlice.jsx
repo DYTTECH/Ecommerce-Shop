@@ -15,13 +15,26 @@ const ProductDetailsSlice = createSlice({
 			};
 		},
 		favoriteItem: (state, action) => {
-			console.log(action.payload);
-			const index = Object.keys(state.value).findIndex((item) => item === action.payload);
-			state.value[index] = {
-				...state.value[index],
-				is_favorite: !state.value[index].is_favorite,
+			const productIdToUpdate = action.payload.id; // Assuming action.payload contains the ID of the product to favorite
+		  
+			// Find the index of the item in state.value array
+			const index = state.value.findIndex((item) => item.id === productIdToUpdate);
+		  
+			if (index !== -1) {
+			  // Create a new array to ensure immutability
+			  const updatedValue = [...state.value];
+			  
+			  // Update the is_favorite property of the item
+			  updatedValue[index] = {
+				...updatedValue[index],
+				is_favorite: !updatedValue[index].is_favorite,
+			  };
+		  
+			  // Update the state with the new array
+			  state.value = updatedValue;
 			}
-		}
+		  },
+		  
 		
 	},
 });

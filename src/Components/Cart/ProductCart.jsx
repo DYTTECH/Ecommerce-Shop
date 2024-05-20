@@ -19,6 +19,7 @@ const ProductCart = ({product_id,
     in_offer,
     brand_name,
     purchase,
+    currency,
     cart_item_id,isPending}) => {
       const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
       const token=JSON.parse(localStorage.getItem("userinfo"))
@@ -85,7 +86,7 @@ const ProductCart = ({product_id,
           }}
         >
           <TextDiscount variant="body1">
-            {price} {t("SAR")}
+            {price} {currency}
           </TextDiscount>
           <Typography variant="body1" sx={{ fontFamily: "Cairo" }}>
             {brand_name}

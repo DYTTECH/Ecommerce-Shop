@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import PageMeta from "../../Components/Layout/MetaPage";
 import ResponsiveLayout from "../../Components/Layout/Layout";
 import useRequest from "../../Hooks/useRequest";
-import { HOMECOMPONENTS, SHOPINFO } from "../../Data/API";
+import { HOMECOMPONENTS, PRODUCTS, SHOPINFO } from "../../Data/API";
 import { useDispatch, useSelector } from "react-redux";
 import { Box } from "@mui/material";
 import Banners from "../../Components/home/banners";
@@ -28,11 +28,41 @@ const Home = () => {
     method: "Get",
     path: SHOPINFO,
   });
+    // Get wishlist request
+    const [RequestGetWishList, ResponseGetWishList] = useRequest({
+      method: "Get",
+      path: PRODUCTS ,
+      token:userInfo?`Token ${userInfo}`:null
+    });
+    const GetProductsWishList = (id) => {
+        RequestGetWishList({
+          id:id+"/products/?favorite=True",
+        onSuccess: (res) => {
+          dispatch({ type: "wishlist/set", payload: res.data });
+        },
+        onError: (err) => {
+          dispatch({ type: "wishlist/reset", payload: err.message });
+        },
+      });
+    };
   const GetShopInfo = (shop) => {
     RequestGetShop({
       id: shop.split("/")[0],
       onSuccess: (res) => {
         dispatch({ type: "shopInfo/setShop", payload: res.data });
+        RequestGetHomeComponent({
+        
+            id:res?.data?.id+"/home-components",
+       
+          onSuccess: (res) => {
+            dispatch({ type: "homecomponents/set", payload: res.data });
+
+          },
+          onError: (err) => {
+            dispatch({ type: "shopInfo/clearShop", payload: err.message });
+          },
+        });
+        GetProductsWishList(res.data.id);
       },
       onError: (err) => {
         dispatch({ type: "shopInfo/clearShop", payload: err.message });
@@ -42,43 +72,34 @@ const Home = () => {
 
 
   useEffect(()=>{
-   
+    window.scrollTo( 10,0)
     checkTokenExpiration()
   },[])
 
   // Get shop home component
   const [RequestGetHomeComponent, ResponseGetHomeComponent] = useRequest({
     method: "Get",
-     path: HOMECOMPONENTS + shopInfo?.id + "/home-components/",
+     path: HOMECOMPONENTS,
   });
-  const GetHomeComponent = () => {
-    RequestGetHomeComponent({
-      onSuccess: (res) => {
-        dispatch({ type: "homecomponents/set", payload: res.data });
-      },
-      onError: (err) => {
-        dispatch({ type: "shopInfo/clearShop", payload: err.message });
-      },
-    });
-  };
+  
   useEffect(() => {
 
-    window.scrollTo(10, 0);
+   
     const currentShopInfo = window.location.pathname.split("/t2/")[1];
     if (currentShopInfo) {
       GetShopInfo(currentShopInfo);
     }
 
-    window.scrollTo(10, 0);
+    
   }, []);
 
-  useEffect(() => {
-    setTimeout(()=>{
-      if(shopInfo?.id){
-      GetHomeComponent();
-    }
-    },50000)
-  }, [shopInfo?.id]);
+  // useEffect(() => {
+  //   setTimeout(()=>{
+  //     if(shopInfo?.id){
+  //     GetHomeComponent();
+  //   }
+  //   },5000)
+  // }, [shopInfo?.id]);
 
   return (
     <Box>

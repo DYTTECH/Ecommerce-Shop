@@ -33,6 +33,7 @@
     "Phone Number":"Phone Number",
     "Female":"Female",
     "Male":"Male",
+    "Gender":"Gender",
     "Sign up":"Sign up",
     "Register for a unique shopping experience":"Register for a unique shopping experience",
     "Forget Password":"Forget Password",
@@ -50,5 +51,10 @@
     "Enter coupon or promo code":"Enter coupon or promo code",
     "Select":"Select",
     "Order Details":"Order Details",
-    "Total Amount":"Total Amount"
+    "Total Amount":"Total Amount",
+    "Enter your OTP":"Enter your OTP",
+    "Send code":"Send code",
+    "Price":"Price",
+    "Brands":"Brands",
+    "Rates":"Rates"
 }

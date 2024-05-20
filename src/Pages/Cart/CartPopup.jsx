@@ -216,7 +216,7 @@ const CartPopup = ({ openCartPopup, handleCloseCartPopup }) => {
           </Box>
           <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
             <DarkText>{t("Shipping fee")}</DarkText>
-            <DarkText>20.00 {t("SAR")}</DarkText>
+            <DarkText>{CartDetails?.shipping_cost}{t("SAR")}</DarkText>
           </Box>
           <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
             <DarkButton
