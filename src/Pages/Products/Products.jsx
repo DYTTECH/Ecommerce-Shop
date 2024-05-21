@@ -168,20 +168,24 @@ export const Products = () => {
   };
 
   useEffect(() => {
-    RequestGetProductFilterd({
-      params: {
-        page: page || 1,
-      },
-      onSuccess: (res) => {
-        dispatch({ type: "products/set", payload: res?.data });
-      },
-    });
+   
     RequestGetFilter({
       onSuccess: (res) => {
         dispatch({ type: "filter/set", payload: res?.data });
       },
     });
-  }, [location?.state?.keys, page, filterdata]);
+  }, [location?.state?.keys ]);
+
+useEffect(()=>{
+  RequestGetProductFilterd({
+    params: {
+      page: page || 1,
+    },
+    onSuccess: (res) => {
+      dispatch({ type: "products/set", payload: res?.data });
+    },
+  });
+},[page,filterdata])
 
   return (
     <ResponsiveLayout>

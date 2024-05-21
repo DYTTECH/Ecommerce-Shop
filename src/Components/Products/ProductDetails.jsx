@@ -112,10 +112,7 @@ const ProductDetails = () => {
   const token = JSON.parse(localStorage.getItem("userinfo"));
   const [openCartPopup, setOpenCartPopup] = useState(false);
   const [selectedimg, setSelectedimg] = useState("");
-  const [variants,setVariants]=useState({
-    variant_id: "",
-    
-  });
+  const [variantID, setVariantID] = useState();
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const theme = useTheme();
@@ -176,8 +173,7 @@ const ProductDetails = () => {
       body: {
         product: params?.id,
         quantity: 1,
-        color_id: variants?.color_id,
-        size_id: variants?.size_id,
+        variant: variantID,
       },
       onSuccess: (res) => {
         setOpenCartPopup(true);
@@ -247,6 +243,7 @@ const ProductDetails = () => {
     GetProductDetails();
     GetProductSort();
     RequestProductView();
+    window.scrollTo(0,0)
   }, []);
 
   useEffect(() => {
@@ -255,18 +252,16 @@ const ProductDetails = () => {
     }
   }, [ProductDetails["images"]]);
 
-  useEffect(()=>{
-    if (ProductDetails && ProductDetails?.variants_details && Object.keys(ProductDetails?.variants_details).length > 0) {
-      const firstVariantKey = Object.keys(ProductDetails.variants_details).at(0)
-      const firstVariantArray = ProductDetails?.variants_details[firstVariantKey];
-      
-      if (firstVariantArray && firstVariantArray.length > 0) {
-        setVariants({
-          variant_id: firstVariantArray[0]?.variant_id,
-        });
+  useEffect(() => {
+    if (ProductDetails && ProductDetails?.variants_details) {
+      const firstVariantGroup = Object.keys(ProductDetails.variants_details)[0];
+      if (firstVariantGroup) {
+        const firstVariant =
+          ProductDetails.variants_details[firstVariantGroup][0];
+        setVariantID(firstVariant?.variant_id);
       }
     }
-  },[ProductDetails])
+  }, [ProductDetails]);
 
   const shareData = {
     text: ProductDetails.name,
@@ -621,32 +616,28 @@ const ProductDetails = () => {
                                     item?.is_color === false ? (
                                       <Button
                                         key={innerIndex}
-                                        variant="outlined"
-                                        
+                                        variant={
+                                          variantID === item?.variant_id
+                                            ? "contained"
+                                            : "outlined"
+                                        }
                                         sx={{
-                                           
                                           ml: 3,
                                           bgcolor: item?.value,
-                                          borderColor: variants?.variant_id===item?.variant_id? "#000" : "transparent",
-                                          borderStyle:"solid",
-                                          borderWidth:'1px',
-                                         }}
-                                        value={item?.variant_id}
-                                        onClick={(e) => {
-                                          setVariants((old) => ({
-                                            ...old,
-                                            variant_id: e.currentTarget.value,
-                                          }));
+                                          borderColor:
+                                            variantID === item?.variant_id
+                                              ? "#000"
+                                              : "transparent",
+                                          borderStyle: "solid",
+                                          borderWidth: "1px",
+                                          ":hover": {
+                                            bgcolor: item?.value,
+                                          },
                                         }}
-                                        // sx={{
-                                        //   ...ButtonSize.__emotion_styles[0],
-                                        //   cursor: "pointer",
-                                        //    borderColor: SizeandColor?.variant_id===item?.variant_id? "#000" : "transparent",
-                                        //  borderStyle:"solid",
-                                        //  borderWidth:'1px',
-                                        //   padding: "8px",
-                                        //   width: "fit-content",
-                                        // }}
+                                        value={item?.variant_id}
+                                        onClick={(e) =>
+                                          setVariantID(item?.variant_id)
+                                        }
                                       >
                                         {item?.is_color === false
                                           ? item?.value
@@ -654,33 +645,30 @@ const ProductDetails = () => {
                                       </Button>
                                     ) : (
                                       <Button
-                                        variant="outlined"
-                                        disabled
+                                        variant={
+                                          variantID === item?.variant_id
+                                            ? "contained"
+                                            : "outlined"
+                                        }
                                         sx={{
                                           ml: 3,
                                           bgcolor: item?.value,
                                           height: "34px",
                                           width: "34px",
-                                          borderColor: variants?.variant_id===item?.variant_id? "#000" : "transparent",
-                                          borderStyle:"solid",
-                                          borderWidth:'1px',
+                                          borderColor:
+                                            variantID === item?.variant_id
+                                              ? "#000"
+                                              : "transparent",
+                                          borderStyle: "solid",
+                                          borderWidth: "1px",
+                                          ":hover": {
+                                            bgcolor: item?.value,
+                                          },
                                         }}
                                         value={item?.variant_id}
-                                        onClick={(e) => {
-
-                                          setVariants((old) => ({
-                                            ...old,
-                                            variant_id: e.currentTarget.value,
-                                          }));
-                                        }}
-                                        // sx={{
-                                        //   ...ButtonSize.__emotion_styles[0],
-                                        //   cursor: "pointer",
-                                        //   border: SizeandColor.variant_id===item.variant_id ? "1px solid #000" : "transparent",
-                                        //   padding: "8px",
-                                        //   width: "24px",
-                                        //   background: item.value,
-                                        // }}
+                                        onClick={(e) =>
+                                          setVariantID(item.variant_id)
+                                        }
                                       />
                                     )
                                   )
