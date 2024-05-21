@@ -7,8 +7,6 @@ import ProductDetails from "../Components/Products/ProductDetails";
 import Discount from "../Pages/Discount/Discount";
 import Wishlist from "../Pages/WishList/Wishlist";
 import Cart from "../Pages/Cart/Cart";
-import Profile from "../Components/Profile/ProfileSettings";
-import ProfileTabs from "../Components/Profile/ProfileTabs";
 import ProfileSettings from "../Components/Profile/ProfileSettings";
 import Address from "../Components/Profile/Address";
 import MyWishlist from "../Components/Profile/MyWishlist";

@@ -6,6 +6,8 @@ import {
   Alert,
   Box,
   Button,
+  CircularProgress,
+  Container,
   Dialog,
   DialogContent,
   FormControl,
@@ -16,12 +18,20 @@ import useRequest from "../../../Hooks/useRequest";
 import useControls from "../../../Hooks/useControls";
 import { BlackText } from "../../../Style/StyledComponents/Typography";
 import BASEURL from "../../../Data/API";
-import { AddressTextField } from "../../../Style/StyledComponents/profileStyle";
+import {
+  InputField,
+  PhoneNumber,
+} from "../../../Style/StyledComponents/Inputs";
+import { DarkButton } from "../../../Style/StyledComponents/Buttons";
 
-const AddAddress = ({ openAddAddress, handleCloseAddAddress, editingAddressId }) => {
+const AddAddress = ({
+  openAddAddress,
+  handleCloseAddAddress,
+  editingAddressId,
+}) => {
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
   const token = JSON.parse(localStorage.getItem("userinfo"));
-  
+
   const userAddresses = useSelector((state) => state.userAddresses?.value);
 
   const { t } = useTranslation();
@@ -59,7 +69,6 @@ const AddAddress = ({ openAddAddress, handleCloseAddAddress, editingAddressId })
     { control: "additional_information", value: "", isRequired: true },
   ]);
 
-
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -84,7 +93,15 @@ const AddAddress = ({ openAddAddress, handleCloseAddAddress, editingAddressId })
       RequestGetAddress({
         id: editingAddressId,
         onSuccess: (res) => {
-          const { name, additional_information, address, city, governorate, country, phone } = res.data;
+          const {
+            name,
+            additional_information,
+            address,
+            city,
+            governorate,
+            country,
+            phone,
+          } = res.data;
           setControl("name", name);
           setControl("additional_information", additional_information);
           setControl("address", address);
@@ -150,17 +167,26 @@ const AddAddress = ({ openAddAddress, handleCloseAddAddress, editingAddressId })
         onClose={handleCloseAddAddress}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        sx={{
+          ".MuiPaper-root": {
+            borderRadius: "10px",
+            width: "50%",
+            height: "100%",
+          },
+        }}
       >
-        <BlackText
-          sx={{ padding: "30px 30px 0 0" }}
-          id="alert-dialog-title"
+        <DialogContent
+          sx={{
+            padding: "0 !important",
+            mt: 4,
+          }}
         >
-          {editingAddressId ? t("Edit Address") : t("New Address")}
-        </BlackText>
-        <DialogContent sx={{ display: "flex", width: "350px", justifyContent: "center" }}>
-          <FormControl>
-            <Box sx={{ width: "100%" }}>
-              <AddressTextField
+          <Container>
+            <BlackText>
+              {editingAddressId ? t("Edit Address") : t("New Address")}
+            </BlackText>
+            <Stack sx={{ gap: 3, mt: 4, px: 2 }}>
+              <InputField
                 variant="outlined"
                 type="text"
                 value={controls.name}
@@ -171,7 +197,7 @@ const AddAddress = ({ openAddAddress, handleCloseAddAddress, editingAddressId })
                 name="name"
                 placeholder="name"
               />
-              <AddressTextField
+              {/* <InputField
                 variant="outlined"
                 name="phone"
                 type="text"
@@ -181,8 +207,20 @@ const AddAddress = ({ openAddAddress, handleCloseAddAddress, editingAddressId })
                 error={Boolean(invalid?.phone)}
                 helperText={invalid?.phone}
                 placeholder="phone number"
+              /> */}
+              <PhoneNumber
+                name="phone"
+                placeholder={t("Phone Number")}
+                defaultCountry="EG"
+                value={controls?.phone}
+                onChange={(e) => {
+                  setControl("phone", e);
+                }}
+                required={required.includes("phone")}
+                error={Boolean(invalid?.phone)}
+                helperText={invalid?.phone}
               />
-              <AddressTextField
+              <InputField
                 variant="outlined"
                 sx={{ padding: "10.5px 14px !important", width: "100%" }}
                 type="text"
@@ -194,7 +232,7 @@ const AddAddress = ({ openAddAddress, handleCloseAddAddress, editingAddressId })
                 name="country"
                 placeholder="country"
               />
-              <AddressTextField
+              <InputField
                 variant="outlined"
                 type="text"
                 value={controls.governorate}
@@ -205,7 +243,7 @@ const AddAddress = ({ openAddAddress, handleCloseAddAddress, editingAddressId })
                 name="governorate"
                 placeholder="governorate"
               />
-              <AddressTextField
+              <InputField
                 variant="outlined"
                 type="text"
                 value={controls.city}
@@ -216,7 +254,7 @@ const AddAddress = ({ openAddAddress, handleCloseAddAddress, editingAddressId })
                 name="city"
                 placeholder="city"
               />
-              <AddressTextField
+              <InputField
                 variant="outlined"
                 type="text"
                 value={controls.address}
@@ -227,34 +265,39 @@ const AddAddress = ({ openAddAddress, handleCloseAddAddress, editingAddressId })
                 name="address"
                 placeholder="address"
               />
-              <AddressTextField
+              <InputField
                 variant="outlined"
                 type="text"
                 value={controls.additional_information}
-                onChange={(e) => setControl("additional_information", e.target.value)}
+                onChange={(e) =>
+                  setControl("additional_information", e.target.value)
+                }
                 required={required.includes("additional_information")}
                 error={Boolean(invalid?.additional_information)}
                 helperText={invalid?.additional_information}
                 name="additional_information"
                 placeholder="additional information"
               />
-              <Stack spacing={2} sx={{ width: "90%", margin: "30px 15px" }}>
-                <Button
-                  onClick={handleSubmitAddAddress}
-                  type="button"
-                  variant="contained"
-                  sx={{
-                    bgcolor: theme.palette.primary.dark,
-                    color: theme.palette.primary.light,
-                    width: "100%",
-                    fontFamily: "Cairo",
-                  }}
-                >
-                  {t("Save")}
-                </Button>
-              </Stack>
-            </Box>
-          </FormControl>
+            </Stack>
+            <DarkButton
+              onClick={handleSubmitAddAddress}
+              type="button"
+              variant="contained"
+              sx={{
+                mt: 3,
+                width: "100%",
+                fontFamily: "Cairo",
+                height: "48px",
+                borderRadius: "8px",
+              }}
+            >
+              {Boolean(ResponseAddAddress.isPending && ResponceUpdateAddress.isPending) ? (
+                <CircularProgress />
+              ) : (
+                t("Save")
+              )}
+            </DarkButton>
+          </Container>
         </DialogContent>
       </Dialog>
       <Snackbar

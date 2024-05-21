@@ -30,7 +30,7 @@ import ProductCart from "../../Components/Cart/ProductCart";
 import CartDetails from "./CartDetails";
 import { DarkButton } from "../../Style/StyledComponents/Buttons";
 import { useNavigate } from "react-router-dom";
-
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 const Cart = () => {
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
   const token = JSON.parse(localStorage.getItem("userinfo"));
@@ -66,22 +66,22 @@ const Cart = () => {
   };
 
   // add coupon to cart
-  const [RequestPostCoupon, ResponsePostCoupon] = useRequest({
-    method: "POST",
-    path: `${PRODUCTS}${shopInfo?.id}/cart/apply_coupon/`,
-    token: token ? `Token ${token}` : null,
-  });
-  const handleAddCoupon = () => {
-    RequestPostCoupon({
-      body: {
-        coupon_code: coupon,
-      },
-      onSuccess: (res) => {
-        setCoupon("");
-        GetCartDetails();
-      },
-    });
-  };
+  // const [RequestPostCoupon, ResponsePostCoupon] = useRequest({
+  //   method: "POST",
+  //   path: `${PRODUCTS}${shopInfo?.id}/cart/apply_coupon/`,
+  //   token: token ? `Token ${token}` : null,
+  // });
+  // const handleAddCoupon = () => {
+  //   RequestPostCoupon({
+  //     body: {
+  //       coupon_code: coupon,
+  //     },
+  //     onSuccess: (res) => {
+  //       setCoupon("");
+  //       GetCartDetails();
+  //     },
+  //   });
+  // };
   useEffect(() => {
     GetCartDetails();
   }, [shopInfo?.id]);
@@ -133,7 +133,7 @@ const Cart = () => {
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               {/* copoun */}
-              <Stack
+              {/* <Stack
                 direction="column"
                 sx={{
                   bgcolor: "#f4fffc",
@@ -187,9 +187,9 @@ const Cart = () => {
                     
                   </Stack>
                 )}
-              </Stack>
+              </Stack> */}
               {/* order details */}
-              <Box
+              {/* <Box
                 sx={{
                   bgcolor: theme.palette.primary.secondLight,
                   padding: 3,
@@ -240,16 +240,18 @@ const Cart = () => {
                     {cartDetails?.total} {t("SAR")}
                   </MainTitle>
                 </Box>
-              </Box>
+              </Box> */}
+              <CartDetails />
               <DarkButton
-                sx={{
-                  width: "100%",
-                  paddingY: 2,
-                  mt: 3,
-                }}
-              >
-                {t("Check Out")}
-              </DarkButton>
+              sx={{
+                width: "100%",
+                paddingY: 3,
+                mt:4
+              }}
+              onClick={() => navigate(`/t2/${shopInfo.sub_domain}/checkout`)} 
+            >
+              {t("Check Out")}
+            </DarkButton>
             </Grid>
           </Grid>
         </Container>

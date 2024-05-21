@@ -48,6 +48,7 @@ const ProfileMenu = ({ openProfile, handleCloseProfile, anchorElProfile }) => {
   };
   const handleCloseLogin = () => {
     setOpenLogin(false);
+    handleCloseProfile();
   };
   const handleClickOpenLogin = () => {
     setOpenLogin(true);

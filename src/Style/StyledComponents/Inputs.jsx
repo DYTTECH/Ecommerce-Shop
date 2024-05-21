@@ -44,7 +44,6 @@ export const InputField = styled(OutlinedInput)(({ theme }) => ({
   fontWeight: 400,
   lineHeight: "22px",
   letterSpacing: "0em",
-
   root: {
     ":-webkit-autofill": {
       WebkitBoxShadow: "0 0 0 1000px white inset",
@@ -60,6 +59,8 @@ export const InputField = styled(OutlinedInput)(({ theme }) => ({
 }));
 
 export const PhoneNumber = styled(MuiTelInput)(({ theme }) => ({
+  width: "100%",
+
   "& .MuiOutlinedInput-root": {
     height: "48px", // Set the desired height
     borderRadius: "8px", // Set the desired border radius
