@@ -265,7 +265,7 @@ const AuthRegister = ({ openRegister, handleCloseRegister }) => {
             {Boolean(RegisterResponse.isPending) ? (
               <CircularProgress />
             ) : (
-              t("Sign in")
+              t("Sign up")
             )}
           </DarkButton>
         </Container>
