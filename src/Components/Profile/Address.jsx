@@ -36,6 +36,7 @@ const Address = () => {
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
   const token = JSON.parse(localStorage.getItem("userinfo"));
   const { t } = useTranslation();
+  const dispatch=useDispatch()
   const theme = useTheme();
   const crumbs = [
     {
@@ -46,7 +47,6 @@ const Address = () => {
     { label: `${t("Profile")}`, active: false },
     { label: `${t("MY ADDRESS BOOK")}`, active: false },
   ];
-
   const [openAddAddress, setOpenAddAddress] = useState(false);
 
   const handleCloseAddAddress = () => {
@@ -56,6 +56,24 @@ const Address = () => {
     setOpenAddAddress(true);
   };
 
+  //get wishlist products
+  const [RequestGetCustomerAddress, ResponseGetCustoerAddress] = useRequest({
+    method: "GET",
+    path: BASEURL + shopInfo?.id + "/customers/addresses/",
+    token: token ? `Token ${token}` : null,
+  });
+
+  const GetCustomerAddress= () => {
+    RequestGetCustomerAddress({
+      onSuccess: (res) => {
+        dispatch({ type: "address/set", payload: res.data });
+      },
+    });
+  };
+
+  useEffect(() => {
+    GetCustomerAddress();
+  }, []);
   return (
     <ResponsiveLayout>
       <PageMeta

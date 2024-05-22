@@ -35,7 +35,7 @@ const MyWishlist = () => {
 
   const [page, setPage] = useState(1);
   const [value, setValue] = useState(0);
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (event,newValue) => {
     setValue(newValue);
   };
   //get wishlist products

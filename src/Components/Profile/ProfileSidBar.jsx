@@ -13,7 +13,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { useTranslation } from "react-i18next";
 import { GrayText } from "../../Style/StyledComponents/Typography";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 const ProfileSidBar = () => {
   const navigate = useNavigate();
@@ -25,8 +25,52 @@ const ProfileSidBar = () => {
   const handleChange = (event, newAlignment) => {
     setAlignment(newAlignment);
   };
+  const profile = [
+    {
+      name: t("MY PROFILE"),
+      value: "profile",
+      icon: <AccountCircle />,
+      path: `/t2/${shopInfo?.sub_domain}/profile`,
+    },
+    {
+      name: t("REFER & EARN"),
+      value: "refer",
+      icon: <WalletIcon />,
+      path: `/t2/${shopInfo?.sub_domain}/profile`,
+    },
+    {
+      name: t("MY ORDERS"),
+      value: "orders",
+      icon: <ListAltIcon />,
+      path: `/t2/${shopInfo?.sub_domain}/orders`,
+    },
+    {
+      name: t("MY RETURN/EXCHANGE"),
+      value: "return",
+      icon: <RotateLeftIcon />,
+      path: `/t2/${shopInfo?.sub_domain}/profile`,
+    },
+    {
+      name: t("MY WISHLIST"),
+      value: "wishlist",
+      icon: <FavoriteBorderOutlinedIcon />,
+      path: `/t2/${shopInfo?.sub_domain}/profile/wishlist`,
+    },
+    {
+      name: t("MY ADDRESS BOOK"),
+      value: "address",
+      icon: <LocationOnIcon />,
+      path: `/t2/${shopInfo?.sub_domain}/addresses`,
+    },
+    {
+      name: t("PAYMENTS"),
+      value: "payments",
+      icon: <CreditCardIcon />,
+      path: `/t2/${shopInfo?.sub_domain}/payments`,
+    },
+  ];
   return (
-    <Box >
+    <Box>
       <Box>
         <ToggleButtonGroup
           fullWidth
@@ -39,78 +83,23 @@ const ProfileSidBar = () => {
           aria-label="text formatting"
           sx={{ textTransform: "none" }}
         >
-          <ToggleButtonProfile
-            value="profile"
-            onClick={() => navigate(`/t2/${shopInfo?.sub_domain}/profile`)}
-          >
-            <AccountCircle />
-            <GrayText>{t("MY PROFILE")}</GrayText>
-            {lang === "ar" ? <ArrowForwardIosIcon /> : <ArrowBackIosNewIcon />}
-          </ToggleButtonProfile>
-          <ToggleButtonProfile
-            value="profile"
-            onClick={() => navigate(`/t2/${shopInfo?.sub_domain}/profile`)}
-          >
-            <WalletIcon />
-            <GrayText>{t("REFER & EARN")}</GrayText>
-            {lang === "ar" ? <ArrowForwardIosIcon /> : <ArrowBackIosNewIcon />}
-          </ToggleButtonProfile>
-          <ToggleButtonProfile
-            value="orders"
-            onClick={() =>
-              navigate(`/t2/${shopInfo?.sub_domain}/orders`)
-            }
-          >
-            <ListAltIcon />
-            <GrayText>{t("MY ORDERS")}</GrayText>
-                        {lang === "ar" ? <ArrowForwardIosIcon /> : <ArrowBackIosNewIcon />}
-
-          </ToggleButtonProfile>
-          <ToggleButtonProfile
-            value="return"
-            onClick={() =>
-              navigate(`/t2/${shopInfo?.sub_domain}/profile`)
-            }
-          >
-            <RotateLeftIcon />
-            <GrayText>{t("MY RETURN/EXCHANGE")}</GrayText>
-                        {lang === "ar" ? <ArrowForwardIosIcon /> : <ArrowBackIosNewIcon />}
-
-          </ToggleButtonProfile>
-          <ToggleButtonProfile
-            value="wishlist"
-            onClick={() =>
-              navigate(`/t2/${shopInfo?.sub_domain}/profile/wishlist`)
-            }
-          >
-            <FavoriteBorderOutlinedIcon />
-            <GrayText>{t("MY WISHLIST")}</GrayText>
-                        {lang === "ar" ? <ArrowForwardIosIcon /> : <ArrowBackIosNewIcon />}
-
-          </ToggleButtonProfile>
-          <ToggleButtonProfile
-            value="addresses"
-            onClick={() =>
-              navigate(`/t2/${shopInfo?.sub_domain}/addresses`)
-            }
-          >
-            <LocationOnIcon />
-            <GrayText>{t("MY ADDRESS BOOK")}</GrayText>
-                        {lang === "ar" ? <ArrowForwardIosIcon /> : <ArrowBackIosNewIcon />}
-
-          </ToggleButtonProfile>
-
-          <ToggleButtonProfile
-            value="payments"
-            onClick={() =>
-              navigate(`/t2/${shopInfo?.sub_domain}/payments`)
-            }
-          >
-            <CreditCardIcon />
-            <GrayText>{t("PAYMENTS")}</GrayText>
-                        {lang === "ar" ? <ArrowForwardIosIcon /> : <ArrowBackIosNewIcon />}
-
-          </ToggleButtonProfile>
+          {profile.map((item, index) => {
+            return (
+              <ToggleButtonProfile
+                key={index}
+                value={item.value}
+                onClick={() => navigate(item?.path)}
+              >
+                {item.icon}
+                <GrayText>{item.name}</GrayText>
+                {lang === "ar" ? (
+                  <ArrowForwardIosIcon />
+                ) : (
+                  <ArrowBackIosNewIcon />
+                )}
+              </ToggleButtonProfile>
+            );
+          })}
         </ToggleButtonGroup>
       </Box>
       <Divider />
@@ -118,7 +107,7 @@ const ProfileSidBar = () => {
         <Button
           //   onClick={handleSignout}
           sx={{
-            width:'100%',
+            width: "100%",
             height: "62px",
             display: "flex",
             justifyContent: "space-between",
@@ -126,7 +115,7 @@ const ProfileSidBar = () => {
           }}
         >
           <LogoutIcon />
-          <GrayText sx={{padding:'0'}}>{t("LOGOUT")}</GrayText>
+          <GrayText sx={{ padding: "0" }}>{t("LOGOUT")}</GrayText>
           {lang === "ar" ? <ArrowForwardIosIcon /> : <ArrowBackIosNewIcon />}
         </Button>
       </Box>

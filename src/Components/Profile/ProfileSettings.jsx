@@ -76,7 +76,7 @@ const ProfileSettings = () => {
     { control: "full_name", value: userDetails?.full_name || "" },
     {
       control: "customer_email",
-      value: userDetails?.customer_email ||"",
+      value: userDetails?.customer_email || "",
       validations: [
         {
           test: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
@@ -84,7 +84,7 @@ const ProfileSettings = () => {
         },
       ],
     },
-    { control: "phone", value: userDetails?.phone || ""  },
+    { control: "phone", value: userDetails?.phone || "" },
     { control: "gender", value: gender },
     { control: "birth_date", value: birthDate },
   ]);
@@ -170,9 +170,29 @@ const ProfileSettings = () => {
           </GrayText>
         </Box>
         <Divider />
-        <Container maxWidth="xl" sx={{ marginTop: { lg: "69px", md: "0", sm: "0", xs: "0" } }}>
-          <Grid container spacing={2} sx={{ flexGrow: 1, bgcolor: "background.paper", display: "flex", height: "100%", overflow: "hidden" }}>
-            <Grid className="GridItem" lg={4} md={4} xs={12} sm={12} sx={{ paddingLeft: "50px" }}>
+        <Container
+          maxWidth="xl"
+          sx={{ marginTop: { lg: "69px", md: "0", sm: "0", xs: "0" } }}
+        >
+          <Grid
+            container
+            spacing={2}
+            sx={{
+              flexGrow: 1,
+              bgcolor: "background.paper",
+              display: "flex",
+              height: "100%",
+              overflow: "hidden",
+            }}
+          >
+            <Grid
+              className="GridItem"
+              lg={4}
+              md={4}
+              xs={12}
+              sm={12}
+              sx={{ paddingLeft: "50px" }}
+            >
               <ProfileSidBar />
             </Grid>
             <Grid lg={8} md={4} xs={12} sm={12}>
@@ -217,7 +237,10 @@ const ProfileSettings = () => {
                   helperText={invalid?.phone}
                 />
                 <FormControl>
-                  <FormLabel id="demo-row-radio-buttons-group-label" sx={{ fontFamily: "Cairo" }}>
+                  <FormLabel
+                    id="demo-row-radio-buttons-group-label"
+                    sx={{ fontFamily: "Cairo" }}
+                  >
                     {t("Gender")}
                   </FormLabel>
                   <RadioGroup
@@ -226,10 +249,20 @@ const ProfileSettings = () => {
                     name="row-radio-buttons-group"
                     value={controls?.gender}
                     onChange={handleGenderChange}
-                    sx={{ ".MuiFormControlLabel-label": { fontFamily: "Cairo" } }}
+                    sx={{
+                      ".MuiFormControlLabel-label": { fontFamily: "Cairo" },
+                    }}
                   >
-                    <FormControlLabel value="F" control={<Radio />} label={t("Female")} />
-                    <FormControlLabel value="M" control={<Radio />} label={t("Male")} />
+                    <FormControlLabel
+                      value="F"
+                      control={<Radio />}
+                      label={t("Female")}
+                    />
+                    <FormControlLabel
+                      value="M"
+                      control={<Radio />}
+                      label={t("Male")}
+                    />
                   </RadioGroup>
                 </FormControl>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -247,7 +280,9 @@ const ProfileSettings = () => {
                     name="birth_date"
                     value={birthDate ? dayjs(birthDate) : null}
                     onChange={(date) => {
-                      const formattedDate = date ? dayjs(date).format("YYYY-MM-DD") : "";
+                      const formattedDate = date
+                        ? dayjs(date).format("YYYY-MM-DD")
+                        : "";
                       setBirthDate(formattedDate);
                       setControl("birth_date", formattedDate);
                     }}
@@ -257,19 +292,24 @@ const ProfileSettings = () => {
                   />
                 </LocalizationProvider>
                 <DarkButton
-                onClick={handleSubmitUpdateProfile}
-                type="button"
-                variant="contained"
-                sx={{ mt: 3, width: "100%", fontFamily: "Cairo", height: "48px", borderRadius: "8px" }}
-              >
-                {Boolean(updateResponse.isPending) ? (
-                  <CircularProgress />
-                ) : (
-                  t("Save")
-                )}
-              </DarkButton>
+                  onClick={handleSubmitUpdateProfile}
+                  type="button"
+                  variant="contained"
+                  sx={{
+                    mt: 3,
+                    width: "100%",
+                    fontFamily: "Cairo",
+                    height: "48px",
+                    borderRadius: "8px",
+                  }}
+                >
+                  {Boolean(updateResponse.isPending) ? (
+                    <CircularProgress />
+                  ) : (
+                    t("Save")
+                  )}
+                </DarkButton>
               </Stack>
-              
             </Grid>
           </Grid>
         </Container>
