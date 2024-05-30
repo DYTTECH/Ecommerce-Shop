@@ -263,6 +263,7 @@ function ResponsiveLayout(props) {
 
   const handleCloseLogin = () => {
     setOpenLogin(false);
+    handleCloseProfile();
   };
   const handleClickOpenLogin = () => {
     setOpenLogin(true);
