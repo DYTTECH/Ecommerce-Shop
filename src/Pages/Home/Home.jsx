@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import PageMeta from "../../Components/Layout/MetaPage";
 import ResponsiveLayout from "../../Components/Layout/Layout";
 import useRequest from "../../Hooks/useRequest";
@@ -13,9 +13,11 @@ import ProductSkeleton from "../../Components/Skeleton/ProductSkeleton";
 import BrandSkeleton from "../../Components/Skeleton/BrandSkeleton";
 import BannerSkeleton from "../../Components/Skeleton/BannerSkeleton";
 import SubCategorySkeleton from "../../Components/Skeleton/SubCategorySkeleton";
-import { checkTokenExpiration } from "../../Components/Authentication/SessionExpireToken";
+import { checkTokenExpiration, setTokenExpiration } from "../../Components/Authentication/SessionExpireToken";
+import SessionDialog from "../../Components/Authentication/SessionDialog";
 
 const Home = () => {
+  const [open, setOpen] = useState(false);
   const homecomponents = useSelector((state) => state.homecomponents.value);
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
   const userInfo=JSON.parse(localStorage.getItem("userInfo"))
@@ -70,12 +72,21 @@ const Home = () => {
     });
   };
 
+  
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   useEffect(()=>{
-    window.scrollTo( 10,0)
-    checkTokenExpiration()
+    window.scrollTo( 0,0)
+    checkTokenExpiration(() => setOpen(true))
+    setTokenExpiration();
   },[])
-
+  useEffect(() => {
+    const interval = setInterval(() => checkTokenExpiration(() => setOpen(true)), 60 * 1000); // Check every minute
+    return () => clearInterval(interval); // Cleanup interval on component unmount
+}, []);
   // Get shop home component
   const [RequestGetHomeComponent, ResponseGetHomeComponent] = useRequest({
     method: "Get",
@@ -165,6 +176,7 @@ const Home = () => {
         )}
        
       </ResponsiveLayout>
+      <SessionDialog open={open} handleClose={handleClose}/>
     </Box>
   );
 };

@@ -2,7 +2,7 @@ import { useTheme } from "@emotion/react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { Box, Container, Grid, IconButton } from "@mui/material";
+import { Box, Container, Grid, IconButton, Radio } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import useRequest from "../../../Hooks/useRequest";
@@ -10,7 +10,7 @@ import BASEURL from "../../../Data/API";
 import { ItemsDes, ItemsTitle, MainTitle } from "../../../Style/StyledComponents/Typography";
 import AddAddress from "./AddAddress"; // Import AddAddress component
 
-const ViewAddress = () => {
+const ViewAddress = ({value,type}) => {
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
   const token = JSON.parse(localStorage.getItem("userinfo"));
   const userAddresses = useSelector((state) => state.address.value);
@@ -63,6 +63,7 @@ const ViewAddress = () => {
     setOpenAddAddress(true);
   };
 
+  
   return (
     <Container maxWidth="xl">
       <Box>
@@ -72,7 +73,17 @@ const ViewAddress = () => {
           userAddresses?.map((address, index) => (
             <Grid container spacing={2} key={index} sx={{ mt: 3, alignItems: 'center' }}>
               <Grid item xs={8} sx={{ bgcolor: theme.palette.primary.mainLight, borderRadius: '7px', p: 2 }}>
-                <Box>
+             {type==="checkout"&&(
+               <Radio
+               checked={value}
+               // onChange={handleChange}
+               value={address?.id}
+               name="radio-buttons"
+               inputProps={{ 'aria-label': 'B' }}
+             />
+             )}
+             
+               <Box>
                   <ItemsTitle>{address.name}</ItemsTitle>
                   <ItemsTitle>{address.address}</ItemsTitle>
                   <ItemsTitle>{address.phone}</ItemsTitle>
