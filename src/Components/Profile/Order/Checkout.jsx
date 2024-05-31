@@ -49,6 +49,7 @@ const Checkout = () => {
   const [step, setStep] = useState(1); // Step 1: Delivery Options, Step 2: Payment Options
   const [isEditingDelivery, setIsEditingDelivery] = useState(false); // New state to manage edit mode
   const cartDetails = useSelector((state) => state.cart.value);
+  
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
