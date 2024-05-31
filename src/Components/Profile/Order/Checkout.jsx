@@ -45,7 +45,6 @@ const Checkout = () => {
   const token = JSON.parse(localStorage.getItem("userinfo"));
   const { t, i18n } = useTranslation();
   const theme = useTheme();
-  const lang = localStorage.getItem("language");
   const [openAddAddress, setOpenAddAddress] = useState(false);
   const [step, setStep] = useState(1); // Step 1: Delivery Options, Step 2: Payment Options
   const [isEditingDelivery, setIsEditingDelivery] = useState(false); // New state to manage edit mode
