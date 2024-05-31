@@ -45,7 +45,7 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
     event.preventDefault();
   };
 
-  const [LoginRequest, LoginResponse] = useRequest({
+  const [LoginRequest,LoginResponse] = useRequest({
     path: `${BASEURL}shop/${shopInfo?.id}/customer/login/`,
     method: "post",
     successMessage: "تم تسجيل الدخول بنجاح",
@@ -69,7 +69,7 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
     {
       control: "password",
       value: "",
-      isRequired: true,
+      isRequired: false,
       validations: [
         {
           message: "In-valid password",
@@ -78,14 +78,15 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
     },
   ]);
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
     validate().then((output) => {
       if (!output.isOk) return;
 
       LoginRequest({
         body: controls,
         onSuccess: (res) => {
-          dispatch({ type: "userInfo/setToken", payload: res.data.token });
+          dispatch({ type: "userInfo/setToken", payload: res?.data?.token });
           handleCloseLogin();
           resetControls();
           navigate(`/t2/${shopInfo.sub_domain}/`);
@@ -95,6 +96,7 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
       });
     });
   };
+  console.log(controls);
   return (
     <Dialog
       maxWidth="xs"
@@ -123,15 +125,15 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
           <InputField
               variant="outlined"
               type="text"
-              name="customer_email"
+              name="email"
               placeholder={t("Email address")}
-              value={controls?.customer_email}
+              value={controls?.email}
               onChange={(e) => {
-                setControl("customer_email", e.target.value);
+                setControl("email", e.target.value);
               }}
-              required={required?.includes("customer_email")}
-              error={Boolean(invalid?.customer_email)}
-              helperText={invalid?.customer_email}
+              required={required?.includes("email")}
+              error={Boolean(invalid?.email)}
+              helperText={invalid?.email}
             />
             <PasswordField
               name="password"
@@ -171,7 +173,6 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
           </Stack>
           <DarkButton
             onClick={handleSubmit}
-            type="button"
             variant="contained"
             sx={{
               mt: 3,
@@ -181,7 +182,7 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
               borderRadius: "8px",
             }}
           >
-            {Boolean(LoginResponse.isPending) ? (
+            {Boolean(LoginResponse?.isPending) ? (
               <CircularProgress />
             ) : (
               t("Sign in")

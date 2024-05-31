@@ -10,9 +10,6 @@ import {
   Divider,
   Grid,
   IconButton,
-  Snackbar,
-  Stack,
-  TextField,
 } from "@mui/material";
 import PageMeta from "../../Layout/MetaPage";
 import ViewAddress from "../Address/ViewAddress";
@@ -20,9 +17,7 @@ import AddAddress from "../Address/AddAddress";
 import { BoxStyle } from "../../../Style/StyledComponents/Box";
 import {
   BlackText,
-  DarkText,
   ItemsDes,
-  ItemsTitle,
   LightText,
   MainTitle,
 } from "../../../Style/StyledComponents/Typography";
@@ -33,23 +28,23 @@ import PaymentIcon from "@mui/icons-material/Payment";
 import EditIcon from "@mui/icons-material/Edit";
 import {
   ActivePaymentButton,
+  DarkButton,
   PaymentButton,
 } from "../../../Style/StyledComponents/Buttons";
 import PaymentsIcon from "@mui/icons-material/Payments";
-import Cart from "../../../Pages/Cart/Cart";
 import ProductCart from "../../Cart/ProductCart";
 import CartDetails from "../../../Pages/Cart/CartDetails";
 import useRequest from "../../../Hooks/useRequest";
 import { PRODUCTS } from "../../../Data/API";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import ResponsiveLayout from "../../Layout/Layout";
 
 const Checkout = () => {
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
   const token = JSON.parse(localStorage.getItem("userinfo"));
   const { t, i18n } = useTranslation();
   const theme = useTheme();
-  const lang = localStorage.getItem("language");
   const [openAddAddress, setOpenAddAddress] = useState(false);
   const [step, setStep] = useState(1); // Step 1: Delivery Options, Step 2: Payment Options
   const [isEditingDelivery, setIsEditingDelivery] = useState(false); // New state to manage edit mode
@@ -95,7 +90,7 @@ const Checkout = () => {
   // }, [lang]);
 
   return (
-    <Box sx={{ mb: 4 }}>
+    <ResponsiveLayout>
       <PageMeta
         title={`${shopInfo?.sub_domain}-${t("MY ADDRESS BOOK")}`}
         desc="Description of my page for SEO"
@@ -103,109 +98,83 @@ const Checkout = () => {
         type={shopInfo?.shop_type_name}
         image={shopInfo?.logo}
       />
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          margin: "30px 25px 20px 25px",
-        }}
-      >
-        <Button
-          type="button"
-          variant="contained"
+      <Container maxWidth="xl" sx={{ my: "100px" }}>
+        <Box
           sx={{
-            bgcolor: theme.palette.primary.dark,
-            color: theme.palette.primary.light,
-            fontFamily: "Cairo",
+            display: "flex",
+            justifyContent: "space-between",
+            mb: 3,
           }}
-          onClick={() => navigate(`/t2/${shopInfo.sub_domain}`)}
         >
-          <ReplayIcon />
-          <LightText
-            sx={{ display: { lg: "flex", md: "flex", sm: "none", xs: "none" } }}
+          <DarkButton
+            variant="contained"
+            onClick={() => navigate(`/t2/${shopInfo.sub_domain}`)}
           >
-            {t("Back to Shopping")}
-          </LightText>
-        </Button>
+            <ReplayIcon />
+            <LightText
+              sx={{
+                display: { lg: "flex", md: "flex", sm: "none", xs: "none" },
+              }}
+            >
+              {t("Back to Shopping")}
+            </LightText>
+          </DarkButton>
+          <BoxStyle>
+            <LockIcon />
+            <BlackText sx={{ fontSize: "18px" }}>
+              {t("Secure checkout")}
+            </BlackText>
+          </BoxStyle>
+        </Box>
+        <Divider />
+
+        {/* responsive box */}
         <BoxStyle
           sx={{
-            display: { lg: "flex", md: "flex", sm: "flex", xs: "none" },
-            justifyContent: "start",
-            width: "15rem",
+            p: 4,
+            display: { lg: "none", md: "none", sm: "flex", xs: "flex" },
+            justifyContent: "center",
           }}
         >
-          <Avatar
-            src={shopInfo?.logo}
-            sx={{ width: 56, height: 56 }}
-            variant="rounded"
-            alt="shop-title"
-          ></Avatar>
-          <BlackText sx={{ pr: 4, fontSize: "24px" }}>
-            {shopInfo?.shop_name}
-          </BlackText>
+          <Box>
+            <Avatar
+              sx={{
+                width: 56,
+                height: 56,
+                bgcolor:
+                  isEditingDelivery || step === 1
+                    ? theme.palette.primary.main
+                    : theme.palette.secondary.third, // Change to the appropriate color for delivery
+              }}
+            >
+              <WhereToVoteIcon />
+            </Avatar>
+            <BlackText>{t("Deliver")}</BlackText>
+          </Box>
+          <Divider sx={{ width: "50%", marginX: 3 }} />
+          <Box>
+            <Avatar
+              sx={{
+                width: 56,
+                height: 56,
+                bgcolor:
+                  !isEditingDelivery && step === 2
+                    ? theme.palette.primary.main
+                    : theme.palette.secondary.third, // Change to the appropriate color for payment
+              }}
+            >
+              <PaymentIcon />
+            </Avatar>
+            <BlackText>{t("Payment")}</BlackText>
+          </Box>
         </BoxStyle>
 
-        <BoxStyle>
-          <LockIcon />
-          <BlackText sx={{ fontSize: "18px" }}>
-            {t("Secure checkout")}
-          </BlackText>
-        </BoxStyle>
-      </Box>
-      <Divider />
-
-      {/* responsive box */}
-      <BoxStyle
-        sx={{
-          p: 4,
-          display: { lg: "none", md: "none", sm: "flex", xs: "flex" },
-          justifyContent: "center",
-        }}
-      >
-        <Box>
-          <Avatar
-            sx={{
-              width: 56,
-              height: 56,
-              bgcolor:
-                isEditingDelivery || step === 1
-                  ? theme.palette.primary.main
-                  : theme.palette.secondary.third, // Change to the appropriate color for delivery
-            }}
-          >
-            <WhereToVoteIcon />
-          </Avatar>
-          <BlackText>{t("Deliver")}</BlackText>
-        </Box>
-        <Divider sx={{ width: "50%", marginX: 3 }} />
-        <Box>
-          <Avatar
-            sx={{
-              width: 56,
-              height: 56,
-              bgcolor:
-                !isEditingDelivery && step === 2
-                  ? theme.palette.primary.main
-                  : theme.palette.secondary.third, // Change to the appropriate color for payment
-            }}
-          >
-            <PaymentIcon />
-          </Avatar>
-          <BlackText>{t("Payment")}</BlackText>
-        </Box>
-      </BoxStyle>
-
-      <Container maxWidth="xl" sx={{ mt: "20px" }}>
         <Grid
           container
           spacing={2}
           sx={{
-            flexGrow: 1,
-            bgcolor: "background.paper",
-            display: "flex",
+            mt: 2,
             height: "100%",
-            overflow: "hidden",
-            alignItems: "center",
           }}
         >
           <Grid lg={7} md={7} xs={12} sm={12} justifyContent="space-between">
@@ -215,21 +184,17 @@ const Checkout = () => {
                 <Box>
                   <MainTitle sx={{ mb: 4 }}>{t("Delivering to")}</MainTitle>
                   <ViewAddress />
-                  <Button
+                  <DarkButton
                     onClick={handleClickOpenAddAddress}
-                    type="button"
                     variant="contained"
                     sx={{
-                      bgcolor: theme.palette.primary.dark,
-                      color: theme.palette.primary.light,
-                      fontFamily: "Cairo",
                       width: "10rem",
                       mt: 4,
                       mr: 3,
                     }}
                   >
                     {t("Add New Address")}
-                  </Button>
+                  </DarkButton>
                   <AddAddress
                     openAddAddress={openAddAddress}
                     handleCloseAddAddress={handleCloseAddAddress}
@@ -250,17 +215,12 @@ const Checkout = () => {
                     {t("Payment Options")}
                   </ItemsDes>
                 </BoxStyle>
-                <Button
-                  type="button"
+                <DarkButton
                   variant="contained"
-                  sx={{
-                    bgcolor: theme.palette.primary.dark,
-                    color: theme.palette.primary.light,
-                  }}
                   onClick={handleProceedToPayment}
                 >
                   {t("PROCEED TO SECURE PAYMENT")}
-                </Button>
+                </DarkButton>
               </>
             ) : (
               <>
@@ -312,16 +272,9 @@ const Checkout = () => {
                     )}
                   </ItemsDes>
                 </Box>
-                <Button
-                  type="button"
-                  variant="contained"
-                  sx={{
-                    bgcolor: theme.palette.primary.dark,
-                    color: theme.palette.primary.light,
-                  }}
-                >
+                <DarkButton type="button" variant="contained">
                   {t("PROCEED TO SECURE PAYMENT")}
-                </Button>
+                </DarkButton>
               </Box>
             )}
           </Grid>
@@ -345,7 +298,7 @@ const Checkout = () => {
           </Grid>
         </Grid>
       </Container>
-    </Box>
+    </ResponsiveLayout>
   );
 };
 

@@ -2,7 +2,7 @@ import { useTheme } from "@emotion/react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { Alert, Box, Container, Divider, Grid, IconButton, Snackbar, Typography } from "@mui/material";
+import { Box, Container, Grid, IconButton } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import useRequest from "../../../Hooks/useRequest";
@@ -18,20 +18,6 @@ const ViewAddress = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const theme = useTheme();
-
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-
-  const handleCloseSnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnackbar(false);
-    setSnackbarSeverity("success");
-    setSnackbarMessage("");
-  };
-
   const [RequestGetAddresses, ResponseGetAddresses] = useRequest({
     method: "GET",
     path: `${BASEURL}shop/${shopInfo?.id}/customers/addresses/`,
@@ -57,10 +43,6 @@ const ViewAddress = () => {
       id: addressId,
       onSuccess: () => {
         dispatch({ type: "address/deleteItem", payload: { id: addressId } });
-        getUserAddresses();
-        setSnackbarSeverity("success");
-        setSnackbarMessage(t("Address Deleted Successfully!"));
-        setOpenSnackbar(true);
       },
     });
   };
@@ -117,26 +99,14 @@ const ViewAddress = () => {
             {t("You have no configured addresses.")}
           </ItemsDes>
         )}
-        <Snackbar
-          open={openSnackbar}
-          autoHideDuration={6000}
-          onClose={handleCloseSnackbar}
-        >
-          <Alert
-            onClose={handleCloseSnackbar}
-            severity={snackbarSeverity}
-            sx={{ width: "16rem" }}
-            variant="filled"
-          >
-            {snackbarMessage}
-          </Alert>
-        </Snackbar>
         <AddAddress
           openAddAddress={openAddAddress}
           handleCloseAddAddress={handleCloseAddAddress}
           editingAddressId={editingAddressId}
         />
       </Box>
+      {ResponseDeleteAddress.failAlert}
+      {ResponseDeleteAddress.successAlert}
     </Container>
   );
 };
