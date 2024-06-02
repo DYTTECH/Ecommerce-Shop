@@ -34,7 +34,6 @@ const ProfileMenu = ({ openProfile, handleCloseProfile, anchorElProfile }) => {
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
   const userInfo = JSON.parse(localStorage.getItem("userinfo"));
   const language = useSelector((state) => state.language.lang);
-  console.log(userInfo);
   const navigate = useNavigate();
   const menuId = "primary-search-account-menu";
   const [openLogin, setOpenLogin] = useState(false);

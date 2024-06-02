@@ -101,5 +101,14 @@
     "Send code":"ارسل الرمز",
     "Rates":"التقييمات",
     "Brands":"الماركات",
-    "Price":"السعر"
+    "Price":"السعر",
+    "All Orders":"كل الطلبات",
+    "Cancel Order":"إلغاء الطلب",
+    "Are You sure you want to cancel this order?":"هل تريد إلغاء هذا الطلب؟",
+    "Confirm":"تأكيد",
+    "1 piece":"قطعة",
+    "Order":"طلب",
+    "Delivery Date":"تاريخ التوصيل",
+    "Location":"الموقع",
+    "Show Details":"عرض التفاصيل"
 }

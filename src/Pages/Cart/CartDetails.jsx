@@ -181,7 +181,7 @@ const CartDetails = () => {
                 >
                   <DarkText>{t("Total Amount")}</DarkText>
                   <MainTitle
-                    sx={{ fontWeight: theme.font.fontWeight.semibold }}
+                    sx={{ fontWeight: theme.font.fontWeight.semibold, color:theme.palette.primary.red }}
                   >
                     {cartDetails?.total} {t("SAR")}
                   </MainTitle>

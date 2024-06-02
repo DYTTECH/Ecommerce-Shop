@@ -53,7 +53,10 @@ const Checkout = () => {
   const [openAddAddress, setOpenAddAddress] = useState(false);
   const [step, setStep] = useState(1); // Step 1: Delivery Options, Step 2: Payment Options
   const [isEditingDelivery, setIsEditingDelivery] = useState(false); // New state to manage edit mode
+  const [selectedAddressId, setSelectedAddressId] = useState(null); // State to manage selected address ID
   const cartDetails = useSelector((state) => state.cart.value);
+  const userAddresses = useSelector((state) => state.userAddresses?.value); // Add this line to get user addresses
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -79,7 +82,11 @@ const Checkout = () => {
     path: `${PRODUCTS}${shopInfo?.id}/cart/details/`,
     token: token ? `Token ${token}` : null,
   });
-
+  const [RequestAddOreder, ResponseAddOreder] = useRequest({
+    method: "Post",
+    path: `${PRODUCTS}${shopInfo?.id}/orders/`,
+    token: token ? `Token ${token}` : null,
+  });
   const GetCartDetails = () => {
     RequestGetCartDetails({
       onSuccess: (res) => {
@@ -87,13 +94,32 @@ const Checkout = () => {
       },
     });
   };
+  const AddOrder = () => {
+    RequestAddOreder({
+      body:{
+        shipping_address:selectedAddressId
+      },
+      onSuccess: (res) => {
+        dispatch({ type: "checkout/set", payload: res.data });
+        navigate(`/t2/${shopInfo.sub_domain}/orders`);
+      },
+    });
+  };
+  const initializeSelectedAddressId = () => {
+    if (userAddresses?.length > 0 && !selectedAddressId) {
+      setSelectedAddressId(userAddresses[0].id);
+    }
+  };
+
   useEffect(() => {
     GetCartDetails();
   }, [shopInfo?.id]);
-  // useEffect(() => {
-  //   document.dir = lang === "ar" ? "rtl" : "ltr";
-  // }, [lang]);
 
+  useEffect(() => {
+    initializeSelectedAddressId();
+  }, [userAddresses]);
+
+  console.log(selectedAddressId);
   return (
     <Box sx={{ mb: 4 }}>
       <PageMeta
@@ -214,7 +240,8 @@ const Checkout = () => {
                 {/* addresses box */}
                 <Box>
                   <MainTitle sx={{ mb: 4 }}>{t("Delivering to")}</MainTitle>
-                  <ViewAddress />
+                  <ViewAddress selectedAddressId={selectedAddressId}
+                    setSelectedAddressId={setSelectedAddressId} />
                   <Button
                     onClick={handleClickOpenAddAddress}
                     type="button"
@@ -319,6 +346,7 @@ const Checkout = () => {
                     bgcolor: theme.palette.primary.dark,
                     color: theme.palette.primary.light,
                   }}
+                  onClick={() => {AddOrder()}}
                 >
                   {t("PROCEED TO SECURE PAYMENT")}
                 </Button>

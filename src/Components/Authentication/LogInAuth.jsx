@@ -125,13 +125,13 @@ const AuthLogin = ({ openLogin, handleCloseLogin }) => {
               type="text"
               name="customer_email"
               placeholder={t("Email address")}
-              value={controls?.customer_email}
+              value={controls?.email}
               onChange={(e) => {
-                setControl("customer_email", e.target.value);
+                setControl("email", e.target.value);
               }}
-              required={required?.includes("customer_email")}
-              error={Boolean(invalid?.customer_email)}
-              helperText={invalid?.customer_email}
+              required={required?.includes("email")}
+              error={Boolean(invalid?.email)}
+              helperText={invalid?.email}
             />
             <PasswordField
               name="password"
