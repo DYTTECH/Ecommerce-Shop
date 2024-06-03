@@ -10,6 +10,7 @@ import { GrayText } from '../../Style/StyledComponents/Typography';
 import PageMeta from '../../Components/Layout/MetaPage';
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import EmptyPage from '../../Components/Products/EmptyPage';
 const Wishlist = () => {
     const wishlist = useSelector((state) => state.wishlist.value);
     const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
@@ -62,7 +63,7 @@ const Wishlist = () => {
             <Grid item xs={12} sm={6} md={4} lg={3} key={product?.id}>
               <ProductItem {...product} />
             </Grid>
-          )):<GrayText>No data to show</GrayText>
+          )):<EmptyPage/>
         )}
          {/* Your products will be displayed here. You can */}
          <Stack

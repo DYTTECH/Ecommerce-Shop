@@ -26,8 +26,7 @@ import {
   MainTitle,
 } from "../../../Style/StyledComponents/Typography";
 import AddAddress from "./AddAddress"; // Import AddAddress component
-
-const ViewAddress = ({ selectedAddressId, setSelectedAddressId }) => {
+const ViewAddress = ({value,type,selectedAddressId, setSelectedAddressId}) => {
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
   const token = JSON.parse(localStorage.getItem("userinfo"));
   const userAddresses = useSelector((state) => state.address?.value);
@@ -35,20 +34,6 @@ const ViewAddress = ({ selectedAddressId, setSelectedAddressId }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const theme = useTheme();
-
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-
-  const handleCloseSnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnackbar(false);
-    setSnackbarSeverity("success");
-    setSnackbarMessage("");
-  };
-
   const [RequestGetAddresses, ResponseGetAddresses] = useRequest({
     method: "GET",
     path: `${BASEURL}shop/${shopInfo?.id}/customers/addresses/`,
@@ -74,10 +59,6 @@ const ViewAddress = ({ selectedAddressId, setSelectedAddressId }) => {
       id: addressId,
       onSuccess: () => {
         dispatch({ type: "address/deleteItem", payload: { id: addressId } });
-        getUserAddresses();
-        setSnackbarSeverity("success");
-        setSnackbarMessage(t("Address Deleted Successfully!"));
-        setOpenSnackbar(true);
       },
     });
   };
@@ -98,9 +79,11 @@ const ViewAddress = ({ selectedAddressId, setSelectedAddressId }) => {
     setOpenAddAddress(true);
   };
 
+
   const handleSelectAddress = (id) => {
     setSelectedAddressId(id);
   };
+
   return (
     <Container maxWidth="xl">
       <Box>
@@ -179,26 +162,14 @@ const ViewAddress = ({ selectedAddressId, setSelectedAddressId }) => {
             {t("You have no configured addresses.")}
           </ItemsDes>
         )}
-        <Snackbar
-          open={openSnackbar}
-          autoHideDuration={6000}
-          onClose={handleCloseSnackbar}
-        >
-          <Alert
-            onClose={handleCloseSnackbar}
-            severity={snackbarSeverity}
-            sx={{ width: "16rem" }}
-            variant="filled"
-          >
-            {snackbarMessage}
-          </Alert>
-        </Snackbar>
         <AddAddress
           openAddAddress={openAddAddress}
           handleCloseAddAddress={handleCloseAddAddress}
           editingAddressId={editingAddressId}
         />
       </Box>
+      {ResponseDeleteAddress.failAlert}
+      {ResponseDeleteAddress.successAlert}
     </Container>
   );
 };

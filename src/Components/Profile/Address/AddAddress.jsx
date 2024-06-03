@@ -23,6 +23,8 @@ import {
   PhoneNumber,
 } from "../../../Style/StyledComponents/Inputs";
 import { DarkButton } from "../../../Style/StyledComponents/Buttons";
+import filter from "../../../utlis/ClearNull";
+import compare from "../../../utlis/compare";
 
 const AddAddress = ({
   openAddAddress,
@@ -31,7 +33,7 @@ const AddAddress = ({
 }) => {
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
   const token = JSON.parse(localStorage.getItem("userinfo"));
-
+const [address,setAddress]=useState({})
   const userAddresses = useSelector((state) => state.userAddresses?.value);
 
   const { t } = useTranslation();
@@ -52,7 +54,7 @@ const AddAddress = ({
 
   const [RequestUpdateAddress, ResponceUpdateAddress] = useRequest({
     method: "PATCH",
-    path: `${BASEURL}shop/${shopInfo?.id}/customers/addresses/${editingAddressId}/`,
+    path: `${BASEURL}shop/${shopInfo?.id}/customers/addresses/`,
     token: token ? `Token ${token}` : null,
   });
 
@@ -60,105 +62,89 @@ const AddAddress = ({
     { controls, invalid, required },
     { setControl, resetControls, validate },
   ] = useControls([
-    { control: "phone", value: "" },
-    { control: "name", value: "", isRequired: true },
-    { control: "country", value: "", isRequired: true },
-    { control: "governorate", value: "", isRequired: true },
-    { control: "city", value: "", isRequired: true },
-    { control: "address", value: "", isRequired: true },
-    { control: "additional_information", value: "", isRequired: true },
-  ]);
+    { control: "phone", value:address?.phone|| "" },
+    { control: "name", value:address?.name|| "", isRequired: true },
+    { control: "country", value:address?.country|| "", isRequired: true },
+    { control: "governorate", value:address?.governorate|| "", isRequired: true },
+    { control: "city", value:address?.city|| "", isRequired: true },
+    { control: "address", value:address?.address|| "", isRequired: true },
+    { control: "additional_information", value:address?.additional_information|| "", isRequired: false },
+  ],[address]);
 
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
-  const [snackbarMessage, setSnackbarMessage] = useState("");
 
-  const handleCloseSnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnackbar(false);
-    setSnackbarSeverity("success");
-    setSnackbarMessage("");
-  };
-  const getUserAddresses = () => {
-    RequestGetAddress({
-      onSuccess: (res) => {
-        dispatch({ type: "address/set", payload: res.data });
-      },
-    });
-  };
   useEffect(() => {
     if (editingAddressId) {
       RequestGetAddress({
         id: editingAddressId,
         onSuccess: (res) => {
-          const {
-            name,
-            additional_information,
-            address,
-            city,
-            governorate,
-            country,
-            phone,
-          } = res.data;
-          setControl("name", name);
-          setControl("additional_information", additional_information);
-          setControl("address", address);
-          setControl("city", city);
-          setControl("governorate", governorate);
-          setControl("country", country);
-          setControl("phone", phone);
+          setAddress(res?.data)
+          // Object.keys(res.data).map((address)=>(
+          //   setControl(address,res.data[address])
+          // ))
         },
       });
     } else {
       resetControls();
     }
   }, [editingAddressId]);
+console.log(editingAddressId);
+const handleSubmitAddAddress = (e) => {
+    e.preventDefault();
+       if (editingAddressId) {
+        const isThereChange = compare(
+          [
+            [controls.name, address?.name, "name"],
+            [controls.phone, address?.phone, "phone"],
+            [controls.address, address?.address, "address"],
+            [controls.city, address?.city, "city"],
+            [controls.governorate, address?.governorate, "governorate"],
+            [controls.country, address?.country, "country"],
+            [controls.additional_information, address?.additional_information, "additional_information"],
+          ],
+          false
+        );
+        if (isThereChange.nochange) {
+          const requestBody = filter({
+            obj: {
+              name: isThereChange.array["name"],
+              phone: isThereChange.array["phone"],
+              address:isThereChange.array["address"],
+              city: isThereChange.array["city"],
+              governorate: isThereChange.array["governorate"],
+              country: isThereChange.array["country"],
+              additional_information: isThereChange.array["additional_information"],
+            },
+            output: "object",
+          });
 
-  const handleSubmitAddAddress = () => {
-    validate().then((output) => {
-      if (!output.isOk) return;
-      const requestPayload = {
-        name: controls.name,
-        additional_information: controls.additional_information,
-        address: controls.address,
-        city: controls.city,
-        governorate: controls.governorate,
-        country: controls.country,
-        phone: controls.phone,
-      };
-
-      if (editingAddressId) {
-        RequestUpdateAddress({
-          body: requestPayload,
-          onSuccess: (res) => {
-            dispatch({
-              type: "address/updateItem",
-              payload: { id: editingAddressId, item: res.data },
-            });
-            handleCloseAddAddress();
-            setSnackbarSeverity("success");
-            setSnackbarMessage(t("Address Updated Successfully!"));
-            setOpenSnackbar(true);
-            getUserAddresses();
-          },
-        });
-      } else {
+          RequestUpdateAddress({
+            id: editingAddressId,
+            body: requestBody,
+            onSuccess: (res) => {
+              dispatch({ type: "address/patchItem", payload: {id:editingAddressId,item:res.data} });
+              handleCloseAddAddress();
+            },
+          });
+        }
+       } 
+      else {
         RequestAddAddress({
-          body: requestPayload,
+          body: {
+            name: controls.name,
+            additional_information: controls.additional_information,
+            address: controls.address,
+            city: controls.city,
+            governorate: controls.governorate,
+            country: controls.country,
+            phone: controls.phone,
+          },
           onSuccess: (res) => {
-            dispatch({ type: "address/addItem", payload: res.data });
+            dispatch({ type: "address/addItem", payload: res?.data });
             handleCloseAddAddress();
-            setSnackbarSeverity("success");
-            setSnackbarMessage(t("Address Added Successfully!"));
-            setOpenSnackbar(true);
-            getUserAddresses();
           },
         });
       }
-    });
-  };
+};
 
   return (
     <>
@@ -197,17 +183,6 @@ const AddAddress = ({
                 name="name"
                 placeholder="name"
               />
-              {/* <InputField
-                variant="outlined"
-                name="phone"
-                type="text"
-                value={controls.phone}
-                onChange={(e) => setControl("phone", e.target.value)}
-                required={required.includes("phone")}
-                error={Boolean(invalid?.phone)}
-                helperText={invalid?.phone}
-                placeholder="phone number"
-              /> */}
               <PhoneNumber
                 name="phone"
                 placeholder={t("Phone Number")}
@@ -291,7 +266,7 @@ const AddAddress = ({
                 borderRadius: "8px",
               }}
             >
-              {Boolean(ResponseAddAddress.isPending && ResponceUpdateAddress.isPending) ? (
+              {Boolean(editingAddressId? ResponceUpdateAddress.isPending: ResponseAddAddress.isPending) ? (
                 <CircularProgress />
               ) : (
                 t("Save")
@@ -300,20 +275,7 @@ const AddAddress = ({
           </Container>
         </DialogContent>
       </Dialog>
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbarSeverity}
-          sx={{ width: "17rem" }}
-          variant="filled"
-        >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
+     
     </>
   );
 };

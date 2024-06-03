@@ -31,6 +31,7 @@ import { InputPrice } from "../../Style/StyledComponents/Inputs";
 import { TransparentButton } from "../../Style/StyledComponents/Buttons";
 import { useTranslation } from "react-i18next";
 import { BlackText } from "../../Style/StyledComponents/Typography";
+import EmptyPage from "../../Components/Products/EmptyPage";
 
 export const Products = () => {
   const Products = useSelector((state) => state.products.value);
@@ -168,6 +169,14 @@ export const Products = () => {
   };
 
   useEffect(() => {
+    RequestGetFilter({
+      onSuccess: (res) => {
+        dispatch({ type: "filter/set", payload: res?.data });
+      },
+    });
+  }, [location?.state?.keys]);
+
+  useEffect(() => {
     RequestGetProductFilterd({
       params: {
         page: page || 1,
@@ -176,12 +185,7 @@ export const Products = () => {
         dispatch({ type: "products/set", payload: res?.data });
       },
     });
-    RequestGetFilter({
-      onSuccess: (res) => {
-        dispatch({ type: "filter/set", payload: res?.data });
-      },
-    });
-  }, [location?.state?.keys, page, filterdata]);
+  }, [page, filterdata]);
 
   return (
     <ResponsiveLayout>
@@ -197,7 +201,12 @@ export const Products = () => {
         spacing={2}
         sx={{ marginTop: { lg: "69px", md: "0", sm: "0", xs: "0" } }}
       >
-        <Grid item md={3} xs={0}  sx={{ height: "calc(100vh - 100px)", overflowY: "auto" }}>
+        <Grid
+          item
+          md={3}
+          xs={0}
+          sx={{ height: "calc(100vh - 100px)", overflowY: "auto" }}
+        >
           {ResponseGetFilter.isPending ? (
             <FilterSkeleton />
           ) : (
@@ -400,16 +409,27 @@ export const Products = () => {
             ))
           )}
         </Grid>
-        <Grid item md={9} xs={12} sx={{ height: "calc(100vh - 100px)", overflowY: "auto" ,overflowX:"hidden"}}>
+        <Grid
+          item
+          md={9}
+          xs={12}
+          sx={{
+            height: "calc(100vh - 100px)",
+            overflowY: "auto",
+            overflowX: "hidden",
+          }}
+        >
           <Grid container spacing={3} px={2}>
             {ResponseGetProductFilterd.isPending ? (
               <ViewProductsSkeleton />
-            ) : (
+            ) : Products.results.length ? (
               Products?.results?.map((item) => (
                 <Grid item md={3} xs={6} key={item.id}>
                   <ProductItem {...item} />
                 </Grid>
               ))
+            ) : (
+              <EmptyPage />
             )}
           </Grid>
           {/* Your products will be displayed here. You can */}

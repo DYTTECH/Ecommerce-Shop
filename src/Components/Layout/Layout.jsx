@@ -18,7 +18,6 @@ import {
 } from "@mui/material";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
 import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
-import SearchIcon from "@mui/icons-material/Search";
 import { styled, alpha } from "@mui/material/styles";
 import Badge from "@mui/material/Badge";
 import NotificationsIcon from "@mui/icons-material/Notifications";
@@ -57,46 +56,8 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ProfileMenu from "../Profile/ProfileMenu";
 import useRequest from "../../Hooks/useRequest";
 import { PRODUCTS } from "../../Data/API";
+import SearchSocket from "./Search";
 
-const Search = styled("div")(({ theme }) => ({
-  position: "relative",
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.primary.light, 0.15),
-  "&:hover": {
-    backgroundColor: alpha(theme.palette.primary.light, 0.25),
-  },
-  marginLeft: 0,
-  width: "100%",
-  [theme.breakpoints.up("sm")]: {
-    marginLeft: theme.spacing(2),
-    width: "auto",
-  },
-}));
-const SearchIconWrapper = styled("div")(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: "100%",
-  position: "absolute",
-  pointerEvents: "none",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-}));
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: "inherit",
-  width: "100%",
-  "& .MuiInputBase-input": {
-    padding: theme.spacing(2, 5, 2, 1),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create("width"),
-    [theme.breakpoints.up("sm")]: {
-      width: "12ch",
-      "&:focus": {
-        width: "20ch",
-      },
-    },
-  },
-}));
 
 const drawerWidth = 240;
 
@@ -375,23 +336,7 @@ function ResponsiveLayout(props) {
                   justifyContent: "center",
                 }}
               >
-                <Search
-                  sx={{ mr: { xs: 3 }, color: theme.palette.primary.dark }}
-                >
-                  <SearchIconWrapper>
-                    <SearchIcon color={theme.palette.primary.dark} />
-                  </SearchIconWrapper>
-                  <StyledInputBase
-                    placeholder={t("Search…")}
-                    // inputProps={{ "Cairo": "search" }}
-                    sx={{
-                      border: "1px solid  #e7eaf3",
-                      borderRadius: "8px",
-                      fontFamily: "Cairo",
-                      fontSize: "14px",
-                    }}
-                  />
-                </Search>
+                <SearchSocket/>
                 <div>|</div>
                 <GrayIcon onClick={handleViewWishList}>
                 <Badge badgeContent={wishlist?.count} color="error">

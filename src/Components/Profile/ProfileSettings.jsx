@@ -33,12 +33,13 @@ import PageMeta from "../Layout/MetaPage";
 import HeroTitle from "../Layout/HeroTitle";
 import { InputField, PhoneNumber } from "../../Style/StyledComponents/Inputs";
 import { DarkButton } from "../../Style/StyledComponents/Buttons";
+import filter from "../../utlis/ClearNull";
+import compare from "../../utlis/compare";
 
 const ProfileSettings = () => {
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
   const token = JSON.parse(localStorage.getItem("userinfo"));
   const userDetails = useSelector((state) => state.userInfo.value);
-
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -50,12 +51,6 @@ const ProfileSettings = () => {
     },
     { label: `${t("Profile")}`, active: false },
   ];
-
-  const [gender, setGender] = useState(userDetails?.gender || "");
-  const [birthDate, setBirthDate] = useState(userDetails?.birth_date || "");
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
-  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const [RequestUserInfo, ResponseUserInfo] = useRequest({
     method: "GET",
@@ -73,10 +68,10 @@ const ProfileSettings = () => {
     { controls, invalid, required },
     { setControl, resetControls, validate, setInvalid },
   ] = useControls([
-    { control: "full_name", value: userDetails?.full_name || "" },
+    { control: "full_name", value: userDetails.full_name || "" },
     {
       control: "customer_email",
-      value: userDetails?.customer_email ||"",
+      value: userDetails.customer_email || "",
       validations: [
         {
           test: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
@@ -84,70 +79,62 @@ const ProfileSettings = () => {
         },
       ],
     },
-    { control: "phone", value: userDetails?.phone || ""  },
-    { control: "gender", value: gender },
-    { control: "birth_date", value: birthDate },
-  ]);
+    { control: "phone", value: userDetails.phone || "" },
+    { control: "gender", value: userDetails.gender || "" },
+    { control: "birth_date", value: userDetails.birth_date || "" },
+  ],[userDetails]);
 
   const getUserInfo = () => {
     RequestUserInfo({
       onSuccess: (res) => {
-        dispatch({ type: "userInfo/setUserInfo", payload: res.data });
-        setGender(res.data.gender || "");
-        setBirthDate(res.data.birth_date || "");
+        dispatch({ type: "userInfo/setUserInfo", payload: res?.data });
+        // Object.keys(res.data).map((item)=>(
+        //   setControl(item,res?.data[item])
+        // ))
       },
     });
   };
 
-  const formatDate = (date) => {
-    return date ? dayjs(date).format("YYYY-MM-DD") : "";
-  };
-
   const handleGenderChange = (event) => {
-    const selectedGender = event.target.value;
-    setGender(selectedGender);
-    setControl("gender", selectedGender);
+    setControl("gender", event.target.value);
   };
 
-  const handleCloseSnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenSnackbar(false);
-    setSnackbarSeverity("success");
-    setSnackbarMessage("");
-  };
+  const handleSubmitUpdateProfile = (e) => {
+    const isThereChange = compare(
+      [
+        [controls.full_name, userDetails?.full_name, "full_name"],
+        [
+          controls.customer_email,
+          userDetails?.customer_email,
+          "customer_email",
+        ],
+        [controls.phone, userDetails?.phone, "phone"],
+        [controls.gender, userDetails?.gender, "gender"],
+        [controls.birth_date, userDetails?.birth_date, "birth_date"],
+      ],
+      false
+    );
 
-  const handleSubmitUpdateProfile = () => {
-    validate().then((output) => {
-      if (!output.isOk) return;
-      const requestBody = {
-        full_name: controls?.full_name || userDetails?.full_name,
-        customer_email: controls?.customer_email || userDetails?.customer_email,
-        phone: controls?.phone || userDetails?.phone,
-        gender: gender || userDetails?.gender,
-        birth_date: birthDate || userDetails?.birth_date,
-      };
+    if (isThereChange.nochange) {
+      const requestBody = filter({
+        obj: {
+          full_name: isThereChange.array["full_name"],
+          customer_email: isThereChange.array["customer_email"],
+          phone: isThereChange.array["phone"],
+          gender: isThereChange.array["gender"],
+          birth_date: isThereChange.array["birth_date"],
+        },
+        output: "object",
+      });
+
       updateRequest({
         body: requestBody,
         onSuccess: (res) => {
-          setSnackbarSeverity("success");
-          setSnackbarMessage(t("Data has been modified!"));
-          setOpenSnackbar(true);
+          dispatch({ type: "userInfo/setUserInfo", payload: res?.data });
         },
-      }).then((res) => {
-        const response = res?.response?.data;
-        if (response && response.errors) {
-          const errorMessages = Object.values(response.errors).flat();
-          const errorMessage = errorMessages.join(", ");
-          setSnackbarSeverity("error");
-          setSnackbarMessage(errorMessage);
-          setOpenSnackbar(true);
-        } else {
-          setInvalid(response);
-        }
       });
-    });
+    }
+    // });
   };
 
   useEffect(() => {
@@ -170,12 +157,32 @@ const ProfileSettings = () => {
           </GrayText>
         </Box>
         <Divider />
-        <Container maxWidth="xl" sx={{ marginTop: { lg: "69px", md: "0", sm: "0", xs: "0" } }}>
-          <Grid container spacing={2} sx={{ flexGrow: 1, bgcolor: "background.paper", display: "flex", height: "100%", overflow: "hidden" }}>
-            <Grid className="GridItem" lg={4} md={4} xs={12} sm={12} sx={{ paddingLeft: "50px" }}>
+        <Container
+          maxWidth="xl"
+          sx={{ marginTop: { lg: "69px", md: "0", sm: "0", xs: "0" } }}
+        >
+          <Grid
+            container
+            spacing={2}
+            sx={{
+              flexGrow: 1,
+              bgcolor: "background.paper",
+              display: "flex",
+              height: "100%",
+              overflow: "hidden",
+            }}
+          >
+            <Grid
+              className="GridItem"
+              lg={3}
+              md={3}
+              xs={12}
+              sm={12}
+              sx={{ paddingLeft: "50px" }}
+            >
               <ProfileSidBar />
             </Grid>
-            <Grid lg={8} md={4} xs={12} sm={12}>
+            <Grid lg={9} md={4} xs={12} sm={12}>
               <Stack sx={{ gap: 3, mt: 4, px: 2 }}>
                 <MainTitle>{t("MY PROFILE")}</MainTitle>
                 <InputField
@@ -217,7 +224,10 @@ const ProfileSettings = () => {
                   helperText={invalid?.phone}
                 />
                 <FormControl>
-                  <FormLabel id="demo-row-radio-buttons-group-label" sx={{ fontFamily: "Cairo" }}>
+                  <FormLabel
+                    id="demo-row-radio-buttons-group-label"
+                    sx={{ fontFamily: "Cairo" }}
+                  >
                     {t("Gender")}
                   </FormLabel>
                   <RadioGroup
@@ -226,10 +236,20 @@ const ProfileSettings = () => {
                     name="row-radio-buttons-group"
                     value={controls?.gender}
                     onChange={handleGenderChange}
-                    sx={{ ".MuiFormControlLabel-label": { fontFamily: "Cairo" } }}
+                    sx={{
+                      ".MuiFormControlLabel-label": { fontFamily: "Cairo" },
+                    }}
                   >
-                    <FormControlLabel value="F" control={<Radio />} label={t("Female")} />
-                    <FormControlLabel value="M" control={<Radio />} label={t("Male")} />
+                    <FormControlLabel
+                      value="F"
+                      control={<Radio />}
+                      label={t("Female")}
+                    />
+                    <FormControlLabel
+                      value="M"
+                      control={<Radio />}
+                      label={t("Male")}
+                    />
                   </RadioGroup>
                 </FormControl>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -245,10 +265,13 @@ const ProfileSettings = () => {
                       },
                     }}
                     name="birth_date"
-                    value={birthDate ? dayjs(birthDate) : null}
+                    value={
+                      controls.birth_date ? dayjs(controls.birth_date) : null
+                    }
                     onChange={(date) => {
-                      const formattedDate = date ? dayjs(date).format("YYYY-MM-DD") : "";
-                      setBirthDate(formattedDate);
+                      const formattedDate = date
+                        ? dayjs(date).format("YYYY-MM-DD")
+                        : "";
                       setControl("birth_date", formattedDate);
                     }}
                     renderInput={(params) => (
@@ -257,19 +280,24 @@ const ProfileSettings = () => {
                   />
                 </LocalizationProvider>
                 <DarkButton
-                onClick={handleSubmitUpdateProfile}
-                type="button"
-                variant="contained"
-                sx={{ mt: 3, width: "100%", fontFamily: "Cairo", height: "48px", borderRadius: "8px" }}
-              >
-                {Boolean(updateResponse.isPending) ? (
-                  <CircularProgress />
-                ) : (
-                  t("Save")
-                )}
-              </DarkButton>
+                  onClick={handleSubmitUpdateProfile}
+                  type="button"
+                  variant="contained"
+                  sx={{
+                    mt: 3,
+                    width: "100%",
+                    fontFamily: "Cairo",
+                    height: "48px",
+                    borderRadius: "8px",
+                  }}
+                >
+                  {Boolean(updateResponse.isPending) ? (
+                    <CircularProgress />
+                  ) : (
+                    t("Save")
+                  )}
+                </DarkButton>
               </Stack>
-              
             </Grid>
           </Grid>
         </Container>

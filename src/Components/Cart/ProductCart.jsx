@@ -28,7 +28,7 @@ const ProductCart = ({product_id,
         const theme=useTheme()
         const [RequestDeleteProductCart, ResponseDeleteProductCart] = useRequest({
           method: "DELETE",
-          path: `${PRODUCTS}${shopInfo?.id}/cart/details/${cart_item_id}/`,
+          path: `${PRODUCTS}${shopInfo?.id}/cart/items/${cart_item_id}/`,
           token:token?`Token ${token}`:null
         });
       
