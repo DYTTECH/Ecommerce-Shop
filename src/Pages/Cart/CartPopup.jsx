@@ -39,7 +39,7 @@ const CartPopup = ({ openCartPopup, handleCloseCartPopup }) => {
   const theme = useTheme();
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
   const token = JSON.parse(localStorage.getItem("userinfo"));
-  const CartDetails = useSelector((state) => state.cart.value);
+  const CartDetails = useSelector((state) => state.cart?.value);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [RequestGetProductsCart, ResponseGetProductsCart] = useRequest({
@@ -224,6 +224,7 @@ const CartPopup = ({ openCartPopup, handleCloseCartPopup }) => {
                 width: "60%",
                 paddingY: 3,
               }}
+              onClick={() => navigate(`/t2/${shopInfo.sub_domain}/checkout`)} 
             >
               {t("Check Out")}
             </DarkButton>

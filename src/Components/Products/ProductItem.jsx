@@ -22,6 +22,7 @@ import useRequest from "../../Hooks/useRequest";
 import { PRODUCTS } from "../../Data/API";
 import { useDispatch } from "react-redux";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import { useTheme } from "@emotion/react";
 export const ProductItem = ({
   main_image,
   name,
@@ -39,6 +40,7 @@ export const ProductItem = ({
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { i18n, t } = useTranslation();
+  const theme = useTheme();
 
   const [RequestAddProductToFavorite, ResponseAddProductToFavorite] =
     useRequest({
@@ -202,12 +204,13 @@ export const ProductItem = ({
               color: "red",
               textDecorationLine: "line-through",
               fontFamily: "Cairo",
+              color:theme.palette.primary.red 
             }}
           >
             {price} {t("SAR")}
           </Typography>
           {/* <Typography variant='body1' sx={{ paddingRight: 2 }}>{discount} %</Typography> */}
-          <Typography variant="body1" sx={{ fontFamily: "Cairo" }}>
+          <Typography variant="body1" sx={{ fontFamily: "Cairo", color:theme.palette.primary.red  }}>
             {final_price} {currency||t("SAR")}
           </Typography>
         </Box>

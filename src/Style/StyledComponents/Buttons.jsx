@@ -21,7 +21,7 @@ export const TransparentButton = styled(Button)(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
   height: "28px",
-  width: "41px",
+  width: "60px",
 }));
 
 export const PaymentButton = styled(IconButton)(({ theme }) => ({
@@ -39,4 +39,14 @@ export const ActivePaymentButton = styled(IconButton)(({ theme }) => ({
   backgroundColor: theme.palette.primary.dark,
   color: theme.palette.primary.light,
   margin: 3,
+}));
+
+
+export const BlackButton = styled(Button)(({ theme }) => ({
+    backgroundColor: theme.palette.primary.dark,
+    color: theme.palette.primary.light,
+    fontFamily: "Cairo",
+    width: "10rem",
+    mt: 4,
+    mr: 3,
 }));

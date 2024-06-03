@@ -11,6 +11,8 @@ import ProfileSettings from "../Components/Profile/ProfileSettings";
 import Address from "../Components/Profile/Address";
 import MyWishlist from "../Components/Profile/MyWishlist";
 import Checkout from "../Components/Profile/Order/Checkout";
+import Orders from "../Components/Profile/Orders";
+import OrderDetails from "../Components/Profile/Order/OrderDetails";
 
 const createRoutes = () => {
   
@@ -64,7 +66,7 @@ const createRoutes = () => {
     },
     {
       path: "/t2/:name/orders",
-      element: <Address />,
+      element: <Orders />,
       // errorElement: <ErrorPage />,
     },
     {
@@ -82,7 +84,11 @@ const createRoutes = () => {
       element: <Checkout />,
       // errorElement: <ErrorPage />,
     },
-    
+    {
+      path: "/t2/:name/orders/:id",
+      element: <OrderDetails/>,
+      // errorElement: <ErrorPage />,
+    },
     // Add more routes if needed
   ];
 };

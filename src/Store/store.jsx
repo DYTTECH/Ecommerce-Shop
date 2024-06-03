@@ -19,6 +19,8 @@ import ProductDetailsSlice from "./Pages/ProductDetailsSlice";
 import WishListSlice from "./Pages/WishListSlice";
 import CartSlice from "./Pages/CartSlice";
 import AddressSlice from "./Pages/AddressSlice";
+import CheckoutSlice from "./Pages/CheckoutSlice";
+import OrdersSlice from "./Pages/OrdersSlice";
 
 
 export const store = configureStore({
@@ -42,7 +44,9 @@ export const store = configureStore({
       productdetails:ProductDetailsSlice,
       wishlist:WishListSlice,
       cart:CartSlice,
-      address:AddressSlice
+      address:AddressSlice,
+      checkout:CheckoutSlice,
+      orders: OrdersSlice
     },
     middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
