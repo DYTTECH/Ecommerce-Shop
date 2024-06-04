@@ -301,17 +301,7 @@ const Checkout = () => {
                     )}
                   </ItemsDes>
                 </Box>
-                <Button
-                  type="button"
-                  variant="contained"
-                  sx={{
-                    bgcolor: theme.palette.primary.dark,
-                    color: theme.palette.primary.light,
-                  }}
-                  onClick={() => {AddOrder()}}
-                >
-
-                <DarkButton type="button" variant="contained">
+                <DarkButton type="button" variant="contained" onClick={() => {AddOrder()}}>
 
                   {t("PROCEED TO SECURE PAYMENT")}
                 </DarkButton>

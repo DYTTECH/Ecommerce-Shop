@@ -25,13 +25,7 @@ import inpackage from "../../assets/images/package.png";
 import review from "../../assets/images/review.png";
 import OrderProgress from "./Order/OrderProgress";
 
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
+function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
   return (
@@ -60,11 +54,11 @@ const Orders = () => {
   const {id} = useParams();
 
   const [value, setValue] = useState(0);
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  const a11yProps = (index: number) => {
+  const a11yProps = (index) => {
     return {
       id: `tab-${index}`,
       "aria-controls": `tabpanel-${index}`,
