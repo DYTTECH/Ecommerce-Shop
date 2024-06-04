@@ -74,7 +74,7 @@ const CartDetails = () => {
   };
   useEffect(() => {
     GetCartDetails();
-  }, [shopInfo?.id]);
+  }, []);
   return (
     
         <Box>

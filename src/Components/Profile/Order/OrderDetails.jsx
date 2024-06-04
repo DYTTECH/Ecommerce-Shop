@@ -1,7 +1,7 @@
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import BASEURL from "../../../Data/API";
+import BASEURL, { PRODUCTS } from "../../../Data/API";
 import useRequest from "../../../Hooks/useRequest";
 import HeroTitle from "../../Layout/HeroTitle";
 import {
@@ -34,7 +34,10 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { LightBox } from "../../../Style/StyledComponents/Box";
 import ProductCart from "../../Cart/ProductCart";
-import { BlackButton, TransparentButton } from "../../../Style/StyledComponents/Buttons";
+import {
+  BlackButton,
+  TransparentButton,
+} from "../../../Style/StyledComponents/Buttons";
 import OrderStepper from "./OrderStepper";
 import OrderSteps from "./OrderSteps";
 import CartDetails from "../../../Pages/Cart/CartDetails";
@@ -45,7 +48,7 @@ const OrderDetails = () => {
   const token = JSON.parse(localStorage.getItem("userinfo"));
   const orders = useSelector((state) => state.orders?.value);
   const userDetails = JSON.parse(localStorage.getItem("userDetails"));
-
+  const cartDetails = useSelector((state) => state.cart.value);
 
   const { id } = useParams();
   const { t } = useTranslation();
@@ -70,16 +73,31 @@ const OrderDetails = () => {
     { label: `${t("Profile")}`, active: false },
     { label: `${t("MY ORDER")}`, active: false },
     { label: `${orders.status_name}`, active: false },
-    { label: `#${orders.id}`, active: false },
+    { label: `#${id}`, active: false },
   ];
-
+ 
+  const [RequestGetOrderDetails, ResponseGetOrderDetails] = useRequest({
+    method: "GET",
+    path: `${BASEURL}shop/${shopInfo?.id}/orders/${id}`,
+    token: token ? `Token ${token}` : null,
+  });
   const [RequestCancelOrder, ResponseCancelOrder] = useRequest({
     method: "PATCH",
     path: `${BASEURL}shop/${shopInfo?.id}/orders/${id}/cancel_order/`,
     token: token ? `Token ${token}` : null,
   });
-
-
+  const [RequestGetCartDetails, ResponseGetCartDetails] = useRequest({
+    method: "Get",
+    path: `${PRODUCTS}${shopInfo?.id}/cart/details/`,
+    token: token ? `Token ${token}` : null,
+  });
+ const getOrderDetails = () => {
+    RequestGetOrderDetails({
+      onSuccess: (res) => {
+        dispatch({ type: "orders/setObject", payload: res.data });
+      },
+    });
+  };
   const CancelOrder = () => {
     RequestCancelOrder({
       onSuccess: (res) => {
@@ -87,7 +105,18 @@ const OrderDetails = () => {
       },
     });
   };
+  const GetCartDetails = () => {
+    RequestGetCartDetails({
+      onSuccess: (res) => {
+        dispatch({ type: "cart/set", payload: res.data });
+      },
+    });
+  };
 
+  useEffect(() => {
+    getOrderDetails();
+    GetCartDetails();
+  }, []);
 
   return (
     <ResponsiveLayout>
@@ -115,15 +144,14 @@ const OrderDetails = () => {
                 <ItemsTitle sx={{ pb: 4 }}>{userDetails?.full_name}</ItemsTitle>
                 <ItemsDes sx={{ pb: 4 }}>{userDetails?.phone}</ItemsDes>
                 {orders?.status_name === "تم الإلغاء" ? null : (
-    <BlackButton
-      onClick={handleClickOpen}
-      type="button"
-      variant="contained"
-    >
-      {t("Cancel Order")}
-    </BlackButton>
-  )}
-                
+                  <BlackButton
+                    onClick={handleClickOpen}
+                    type="button"
+                    variant="contained"
+                  >
+                    {t("Cancel Order")}
+                  </BlackButton>
+                )}
               </LightBox>
               <Dialog
                 open={open}
@@ -172,11 +200,18 @@ const OrderDetails = () => {
                   </BlackButton>
                 </DialogActions>
               </Dialog>
-              <OrderProgress />
-              
+              <OrderProgress key={orders?.id} order={orders} />
             </Grid>
             <Grid item md={4} xs={12}>
-              <CartDetails />
+            {orders?.products &&
+              orders?.products?.map((item) => (
+                <ProductCart
+                  key={item.cart_item_id}
+                  {...item}
+                  isPending={ResponseGetOrderDetails.isPending}
+                />
+              ))}
+            <CartDetails />
             </Grid>
           </Grid>
         </Container>

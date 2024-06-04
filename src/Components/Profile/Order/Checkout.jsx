@@ -35,10 +35,10 @@ import PaymentsIcon from "@mui/icons-material/Payments";
 import ProductCart from "../../Cart/ProductCart";
 import CartDetails from "../../../Pages/Cart/CartDetails";
 import useRequest from "../../../Hooks/useRequest";
-import { PRODUCTS } from "../../../Data/API";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import ResponsiveLayout from "../../Layout/Layout";
+import { PRODUCTS } from "../../../Data/API";
 
 const Checkout = () => {
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
@@ -107,7 +107,7 @@ const Checkout = () => {
 
   useEffect(() => {
     GetCartDetails();
-  }, [shopInfo?.id]);
+  }, []);
 
   useEffect(() => {
     initializeSelectedAddressId();
@@ -301,19 +301,12 @@ const Checkout = () => {
                     )}
                   </ItemsDes>
                 </Box>
-                <Button
-                  type="button"
+                <DarkButton 
+                type="button"
                   variant="contained"
-                  sx={{
-                    bgcolor: theme.palette.primary.dark,
-                    color: theme.palette.primary.light,
-                  }}
-                  onClick={() => {AddOrder()}}
-                >
+                  onClick={() => {AddOrder()}}>
 
-                <DarkButton type="button" variant="contained">
-
-                  {t("PROCEED TO SECURE PAYMENT")}
+                  {t("Check Out")}
                 </DarkButton>
               </Box>
             )}
