@@ -1,25 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useTheme } from "@emotion/react";
 import { useTranslation } from "react-i18next";
 import { Box, Container, Divider, Grid, Tab } from "@mui/material";
-import {
-  GrayText,
-  ItemsDes,
-  ItemsTitle,
-  MainTitle,
-} from "../../Style/StyledComponents/Typography";
+import { GrayText, ItemsDes, ItemsTitle, MainTitle } from "../../Style/StyledComponents/Typography";
 import ResponsiveLayout from "../Layout/Layout";
 import PageMeta from "../Layout/MetaPage";
 import HeroTitle from "../Layout/HeroTitle";
 import ProfileSidBar from "./ProfileSidBar";
 import useRequest from "../../Hooks/useRequest";
 import BASEURL from "../../Data/API";
-import Tabs, { tabsClasses } from '@mui/material/Tabs';
+import Tabs, { tabsClasses } from "@mui/material/Tabs";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import dellivery from '../../assets/images/delivery.png'
-import Canceled from '../../assets/images/canceled.png'
-import dlivered from '../../assets/images/deliverd.png'
+import dellivery from "../../assets/images/delivery.png";
+import Canceled from "../../assets/images/canceled.png";
+import dlivered from "../../assets/images/deliverd.png";
 import shipping from "../../assets/images/shipping.png";
 import inpackage from "../../assets/images/package.png";
 import review from "../../assets/images/review.png";
@@ -42,16 +37,16 @@ function TabPanel(props) {
 }
 
 const Orders = () => {
-  const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
-  const token = JSON.parse(localStorage.getItem("userinfo"));
-  const orders = useSelector((state) => state.orders.results); 
+  const shopInfo = useMemo(() => JSON.parse(localStorage.getItem("shopInfo")), []);
+  const token = useMemo(() => JSON.parse(localStorage.getItem("userinfo")), []);
+  const orders = useSelector((state) => state.orders.results);
   const navigate = useNavigate();
 
   const [orderStatus, setOrderStatus] = useState([]);
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const theme = useTheme();
-  const {id} = useParams();
+  const { id } = useParams();
 
   const [value, setValue] = useState(0);
   const handleChange = (event, newValue) => {
@@ -65,7 +60,7 @@ const Orders = () => {
     };
   };
 
-  const crumbs = [
+  const crumbs = useMemo(() => [
     {
       label: `${t("Home")}`,
       link: `/t2/${shopInfo?.sub_domain}`,
@@ -73,7 +68,7 @@ const Orders = () => {
     },
     { label: `${t("Profile")}`, active: false },
     { label: `${t("MY ORDERS")}`, active: false },
-  ];
+  ], [shopInfo, t]);
 
   const [RequestGetOrders, ResponseGetOrders] = useRequest({
     method: "GET",
@@ -86,32 +81,32 @@ const Orders = () => {
     path: `${BASEURL}shop/dashboard/order/status/`,
   });
 
-  const getUserOrders = () => {
+  const getUserOrders = useCallback(() => {
     RequestGetOrders({
       onSuccess: (res) => {
         console.log("Fetched Orders:", res.data);
-        dispatch({ type: "orders/set", payload: res.data.results }); 
+        dispatch({ type: "orders/set", payload: res.data.results });
       },
     });
-  };
+  }, []);
 
-  const getUserOrdersStatus = () => {
+  const getUserOrdersStatus = useCallback(() => {
     RequestGetOrdersStatus({
       onSuccess: (res) => {
         console.log("Fetched Order Statuses:", res.data);
         setOrderStatus(res.data);
       },
     });
-  };
+  }, []);
 
   useEffect(() => {
     getUserOrders();
     getUserOrdersStatus();
   }, []);
 
-  const getStatusOrders = (statusName) => {
-    return orders?.filter(order => order.status_name === statusName);
-  };
+  const getStatusOrders = useCallback((statusName) => {
+    return orders?.filter((order) => order.status_name === statusName);
+  }, []);
 
   return (
     <ResponsiveLayout>
@@ -168,7 +163,7 @@ const Orders = () => {
                     borderBottom: 1,
                     borderColor: "divider",
                     [`& .${tabsClasses.scrollButtons}`]: {
-                      '&.Mui-disabled': { opacity: 0.3 },
+                      "&.Mui-disabled": { opacity: 0.3 },
                     },
                   }}
                 >
@@ -191,7 +186,11 @@ const Orders = () => {
                 <MainTitle>{t("MY ORDERS")}</MainTitle>
                 {orders?.length > 0 ? (
                   orders?.map((order, index) => (
-                    <Box key={index} onClick={() => navigate(`/t2/${shopInfo?.sub_domain}/orders/${order.id}`)} sx={{ cursor: 'pointer' }}>
+                    <Box
+                      key={index}
+                      onClick={() => navigate(`/t2/${shopInfo?.sub_domain}/orders/${order.id}`)}
+                      sx={{ cursor: "pointer" }}
+                    >
                       <Grid
                         container
                         spacing={2}
@@ -241,31 +240,34 @@ const Orders = () => {
                                   ? shipping
                                   : order.status === "5"
                                   ? dlivered
-                                  : order.status === "2" &&
-                                    Canceled
+                                  : order.status === "2" && Canceled
                               }
                               alt="dellivery"
                               width={"100%"}
                               height={"100%"}
                             />
                           </Box>
-                          <ItemsTitle sx={{
-                            color:
-                              order.status === "1"
-                                ? "#2629DB"
-                                : order.status === "7" ?
-                                  "#2629DB"
-                                  : order.status === "3" ?
-                                    "#2629DB"
-                                    : order.status === "4"
-                                      ? "#2629DB"
-                                      : order.status === "5" ?
-                                        "#5CB85C"
-                                        : order.status === "6" ?
-                                          "#D9534F"
-                                          : order.status === "2" &&
-                                          "#D9534F", pr: 2
-                          }}>{order.status_name}</ItemsTitle>
+                          <ItemsTitle
+                            sx={{
+                              color:
+                                order.status === "1"
+                                  ? "#2629DB"
+                                  : order.status === "7"
+                                  ? "#2629DB"
+                                  : order.status === "3"
+                                  ? "#2629DB"
+                                  : order.status === "4"
+                                  ? "#2629DB"
+                                  : order.status === "5"
+                                  ? "#5CB85C"
+                                  : order.status === "6"
+                                  ? "#D9534F"
+                                  : order.status === "2" && "#D9534F",
+                              pr: 2,
+                            }}
+                          >
+                            {order.status_name}
+                          </ItemsTitle>
                         </Grid>
                       </Grid>
                     </Box>
@@ -279,8 +281,14 @@ const Orders = () => {
               {orderStatus?.map((status, index) => (
                 <TabPanel key={status.id} value={value} index={index + 1}>
                   <MainTitle>{status.name}</MainTitle>
-                  {getStatusOrders(status.name)?.map(order => (
-                    <OrderProgress key={order?.id} order={order} />
+                  {getStatusOrders(status.name)?.map((order) => (
+                    <Box onClick={() =>
+                      navigate(
+                        `/t2/${shopInfo?.sub_domain}/orders/${order.id}`
+                      )
+                    } sx={{cursor:'pointer'}}>
+                      <OrderProgress key={order.id} orderId={order.id} />
+                    </Box>
                   ))}
                 </TabPanel>
               ))}

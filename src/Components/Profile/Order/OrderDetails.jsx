@@ -211,7 +211,7 @@ const OrderDetails = () => {
                   isPending={ResponseGetOrderDetails.isPending}
                 />
               ))}
-            <CartDetails />
+            <CartDetails orderDetails={orders} />
             </Grid>
           </Grid>
         </Container>

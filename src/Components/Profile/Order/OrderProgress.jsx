@@ -18,23 +18,24 @@ import {
 import { LightBox } from "../../../Style/StyledComponents/Box";
 import OrderStepper from "./OrderStepper";
 import OrderSteps from "./OrderSteps";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-const OrderProgress = ({ order }) => {
+const OrderProgress = ({ orderId }) => {
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
   const token = JSON.parse(localStorage.getItem("userinfo"));
-  const orders = useSelector((state) => state.orders?.value);
-  const userDetails = JSON.parse(localStorage.getItem("userDetails"));
+  const order = useSelector((state) => state.orders?.value);
   const userAddresses = useSelector((state) => state.address?.value);
-  const [showDerials, setShowDerials] = useState(false);
-const {id} = useParams();
+  const [showDetails, setShowDetails] = useState(false);
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const theme = useTheme();
+  const navigate = useNavigate();
+  const { id } = useParams();
+
 
   const [RequestGetOrderDetails, ResponseGetOrderDetails] = useRequest({
     method: "GET",
-    path: `${BASEURL}shop/${shopInfo?.id}/orders/${order?.id || id}`,
+    path: `${BASEURL}shop/${shopInfo?.id}/orders/${orderId}`,
     token: token ? `Token ${token}` : null,
   });
 
@@ -61,7 +62,7 @@ const {id} = useParams();
   };
 
   const shippingAddress = Array.isArray(userAddresses)
-    ? userAddresses.find((address) => address.id === orders?.shipping_address)
+    ? userAddresses.find((address) => address.id === order?.shipping_address)
     : null;
 
   useEffect(() => {
@@ -79,7 +80,7 @@ const {id} = useParams();
         }}
       >
         <MainTitle>
-          {t("Order")} #{order?.id || id} 
+          {t("Order")} #{orderId || id} 
         </MainTitle>
         <DarkText>{order?.status_name}</DarkText>
       </Box>
@@ -112,10 +113,10 @@ const {id} = useParams();
         </Grid>
         <OrderStepper step={order?.status} />
         <Box sx={{ mt: "32px" }}>
-          {showDerials && <OrderSteps />}
+          {showDetails && <OrderSteps />}
           <MainText
             sx={{ cursor: "pointer" }}
-            onClick={() => setShowDerials(!showDerials)}
+            onClick={() => setShowDetails(!showDetails)}
           >
             {t("Show Details")}
           </MainText>

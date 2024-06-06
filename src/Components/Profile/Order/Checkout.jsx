@@ -115,15 +115,8 @@ const Checkout = () => {
 
   console.log(selectedAddressId);
   return (
-    <ResponsiveLayout>
-      <PageMeta
-        title={`${shopInfo?.sub_domain}-${t("MY ADDRESS BOOK")}`}
-        desc="Description of my page for SEO"
-        name={shopInfo?.full_name}
-        type={shopInfo?.shop_type_name}
-        image={shopInfo?.logo}
-      />
-      <Container maxWidth="xl" sx={{ my: "100px" }}>
+    
+      <Container maxWidth="xl" sx={{ my: "50px" }}>
         <Box
           sx={{
             display: "flex",
@@ -328,7 +321,6 @@ const Checkout = () => {
           </Grid>
         </Grid>
       </Container>
-    </ResponsiveLayout>
   );
 };
 
