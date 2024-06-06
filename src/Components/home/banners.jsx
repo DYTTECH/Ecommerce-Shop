@@ -68,11 +68,21 @@ console.log(items);
                   }}
                   key={index}
                 >
+                  {banner.banner_type_name==="Link"?
+                  <a href={banner?.link} target="_blank" rel="noreferrer">
+                    <img
+                      src={banner?.image}
+                      alt={banner?.name}
+                      style={{ width: "100%", height: 320 }}
+                    />
+                  </a>:
                   <img
                     src={banner?.image}
                     alt={banner?.name}
                     style={{ width: "100%", height: 320 }}
                   />
+                  }
+                  
                 </Card>
               ))}
             </Carousel>
@@ -91,11 +101,20 @@ console.log(items);
                           justifyContent: "center",
                         }}
                       >
-                        <img
-                          src={banner?.image}
-                          alt={banner?.name}
-                          style={{ width: "100%" }}
-                        />
+                        {banner.banner_type_name==="Link"?
+                  <a href={banner?.link} target="_blank" rel="noreferrer">
+                    <img
+                      src={banner?.image}
+                      alt={banner?.name}
+                      style={{ width: "100%", height: 320 }}
+                    />
+                  </a>:
+                  <img
+                    src={banner?.image}
+                    alt={banner?.name}
+                    style={{ width: "100%", height: 320 }}
+                  />
+                  }
                       </Card>
                     </Grid>
                   ))}
@@ -114,11 +133,20 @@ console.log(items);
             }}
             key={index}
           >
-            <img
-              src={banner?.image}
-              alt={banner?.name}
-              style={{ width: "100%", height: 330 }}
-            />
+             {banner.banner_type_name==="Link"?
+                  <a href={banner?.link} target="_blank" rel="noreferrer">
+                    <img
+                      src={banner?.image}
+                      alt={banner?.name}
+                      style={{ width: "100%", height: 320 }}
+                    />
+                  </a>:
+                  <img
+                    src={banner?.image}
+                    alt={banner?.name}
+                    style={{ width: "100%", height: 320 }}
+                  />
+                  }
           </Card>
         ))
       )}

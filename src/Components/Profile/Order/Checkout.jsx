@@ -301,10 +301,7 @@ const Checkout = () => {
                     )}
                   </ItemsDes>
                 </Box>
-                <DarkButton 
-                type="button"
-                  variant="contained"
-                  onClick={() => {AddOrder()}}>
+                <DarkButton type="button" variant="contained" onClick={() => {AddOrder()}}>
 
                   {t("Check Out")}
                 </DarkButton>
