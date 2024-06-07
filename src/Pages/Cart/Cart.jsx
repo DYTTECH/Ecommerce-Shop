@@ -111,7 +111,7 @@ const Cart = () => {
           sx={{ marginTop: { lg: "69px", md: "0", sm: "0", xs: "0" }, mb:5 }}
         >
           <Grid container spacing={3}>
-            <Grid item xs={12} sm={6} md={8}>
+            <Grid item xs={12} sm={12} md={8}>
               <Box sx={{ display: "flex", mt: 3 }}>
                 <DarkText sx={{ fontWeight: theme.font.fontWeight.semibold }}>
                   {t("My Cart")}
@@ -131,7 +131,7 @@ const Cart = () => {
                   />
                 ))}
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={12} md={4}>
               {/* copoun */}
               {/* <Stack
                 direction="column"

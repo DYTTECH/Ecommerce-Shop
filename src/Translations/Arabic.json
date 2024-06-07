@@ -110,5 +110,7 @@
     "Order":"طلب",
     "Delivery Date":"تاريخ التوصيل",
     "Location":"الموقع",
-    "Show Details":"عرض التفاصيل"
+    "Show Details":"عرض التفاصيل",
+    "Only ":"فقط ",
+    " Piece available":" قطعة متاحة"
 }

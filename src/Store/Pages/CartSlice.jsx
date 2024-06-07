@@ -26,14 +26,12 @@ const CartSlice = createSlice({
         shipping: 0,
       };
     },
+    
     deleteItem: (state, action) => {
-      //  state.items=state.items.filter((item)=>item.id!==action.payload)
-      return {
-        ...state,
-        items: state.products.filter(
-          (item) => item.cart_item_id !== action.payload
-        ),
-      };
+      // Correctly access state.value.products instead of state.products
+      state.value.products = state.value.products.filter(
+        (item) => item.cart_item_id !== action.payload
+      );
     },
     // addItem: (state, action) => {
     //   //  state.items.push(action.payload)

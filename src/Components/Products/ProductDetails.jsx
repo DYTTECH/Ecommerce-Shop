@@ -25,6 +25,8 @@ import {
   GrayText,
   ItemsDes,
   MainTitle,
+  Span,
+  TextButton,
   TextDiscount,
 } from "../../Style/StyledComponents/Typography";
 import { HOMECOMPONENTS, PRODUCTS } from "../../Data/API";
@@ -54,6 +56,7 @@ import { RWebShare } from "react-web-share";
 import Specification from "./ProductSpecification";
 import CartPopup from "../../Pages/Cart/CartPopup";
 import AuthLogin from "../Authentication/LogInAuth";
+import { BoxStyleRow } from "../../Style/StyledComponents/Box";
 const StyledMenu = styled((props) => (
   <Menu
     elevation={0}
@@ -122,6 +125,14 @@ const ProductDetails = () => {
   const [open, setOpen] = React.useState(false);
   const [openShare, setOpenShare] = React.useState(false);
   const [openLogin, setOpenLogin] = useState(false);
+  const [localQuantity, setLocalQuantity] = useState(1);
+
+  const handleQuantity = (type) => {
+    const newQuantity = type === "inc" ? localQuantity + 1 : localQuantity - 1;
+    if (newQuantity > 0) {
+      setLocalQuantity(newQuantity); // Update local state immediately
+    }
+  };
 
   const handleOpenShareDialog = () => {
     setOpenShare(true);
@@ -168,17 +179,16 @@ const ProductDetails = () => {
     path: `${PRODUCTS}${shopInfo?.id}/cart/items/`,
     token: token ? `Token ${token}` : null,
   });
+
   const AddProductToCart = () => {
     RequestAddProductToCart({
       body: {
         product: params?.id,
-        quantity: 1,
+        quantity: localQuantity,
         variant: variantID,
       },
       onSuccess: (res) => {
-        
         dispatch({ type: "cart/addItem", payload: res?.data });
-
         setOpenCartPopup(true);
       },
     });
@@ -245,7 +255,7 @@ const ProductDetails = () => {
     GetProductDetails();
     GetProductSort();
     RequestProductView();
-    window.scrollTo(0,0)
+    window.scrollTo(0, 0);
   }, []);
 
   useEffect(() => {
@@ -549,8 +559,8 @@ const ProductDetails = () => {
                     </Typography>
                   </Box>
                   <Divider />
-                  <Box sx={{ pt: 3, display: "flex" }}>
-                    <Box>
+                  <BoxStyleRow sx={{ pt: 3 }}>
+                    {/* <Box>
                       <Button
                         id="demo-customized-button"
                         aria-controls={
@@ -585,7 +595,27 @@ const ProductDetails = () => {
                           US
                         </MenuItem>
                       </StyledMenu>
-                    </Box>
+                    </Box> */}
+                    <BoxStyleRow>
+                      <Span onClick={() => handleQuantity("inc")}>+</Span>
+                      <TextButton sx={{ border: "none !important" }}>
+                        {localQuantity}
+                      </TextButton>
+                      <Span onClick={() => handleQuantity("dec")}>-</Span>
+                    </BoxStyleRow>
+                    <ItemsDes
+                      sx={{
+                        pr: 3,
+                        color:
+                          ProductDetails?.quantity === 0
+                            ? theme.palette.primary.red
+                            : "inherit",
+                      }}
+                    >
+                      {t("Only ")}
+                      {ProductDetails?.quantity}
+                      {t(" Piece available")}
+                    </ItemsDes>
                     <Stack
                       sx={{
                         width: "50%",
@@ -685,7 +715,7 @@ const ProductDetails = () => {
                         <></>
                       )}
                     </Stack>
-                  </Box>
+                  </BoxStyleRow>
                   <Button
                     variant="contained"
                     sx={{ mt: 4, width: "100%", fontFamily: "cairo" }}

@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { GrayText } from "../../Style/StyledComponents/Typography";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import { SidBarButton } from "../../Style/StyledComponents/Buttons";
 
 const ProfileSidBar = () => {
   const navigate = useNavigate();
@@ -91,11 +92,13 @@ const ProfileSidBar = () => {
                 onClick={() => navigate(item?.path)}
               >
                 {item.icon}
-                <GrayText>{item.name}</GrayText>
+                <GrayText sx={{ paddingBottom: "0 !important" }}>
+                  {item.name}
+                </GrayText>
                 {lang === "ar" ? (
-                  <ArrowForwardIosIcon />
-                ) : (
                   <ArrowBackIosNewIcon />
+                ) : (
+                  <ArrowForwardIosIcon />
                 )}
               </ToggleButtonProfile>
             );
@@ -104,20 +107,15 @@ const ProfileSidBar = () => {
       </Box>
       <Divider />
       <Box>
-        <Button
-          //   onClick={handleSignout}
-          sx={{
-            width: "100%",
-            height: "62px",
-            display: "flex",
-            justifyContent: "space-between",
-            pl: "12px",
-          }}
-        >
+        <SidBarButton>
           <LogoutIcon />
           <GrayText sx={{ padding: "0" }}>{t("LOGOUT")}</GrayText>
-          {lang === "ar" ? <ArrowForwardIosIcon /> : <ArrowBackIosNewIcon />}
-        </Button>
+          {lang === "ar" ? (
+            <ArrowBackIosNewIcon />
+          ) : (
+            <ArrowForwardIosIcon />
+          )}{" "}
+        </SidBarButton>
       </Box>
     </Box>
   );
