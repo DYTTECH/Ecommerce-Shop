@@ -176,8 +176,10 @@ const ProductDetails = () => {
         variant: variantID,
       },
       onSuccess: (res) => {
-        setOpenCartPopup(true);
+        
         dispatch({ type: "cart/addItem", payload: res?.data });
+
+        setOpenCartPopup(true);
       },
     });
   };

@@ -320,6 +320,8 @@ const Checkout = () => {
             <CartDetails />
           </Grid>
         </Grid>
+        {RequestAddOreder.failAlert}
+      {RequestAddOreder.successAlert}
       </Container>
   );
 };
