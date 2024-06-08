@@ -4,6 +4,11 @@ export const BoxStyle = styled(Box)(({ theme }) => ({
     display: "flex",
     alignItems: "center",
 }));
+export const BoxStyleRow = styled(Box)({
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "row",
+  });
 
 export const BoxMenuSkew = styled(Box)(({ theme }) => ({
     

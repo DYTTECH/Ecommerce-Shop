@@ -50,3 +50,12 @@ export const BlackButton = styled(Button)(({ theme }) => ({
     mt: 4,
     mr: 3,
 }));
+
+
+export const SidBarButton = styled(Button)(({ theme }) => ({
+  width: "100%",
+            height: "62px",
+            display: "flex",
+            justifyContent: "space-between",
+            padding: '15px'
+}));

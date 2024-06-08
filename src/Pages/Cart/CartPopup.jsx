@@ -30,7 +30,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { styled, alpha } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import ProductCart from "../../Components/Cart/ProductCart";
 import { DarkButton } from "../../Style/StyledComponents/Buttons";
 
@@ -45,7 +45,7 @@ const CartPopup = ({ openCartPopup, handleCloseCartPopup }) => {
   const [RequestGetProductsCart, ResponseGetProductsCart] = useRequest({
     method: "Get",
     path: `${PRODUCTS}${shopInfo?.id}/cart/details/`,
-    token:token?`Token ${token}`:null
+    token: token ? `Token ${token}` : null,
   });
   const GetProductsCart = () => {
     RequestGetProductsCart({
@@ -58,7 +58,7 @@ const CartPopup = ({ openCartPopup, handleCloseCartPopup }) => {
   useEffect(() => {
     GetProductsCart();
   }, [shopInfo?.id]);
- 
+
   return (
     <Dialog
       open={openCartPopup}
@@ -86,11 +86,14 @@ const CartPopup = ({ openCartPopup, handleCloseCartPopup }) => {
         </Box>
       </Box>
       <DialogContent>
-        {CartDetails.products&&
-        
-        CartDetails.products.map((item) => (
-          <ProductCart key={item.id} {...item} isPending={ResponseGetProductsCart.isPending} />
-        ))}
+        {CartDetails.products &&
+          CartDetails.products.map((item) => (
+            <ProductCart
+              key={item.id}
+              {...item}
+              isPending={ResponseGetProductsCart.isPending}
+            />
+          ))}
         {/* <Grid container spacing={3} sx={{ alignItems: "center" }}>
           <Grid item xs={12} sm={6} md={4}>
             {ResponseGetProductsCart.isPending ? (
@@ -216,7 +219,10 @@ const CartPopup = ({ openCartPopup, handleCloseCartPopup }) => {
           </Box>
           <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
             <DarkText>{t("Shipping fee")}</DarkText>
-            <DarkText>{CartDetails?.shipping_cost}{t("SAR")}</DarkText>
+            <DarkText>
+              {CartDetails?.shipping_cost}
+              {t("SAR")}
+            </DarkText>
           </Box>
           <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
             <DarkButton
@@ -224,7 +230,7 @@ const CartPopup = ({ openCartPopup, handleCloseCartPopup }) => {
                 width: "60%",
                 paddingY: 3,
               }}
-              onClick={() => navigate(`/t2/${shopInfo.sub_domain}/checkout`)} 
+              onClick={() => navigate(`/t2/${shopInfo.sub_domain}/checkout`)}
             >
               {t("Check Out")}
             </DarkButton>
@@ -238,10 +244,17 @@ const CartPopup = ({ openCartPopup, handleCloseCartPopup }) => {
             </Button>
           </Box>
           <Box
-            sx={{ bgcolor: "#f6f6f6", padding: 3, borderRadius: "3px", mt: 3, display:'flex', alignItems:'center' }}
+            sx={{
+              bgcolor: "#f6f6f6",
+              padding: 3,
+              borderRadius: "3px",
+              mt: 3,
+              display: "flex",
+              alignItems: "center",
+            }}
           >
             <LocalShippingIcon />
-            <DarkText sx={{pr:2}}>
+            <DarkText sx={{ pr: 2 }}>
               {t("Add")}{" "}
               <span style={{ fontWeight: theme.font.fontWeight.semibold }}>
                 {" "}

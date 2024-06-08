@@ -77,7 +77,13 @@ const OrderProgress = ({ orderId }) => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          cursor:'pointer'
         }}
+        onClick={() =>
+          navigate(
+            `/t2/${shopInfo?.sub_domain}/orders/${order.id}`
+          )
+        }
       >
         <MainTitle>
           {t("Order")} #{orderId || id} 

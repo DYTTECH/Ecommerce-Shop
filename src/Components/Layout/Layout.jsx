@@ -57,6 +57,7 @@ import ProfileMenu from "../Profile/ProfileMenu";
 import useRequest from "../../Hooks/useRequest";
 import { PRODUCTS } from "../../Data/API";
 import SearchSocket from "./Search";
+import SidBarMenu from "./SidBarMenu";
 
 
 const drawerWidth = 240;
@@ -201,7 +202,7 @@ function ResponsiveLayout(props) {
   }, [i18n.language]);
 
   // sidebar button links
-  const drawer = <Container>hjh</Container>;
+  // const drawer = [SidBarMenu
   // Remove this const when copying and pasting into your project.
   const container =
     window !== undefined ? () => window().document.body : undefined;
@@ -276,11 +277,12 @@ function ResponsiveLayout(props) {
           paddingInline: "2%",
           paddingBlock: trigger ? "0.4%" : "0.4%",
           background: theme.palette.primary.light,
+          // justifyContent: {sm:"start", xs:'center'}
         }}
       >
         <Toolbar
           sx={{
-            justifyContent: { lg: "space-between", md: "center", sm: "center" },
+            justifyContent: { lg: "space-between", md: "center", sm: "center" , xs:'center'},
             pb: { lg: 0, md: 2, sm: 2 },
           }}
           disableGutters
@@ -323,6 +325,7 @@ function ResponsiveLayout(props) {
                 sm: "column",
                 xs: "column",
               },
+              
             }}
           >
             <Typography variant="h6" noWrap component="div">
@@ -338,12 +341,12 @@ function ResponsiveLayout(props) {
               >
                 <SearchSocket/>
                 <div>|</div>
-                <GrayIcon onClick={handleViewWishList}>
+                <GrayIcon onClick={handleViewWishList} sx={{display:{ sm:'flex', xs:'none'}}}>
                 <Badge badgeContent={wishlist?.count} color="error">
                   <FavoriteBorderOutlinedIcon />
                 </Badge>
                 </GrayIcon>
-                <GrayIcon onClick={handleClickOpenCartPopup}>
+                <GrayIcon onClick={handleClickOpenCartPopup} sx={{display:{ sm:'flex', xs:'none'}}}>
                 <Badge badgeContent={cart?.products?.length} color="error">
                   <ShoppingCartIcon />
                   </Badge>
@@ -357,6 +360,7 @@ function ResponsiveLayout(props) {
                   aria-controls={menuId}
                   aria-haspopup="true"
                   onClick={handleProfileMenuOpen}
+                  sx={{display:{ sm:'flex', xs:'none'}}}
                 >
                   <AccountCircle />
                 </GrayIcon>
@@ -368,6 +372,7 @@ function ResponsiveLayout(props) {
                   aria-controls={menuId}
                   aria-haspopup="true"
                   onClick={handleLanguageMenuOpen}
+                  sx={{display:{ sm:'flex', xs:'none'}}}
                 >
                   <LanguageOutlinedIcon />
                 </GrayIcon>
@@ -461,7 +466,7 @@ function ResponsiveLayout(props) {
             },
           }}
         >
-          {drawer}
+          <SidBarMenu />
         </Drawer>
       </Box>
       <Box
@@ -475,7 +480,6 @@ function ResponsiveLayout(props) {
         }}
       >
         <Toolbar
-          className="gehad"
           sx={{ marginBottom: { lg: "35px", md: "0", sm: "0", xs: "0" } }}
         />
         {ViewMainCategories}

@@ -282,13 +282,7 @@ const Orders = () => {
                 <TabPanel key={status.id} value={value} index={index + 1}>
                   <MainTitle>{status.name}</MainTitle>
                   {getStatusOrders(status.name)?.map((order) => (
-                    <Box onClick={() =>
-                      navigate(
-                        `/t2/${shopInfo?.sub_domain}/orders/${order.id}`
-                      )
-                    } sx={{cursor:'pointer'}}>
-                      <OrderProgress key={order.id} orderId={order.id} />
-                    </Box>
+                    <OrderProgress key={order.id} orderId={order.id} />
                   ))}
                 </TabPanel>
               ))}

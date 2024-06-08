@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   BlackText,
+  ItemsDes,
   ItemsTitle,
   ProductTitle,
 } from "../../Style/StyledComponents/Typography";
@@ -32,10 +33,11 @@ export const ProductItem = ({
   is_favorite,
   id,
   type,
-  currency
+  currency,
+  quantity,
 }) => {
   const shopInfo = JSON.parse(localStorage.getItem("shopInfo"));
-  const token=JSON.parse(localStorage.getItem("userinfo"))
+  const token = JSON.parse(localStorage.getItem("userinfo"));
   const product_route = `${name?.replace(" ", "_")}/${id}`;
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -45,8 +47,8 @@ export const ProductItem = ({
   const [RequestAddProductToFavorite, ResponseAddProductToFavorite] =
     useRequest({
       method: "POST",
-      path: PRODUCTS+shopInfo?.id+`/favorites/`,
-      token:`Token ${token}`
+      path: PRODUCTS + shopInfo?.id + `/favorites/`,
+      token: `Token ${token}`,
     });
 
   const AddProductToFavorite = (id) => {
@@ -55,21 +57,22 @@ export const ProductItem = ({
         product: id,
       },
       onSuccess: (res) => {
-        if(type==="newarrive"){
-          dispatch({ type: "newarrive/favoriteItem", payload: {id:id} });
-        }else if(type==="bestseller"){
-          dispatch({ type: "bestseller/favoriteItem", payload: {id:id} });
-        }else if(type==="recommendation"){
-          dispatch({ type: "recommendation/favoriteItem", payload: {id:id} });
-        }else if(type==="mostviewed"){
-          dispatch({ type: "mostviewed/favoriteItem", payload: {id:id} });
-        }else if(type===" mostrated"){
-          dispatch({ type: "mostrated/favoriteItem", payload: {id:id} });
+        if (type === "newarrive") {
+          dispatch({ type: "newarrive/favoriteItem", payload: { id: id } });
+        } else if (type === "bestseller") {
+          dispatch({ type: "bestseller/favoriteItem", payload: { id: id } });
+        } else if (type === "recommendation") {
+          dispatch({
+            type: "recommendation/favoriteItem",
+            payload: { id: id },
+          });
+        } else if (type === "mostviewed") {
+          dispatch({ type: "mostviewed/favoriteItem", payload: { id: id } });
+        } else if (type === " mostrated") {
+          dispatch({ type: "mostrated/favoriteItem", payload: { id: id } });
+        } else if (type === "wishlist") {
+          dispatch({ type: "wishlist/deleteItem", payload: { id: id } });
         }
-        else if(type==="wishlist"){
-        dispatch({ type: "wishlist/deleteItem", payload: {id:id} });
-        }
-        
       },
     });
   };
@@ -77,7 +80,7 @@ export const ProductItem = ({
     useRequest({
       method: "Delete",
       path: `${PRODUCTS}/${shopInfo?.id}/favorites/`,
-      token:token?`Token ${token}`:null
+      token: token ? `Token ${token}` : null,
     });
 
   const DeleteProductFromFavorite = (id) => {
@@ -86,19 +89,21 @@ export const ProductItem = ({
         product: id,
       },
       onSuccess: (res) => {
-        if(type==="newarrive"){
-          dispatch({ type: "newarrive/favoriteItem", payload: {id:id} });
-        }else if(type==="bestseller"){
-          dispatch({ type: "bestseller/favoriteItem", payload: {id:id} });
-        }else if(type==="recommendation"){
-          dispatch({ type: "recommendation/favoriteItem", payload: {id:id} });
-        }else if(type==="mostviewed"){
-          dispatch({ type: "mostviewed/favoriteItem", payload: {id:id} });
-        }else if(type===" mostrated"){
-          dispatch({ type: "mostrated/favoriteItem", payload: {id:id} });
-        }
-        else if(type==="wishlist"){
-        dispatch({ type: "wishlist/deleteItem", payload: {id:id} });
+        if (type === "newarrive") {
+          dispatch({ type: "newarrive/favoriteItem", payload: { id: id } });
+        } else if (type === "bestseller") {
+          dispatch({ type: "bestseller/favoriteItem", payload: { id: id } });
+        } else if (type === "recommendation") {
+          dispatch({
+            type: "recommendation/favoriteItem",
+            payload: { id: id },
+          });
+        } else if (type === "mostviewed") {
+          dispatch({ type: "mostviewed/favoriteItem", payload: { id: id } });
+        } else if (type === " mostrated") {
+          dispatch({ type: "mostrated/favoriteItem", payload: { id: id } });
+        } else if (type === "wishlist") {
+          dispatch({ type: "wishlist/deleteItem", payload: { id: id } });
         }
       },
     });
@@ -108,11 +113,7 @@ export const ProductItem = ({
   }, [i18n.language]);
 
   return (
-    <Box
-      className="product"
-      sx={{ position: "relative" }}
-     
-    >
+    <Box className="product" sx={{ position: "relative" }}>
       <Avatar
         sx={{
           position: "absolute",
@@ -128,7 +129,7 @@ export const ProductItem = ({
             onClick={() => DeleteProductFromFavorite(id)}
           />
         ) : (
-          <FavoriteBorderIcon onClick={()=> AddProductToFavorite(id)} />
+          <FavoriteBorderIcon onClick={() => AddProductToFavorite(id)} />
         )}
       </Avatar>
       <Card
@@ -138,7 +139,6 @@ export const ProductItem = ({
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-
         }}
         onClick={() => {
           navigate(`/t2/${shopInfo?.sub_domain}/products/${product_route}`);
@@ -189,6 +189,17 @@ export const ProductItem = ({
             />
           </CardContent>
         </CardActionArea>
+        <ItemsDes
+          sx={{
+            pr: 3,
+            color: quantity === 0 ? theme.palette.primary.red : "inherit",
+            textAlign:'right'
+          }}
+        >
+          {t("Only ")}
+          {quantity}
+          {t(" Piece available")}
+        </ItemsDes>
         <Box
           sx={{
             display: "flex",
@@ -204,14 +215,17 @@ export const ProductItem = ({
               color: "red",
               textDecorationLine: "line-through",
               fontFamily: "Cairo",
-              color:theme.palette.primary.red 
+              color: theme.palette.primary.red,
             }}
           >
             {price} {t("SAR")}
           </Typography>
           {/* <Typography variant='body1' sx={{ paddingRight: 2 }}>{discount} %</Typography> */}
-          <Typography variant="body1" sx={{ fontFamily: "Cairo", color:theme.palette.primary.red  }}>
-            {final_price} {currency||t("SAR")}
+          <Typography
+            variant="body1"
+            sx={{ fontFamily: "Cairo", color: theme.palette.primary.red }}
+          >
+            {final_price} {currency || t("SAR")}
           </Typography>
         </Box>
       </Card>

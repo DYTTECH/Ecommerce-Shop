@@ -1,4 +1,5 @@
 import {
+  Box,
   InputBase,
   MenuItem,
   MenuList,
@@ -12,6 +13,7 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import SearchIcon from "@mui/icons-material/Search";
 import useWebSocket, { ReadyState } from "react-use-websocket";
+import { ItemsDes, MainTitle } from "../../Style/StyledComponents/Typography";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -124,36 +126,38 @@ console.log(searchResults);
             color: theme.palette.primary.dark,
             border: "1px solid #e7eaf3",
             borderRadius: "8px",
-            fontFamily: "Cairo",
-            fontSize: "14px",
+            // fontFamily: "Cairo",
+            // fontSize: "14px",
             maxHeight: "200px",
             overflowY: "auto",
-            width: "200px",
+            width: "300px",
           }}
         >
           <MenuList>
-            {Object.entries(searchResults).map(([title, items]) => (
-              <React.Fragment key={title}>
-                <MenuItem 
-               
-                >{title}</MenuItem>
-                {items.map((item) => (
-                  <MenuItem
-                  sx={{
-                    fontFamily: "Cairo",
-                    fontSize: "16px",
-                    fontWeight: 500,
-                    color: theme.palette.primary.dark,
-                    borderBottom: "1px solid #e7eaf3",
-                    padding: "10px 16px",
-                    "&:hover": {
-                      backgroundColor: theme.palette.primary.dark,
-                      color: theme.palette.primary.light,
-                    },
-                  }}
-                  key={item?.id}>{item?.name}</MenuItem>
-                ))}
-              </React.Fragment>
+          {Object.entries(searchResults).map(([title, items]) => (
+              items?.length > 0 && (
+                <React.Fragment key={title} >
+                  <Box mb={3}>
+                  <MainTitle p={3}>{title}</MainTitle>
+                  {items.map((item) => (
+                    <ItemsDes
+                      sx={{
+                        borderBottom: "1px solid #e7eaf3",
+                        padding: "10px 16px",
+                        
+                        "&:hover": {
+                          backgroundColor: theme.palette.primary.dark,
+                          color: theme.palette.primary.light,
+                        },
+                      }}
+                      key={item?.id}
+                    >
+                      {item?.name}
+                    </ItemsDes>
+                  ))}
+                  </Box>
+                </React.Fragment>
+              )
             ))}
           </MenuList>
         </Paper>
